@@ -4,19 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Application de Gestion Réunions & Territoires</title>
+    <!-- Style Tailwind CSS -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Liens pour la carte interactive (Leaflet) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body class="bg-gray-100 font-sans min-h-screen flex flex-col">
 
+    <!-- Bandeau bleu supérieur -->
     <div class="bg-blue-600 text-white text-center py-6 shadow-md">
         <h1 class="text-2xl font-bold">Application de Gestion Réunions & Territoires</h1>
         <p class="text-sm opacity-80 mt-1">Session : Administrateur</p>
     </div>
 
+    <!-- Corps principal en deux colonnes -->
     <div class="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-6 p-6 flex-grow">
         
+        <!-- Colonne Gauche : Liste des Pôles -->
         <div class="w-full lg:w-1/4 bg-white p-4 rounded-xl shadow-sm h-fit">
             <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Les 7 Pôles</h2>
             <div class="flex flex-col gap-2">
@@ -30,21 +35,26 @@
             </div>
         </div>
 
+        <!-- Colonne Droite : Contenu Principal -->
         <div class="w-full lg:w-3/4 bg-white p-6 rounded-xl shadow-sm space-y-6">
             
+            <!-- En-tête dynamique -->
             <div class="border-b pb-4">
                 <h2 id="titre-pole" class="text-2xl font-bold text-blue-600">Territoires</h2>
             </div>
 
+            <!-- CONTENU DYNAMIQUE -->
             <div id="contenu-dynamique">
-                </div>
+                <!-- S'injecte ici via JavaScript -->
+            </div>
 
         </div>
     </div>
 
+    <!-- Script de gestion de la page -->
     <script>
         let poleActuel = "Territoires";
-        let map = null; // Variable pour la carte
+        let map = null;
         
         // Génération des 120 cartes
         const cartesTerritoires = [];
@@ -64,14 +74,18 @@
         };
 
         function initialiserCarte() {
-            // Évite de recréer la carte si elle existe déjà
             if (document.getElementById('map') && !map) {
-                // Centre la carte de base (ici configuré par défaut sur la France, mais ajustable)
-                map = L.map('map').setView([46.603354, 1.888334], 6);
+                // MODIFICATION ICI : Centrage automatique sur Goyave, Guadeloupe [Lat, Long], Zoom 14
+                map = L.map('map').setView([16.134, -61.571], 14);
                 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap contributors'
                 }).addTo(map);
+
+                // Optionnel : Ajoute un petit repère au centre de Goyave
+                L.marker([16.134, -61.571]).addTo(map)
+                    .bindPopup('<b>Goyave</b><br>Centre de votre zone de territoires.')
+                    .openPopup();
             }
         }
 
@@ -81,12 +95,14 @@
             if (poleActuel === "Territoires") {
                 let html = `
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-4">
-                        <h3 class="text-lg font-semibold text-gray-800">🗺️ Assistant de Territoires (Style Territory Helper)</h3>
-                        <p class="text-sm text-gray-600 mt-1">Visualisez vos zones et gérez la rotation des 120 cartes (3 mois maximum).</p>
+                        <h3 class="text-lg font-semibold text-gray-800">🗺️ Assistant de Territoires — Goyave</h3>
+                        <p class="text-sm text-gray-600 mt-1">Visualisez votre commune et gérez la rotation des 120 cartes (3 mois maximum).</p>
                     </div>
 
-                    <div class="w-full h-80 rounded-xl border shadow-sm mb-6 z-10" id="map"></div>
+                    <!-- Zone de la Carte interactive -->
+                    <div class="w-full h-96 rounded-xl border shadow-sm mb-6 z-10" id="map"></div>
 
+                    <!-- Tableau de suivi -->
                     <div class="overflow-x-auto shadow-sm border rounded-xl bg-white">
                         <table class="w-full text-sm text-left text-gray-500">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-100 border-b">
@@ -108,7 +124,7 @@
                             <td class="px-4 py-3 font-bold text-gray-900">N° ${carte.numero}</td>
                             <td class="px-4 py-3 text-gray-600">${carte.type}</td>
                             <td class="px-4 py-2">
-                                <input type="text" value="${carte.localisation}" placeholder="ex: Centre-ville, Quartier Nord..." onchange="mettreAJourCarte(${index}, 'localisation', this.value)" class="w-full p-1 border rounded bg-white text-gray-800">
+                                <input type="text" value="${carte.localisation}" placeholder="ex: Blonzac, Sainte-Claire..." onchange="mettreAJourCarte(${index}, 'localisation', this.value)" class="w-full p-1 border rounded bg-white text-gray-800">
                             </td>
                             <td class="px-4 py-2">
                                 <input type="text" value="${carte.NomPrenom}" placeholder="Prédicateur" onchange="mettreAJourCarte(${index}, 'NomPrenom', this.value)" class="w-full p-1 border rounded bg-white text-gray-800">
@@ -130,11 +146,10 @@
                 `;
                 conteneur.innerHTML = html;
                 
-                // On lance l'affichage de la carte dès que le code HTML est injecté
                 initialiserCarte();
 
             } else {
-                map = null; // Reset de la carte si on change de pôle
+                map = null;
                 conteneur.innerHTML = `
                     <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <h3 class="text-lg font-semibold text-gray-800 mb-2">📋 Programme en cours :</h3>
@@ -175,11 +190,10 @@
             });
             document.getElementById(mappingIds[nomPole]).className = "w-full text-left p-3 rounded-lg font-medium bg-blue-600 text-white shadow";
             
-            map = null; // Force la réinitialisation de la carte si on revient sur Territoires
+            map = null;
             afficherContenu();
         }
 
-        // Lancement au démarrage
         afficherContenu();
     </script>
 </body>
