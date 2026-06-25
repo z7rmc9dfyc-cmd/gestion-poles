@@ -4,18 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Pôles - Goyave</title>
-    <!-- Supabase & Leaflet (Cartographie) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         :root { --primary: #2563eb; --success: #10b981; --bg: #f8fafc; --text: #0f172a; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
         .container { max-width: 1200px; margin: 0 auto; }
-        h1 { text-align: center; color: var(--primary); }
-        .tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
-        .tab-btn { background: #e2e8f0; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        h1 { text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 20px; }
+        
+        /* Menu horizontal défilant pour les 7 pôles sur iPad */
+        .tabs { display: flex; gap: 8px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+        .tab-btn { background: #e2e8f0; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; flex-shrink: 0; }
         .tab-btn.active { background: var(--primary); color: white; }
+        
         .panel { display: none; }
         .panel.active { display: block; }
         .box { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 25px; }
@@ -32,35 +34,35 @@
 <body>
 
 <div class="container">
-    <h1>Gestion des Pôles — Goyave</h1>
+    <h1>Gestion des 7 Pôles — Goyave</h1>
     
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('territoires')">🗺️ Pôle Territoires</button>
-        <button class="tab-btn" onclick="switchTab('discours')">🎤 Pôle Discours</button>
+        <button class="tab-btn active" onclick="switchTab('territoires')">🗺️ Territoires</button>
+        <button class="tab-btn" onclick="switchTab('discours')">🎤 Discours</button>
+        <button class="tab-btn" onclick="switchTab('nettoyage')">🧹 Nettoyage</button>
+        <button class="tab-btn" onclick="switchTab('sonorisation')">🔊 Sonorisation</button>
+        <button class="tab-btn" onclick="switchTab('estrade')">🎭 Estrade</button>
+        <button class="tab-btn" onclick="switchTab('accueil')">🤝 Accueil</button>
+        <button class="tab-btn" onclick="switchTab('secretariat')">📂 Secrétariat</button>
     </div>
     
-    <!-- PANNEAU : TERRITOIRES (RETOUR DE TES 120 CARTES ET DE LA CARTE) -->
     <div id="panel-territoires" class="panel active">
         <div class="box">
-            <h3>Assistant de Territoires — Goyave</h3>
-            <p>Visualisez votre commune et gérez la rotation des 120 cartes (3 mois maximum).</p>
+            <h3>Pôle Territoires — Goyave</h3>
+            <p>Visualisation et gestion de la rotation des 120 cartes (3 mois maximum).</p>
             <div id="map"></div>
-            
             <div class="grid-cartes" id="cartes-container">
-                <!-- Les 120 cartes vont se charger ici depuis Supabase -->
-                <p style="color: #64748b;">Chargement de vos 120 cartes recto-verso...</p>
+                <p style="color: #64748b;">Chargement de vos 120 cartes...</p>
             </div>
         </div>
     </div>
     
-    <!-- PANNEAU : DISCOURS -->
     <div id="panel-discours" class="panel">
         <div class="box">
-            <h3>Copier-Coller un Programme</h3>
+            <h3>Pôle Discours — Copier-Coller</h3>
             <textarea id="paste-zone" placeholder="Collez ici les lignes de votre tableau de programme..."></textarea>
             <button class="action-btn" onclick="traiterCopierColler()">Importer le programme</button>
         </div>
-        
         <table>
             <thead>
                 <tr>
@@ -72,44 +74,75 @@
             </tbody>
         </table>
     </div>
+    
+    <div id="panel-nettoyage" class="panel">
+        <div class="box">
+            <h3>Pôle Nettoyage</h3>
+            <p style="color: #64748b;">Interface du planning de nettoyage en cours de liaison...</p>
+        </div>
+    </div>
+
+    <div id="panel-sonorisation" class="panel">
+        <div class="box">
+            <h3>Pôle Sonorisation</h3>
+            <p style="color: #64748b;">Interface de la sonorisation en cours de liaison...</p>
+        </div>
+    </div>
+
+    <div id="panel-estrade" class="panel">
+        <div class="box">
+            <h3>Pôle Estrade</h3>
+            <p style="color: #64748b;">Interface du pôle estrade en cours de liaison...</p>
+        </div>
+    </div>
+
+    <div id="panel-accueil" class="panel">
+        <div class="box">
+            <h3>Pôle Accueil</h3>
+            <p style="color: #64748b;">Interface du pôle accueil en cours de liaison...</p>
+        </div>
+    </div>
+
+    <div id="panel-secretariat" class="panel">
+        <div class="box">
+            <h3>Pôle Secrétariat</h3>
+            <p style="color: #64748b;">Interface du secrétariat en cours de liaison...</p>
+        </div>
+    </div>
 </div>
 
 <script>
-    // Connexion automatique et sécurisée à ton Supabase
     const supabaseUrl = "https://wjgwodsxxjylyndylfnf.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqZ3dvZHN4eGoueWx5bmR5bGZuZiIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzE2NDY1NTA0LCJleHAiOjIwMzIwMjE1MDR9.bC_X9z3U_Z_t7xcl9_Q2n3M_4jYf3lP7fX2L8vK5hYg"; 
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
     let map;
 
-    // Navigation
     function switchTab(tabName) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
-        if(tabName === 'territoires') {
-            document.querySelector('[onclick="switchTab(\'territoires\')"]').classList.add('active');
-            document.getElementById('panel-territoires').classList.add('active');
-            if(map) setTimeout(() => map.invalidateSize(), 100);
-        } else {
-            document.querySelector('[onclick="switchTab(\'discours\')"]').classList.add('active');
-            document.getElementById('panel-discours').classList.add('active');
-        }
+        
+        // Activer l'onglet cliqué
+        const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabName));
+        if(btn) btn.classList.add('active');
+        
+        const panel = document.getElementById(`panel-${tabName}`);
+        if(panel) panel.classList.add('active');
+        
+        if(tabName === 'territoires' && map) setTimeout(() => map.invalidateSize(), 100);
     }
 
-    // Initialisation de la carte de Goyave
     function initMap() {
         map = L.map('map').setView([16.134, -61.571], 14);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        L.marker([16.134, -61.571]).addTo(map).bindPopup('<b>Goyave</b><br>Centre de votre zone de territoires.').openPopup();
+        L.marker([16.134, -61.571]).addTo(map).bindPopup('<b>Goyave</b>').openPopup();
     }
 
-    // Charger les 120 cartes depuis ton Supabase
     async function chargerCartes() {
         const container = document.getElementById('cartes-container');
         const { data: cartes, error } = await _supabase.from('territoires').select('*').order('numero');
         
         if (error || !cartes || cartes.length === 0) {
-            // Simulation visuelle si la table est vide pour le test
             container.innerHTML = "";
             for(let i=1; i<=120; i++) {
                 container.innerHTML += `<div class="carte-card"><b>Carte N° ${i} (Recto/Verso)</b><br>Statut : Disponible<br><small>Rotation : 3 mois max</small></div>`;
