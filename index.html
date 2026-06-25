@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Pôles - Goyave</title>
+    <!-- Supabase, Leaflet & Traducteur Excel (SheetJS) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root { --primary: #2563eb; --success: #10b981; --bg: #f8fafc; --text: #0f172a; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
@@ -22,7 +24,6 @@
         .box { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 25px; }
         #map { height: 350px; border-radius: 12px; margin-bottom: 20px; z-index: 1; }
         
-        /* Zone d'importation de fichier moderne */
         .file-upload-zone { border: 3px dashed #cbd5e1; padding: 30px; text-align: center; border-radius: 12px; background: #f8fafc; cursor: pointer; margin-bottom: 15px; }
         .file-upload-zone:hover { border-color: var(--primary); background: #eff6ff; }
         .file-input { display: none; }
@@ -52,6 +53,7 @@
         <button class="tab-btn" onclick="switchTab('secretariat')">📂 Secrétariat</button>
     </div>
     
+    <!-- 1. PANNEAU : TERRITOIRES -->
     <div id="panel-territoires" class="panel active">
         <div class="box">
             <h3>Pôle Territoires — Goyave</h3>
@@ -63,17 +65,18 @@
         </div>
     </div>
     
+    <!-- 2. PANNEAU : DISCOURS -->
     <div id="panel-discours" class="panel">
         <div class="box">
-            <h3>Pôle Discours — Importer un document</h3>
-            <p>Sélectionnez directement le fichier de votre programme (Excel, CSV ou texte) depuis votre iPad :</p>
+            <h3>Pôle Discours — Importer un document Excel</h3>
+            <p>Sélectionnez directement votre fichier Excel de programme depuis votre iPad :</p>
             
             <div class="file-upload-zone" onclick="document.getElementById('file-input').click()">
-                <span class="file-icon">📄</span>
-                <strong style="color: var(--primary);">Cliquez ici pour choisir votre fichier</strong>
-                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Formats acceptés : .xlsx, .csv, .txt</p>
+                <span class="file-icon">📊</span>
+                <strong style="color: var(--primary);">Cliquez ici pour choisir votre fichier Excel</strong>
+                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Format recommandé : .xlsx ou .xls</p>
             </div>
-            <input type="file" id="file-input" class="file-input" onchange="chargerFichierProgramme(event)">
+            <input type="file" id="file-input" class="file-input" accept=".xlsx, .xls" onchange="chargerFichierExcel(event)">
         </div>
         
         <div class="table-wrapper">
@@ -84,12 +87,13 @@
                     </tr>
                 </thead>
                 <tbody id="discours-table-body">
-                    <tr><td colspan="8" style="text-align:center; color:#64748b;">Aucun discours affiché. Chargez un fichier de programme ci-dessus.</td></tr>
+                    <tr><td colspan="8" style="text-align:center; color:#64748b;">Aucun discours affiché. Chargez un fichier Excel ci-dessus.</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
     
+    <!-- AUTRES PANNEAUX INTACTS -->
     <div id="panel-nettoyage" class="panel"><div class="box"><h3>Pôle Nettoyage</h3><p style="color: #64748b;">Interface en cours de liaison...</p></div></div>
     <div id="panel-sonorisation" class="panel"><div class="box"><h3>Pôle Sonorisation</h3><p style="color: #64748b;">Interface en cours de liaison...</p></div></div>
     <div id="panel-estrade" class="panel"><div class="box"><h3>Pôle Estrade</h3><p style="color: #64748b;">Interface en cours de liaison...</p></div></div>
@@ -146,25 +150,34 @@
         });
     }
 
-    // LECTURE DIRECTE DU FICHIER CHARGÉ
-    function chargerFichierProgramme(event) {
+    // NOUVEAU LECTEUR EXCEL INTELLIGENT
+    function chargerFichierExcel(event) {
         const file = event.target.files[0];
         if (!file) return;
 
         const reader = new FileReader();
+        reader.onerror = () => alert("Erreur lors de la lecture du fichier.");
         reader.onload = function(e) {
-            const contenu = e.target.result;
-            const lignes = contenu.split('\n');
-            const tbody = document.getElementById('discours-table-body');
-            tbody.innerHTML = ""; 
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                
+                // On prend la première feuille du classeur Excel
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                
+                // Transformation des lignes en tableau de texte
+                const lignes = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                const tbody = document.getElementById('discours-table-body');
+                tbody.innerHTML = ""; 
 
-            let ligneAjoutee = false;
+                let ligneAjoutee = false;
 
-            lignes.forEach(ligne => {
-                if (!ligne.trim()) return;
-                const elements = ligne.split(/,|;|\t| {2,}/).map(el => el.trim());
+                lignes.forEach((elements, index) => {
+                    // On saute la première ligne si c'est l'entête (Date, Thème, etc.)
+                    if (index === 0 && isNaN(Date.parse(elements[0]))) return;
+                    if (!elements || elements.length === 0 || !elements[0]) return;
 
-                if (elements.length >= 3) {
                     ligneAjoutee = true;
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
@@ -178,16 +191,19 @@
                         <td>${elements[7] || '--'}</td>
                     `;
                     tbody.appendChild(tr);
-                }
-            });
+                });
 
-            if (ligneAjoutee) {
-                alert("Fichier lu avec succès ! Le programme s'est affiché dans votre tableau.");
-            } else {
-                alert("Le fichier a été lu mais aucune ligne correspondante n'a été trouvée.");
+                if (ligneAjoutee) {
+                    alert("Fichier Excel décodé avec succès !");
+                } else {
+                    alert("Fichier lu, mais aucune donnée exploitable trouvée.");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Impossible de lire ce fichier Excel. Assurez-vous qu'il n'est pas corrompu.");
             }
         };
-        reader.readAsText(file);
+        reader.readAsArrayBuffer(file);
     }
 
     window.onload = () => {
