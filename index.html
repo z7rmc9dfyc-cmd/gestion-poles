@@ -19,7 +19,7 @@
         .panneau { display: none; }
         .panneau.actif { display: block; }
         .boite { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 25px; }
-        #carte { height: 350px; border-radius: 12px; margin-top: 20px; z-index: 1; }
+        #carte { height: 380px; border-radius: 12px; margin-top: 15px; margin-bottom: 20px; z-index: 1; border: 1px solid #cbd5e1; }
         .zone-telechargement { border: 3px dashed #cbd5e1; padding: 30px; text-align: center; background: #f8fafc; border-radius: 12px; cursor: pointer; transition: border-color 0.2s; }
         .zone-telechargement:hover { border-color: var(--primary); }
         .entree-fichier { display: none; }
@@ -121,9 +121,11 @@
     <div id="territoires" class="panneau">
         <div class="boite">
             <h3>🗺️ Pôle Territoires</h3>
-            <p>Suivi et rotation des 120 cartes de territoires.</p>
+            <p>Suivi et rotation des 120 cartes de territoires autour de Goyave.</p>
+            
             <div id="carte"></div>
-            <div class="grilles-cartes" id="cartes-conteneur" style="margin-top: 20px;"></div>
+            
+            <div class="grilles-cartes" id="cartes-conteneur"></div>
         </div>
     </div>
 </div>
@@ -132,6 +134,8 @@
     // Config PDF.js
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
+    let map = null;
+
     // Gestion de la navigation entre onglets
     function switchTab(tabId) {
         document.querySelectorAll('.panneau').forEach(p => p.classList.remove('actif'));
@@ -139,9 +143,36 @@
         
         document.getElementById(tabId).classList.add('actif');
         event.currentTarget.classList.add('actif');
+
+        // Force la carte à se recalculer correctement si on clique sur l'onglet Territoires
+        if (tabId === 'territoires') {
+            setTimeout(() => {
+                if (map) {
+                    map.invalidateSize();
+                } else {
+                    initMap();
+                }
+            }, 200);
+        }
     }
 
-    // Génération visuelle rapide des 120 cartes de territoires
+    // Initialisation de la carte sur Goyave (Guadeloupe)
+    function initMap() {
+        if (document.getElementById('carte') && !map) {
+            // Coordonnées approximatives de Goyave : 16.1342, -61.6152
+            map = L.map('carte').setView([16.1342, -61.6152], 13);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Petit marqueur central pour Goyave
+            L.marker([16.1342, -61.6152]).addTo(map)
+                .bindPopup('<b>Zone de Goyave</b><br>Suivi des 120 cartes.')
+                .openPopup();
+        }
+    }
+
+    // Génération visuelle des 120 cartes de territoires
     function chargeurCartes() {
         const conteneur = document.getElementById('cartes-conteneur');
         if (!conteneur) return;
@@ -181,7 +212,6 @@
 
                 let cleanText = texteComplet.replace(/DATE THEME N° ORATEUR ASSEMBLEE PRESIDENT LECTEUR GROUPE qui reçoit l'orateur/gi, '').trim();
 
-                // Découpage automatique basé sur les formats de date (DD/MM/YYYY)
                 const entryRegex = /(\d{2}\/\d{2}\/\d{4})(.*?)(?=\d{2}\/\d{2}\/\d{4}|PROGRAMME|$)/gs;
                 let match;
                 let ligneAjoutee = false;
