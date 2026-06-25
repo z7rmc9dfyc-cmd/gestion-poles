@@ -10,7 +10,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
-        :root { --primary: #2563eb; --success: #10b981; --warning: #f59e0b; --bg: #f8fafc; --text: #0f172a; }
+        :root { --primary: #2563eb; --success: #16a34a; --warning: #f59e0b; --bg: #f8fafc; --text: #0f172a; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
         h1 { text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 20px; }
@@ -22,6 +22,7 @@
         .boite { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 25px; }
         #carte { height: 380px; border-radius: 12px; margin-top: 15px; margin-bottom: 20px; z-index: 1; border: 1px solid #cbd5e1; }
         .zone-telechargement { border: 3px dashed #cbd5e1; padding: 30px; text-align: center; background: #f8fafc; border-radius: 12px; cursor: pointer; transition: border-color 0.2s; }
+        .zone-telechargement.cahier-zone:hover { border-color: var(--success); }
         .zone-telechargement:hover { border-color: var(--primary); }
         .entree-fichier { display: none; }
         .icone-fichier { font-size: 40px; margin-bottom: 10px; display: block; }
@@ -57,12 +58,12 @@
         <div class="boite">
             <h3>🎤 Pôle Discours — Importer le programme PDF</h3>
             <p>Sélectionnez le fichier PDF de votre programme :</p>
-            <div class="zone-telechargement" onclick="document.getElementById('file-input').click()">
+            <div class="zone-telechargement" onclick="document.getElementById('file-input-discours').click()">
                 <span class="icone-fichier">📕</span>
                 <p style="color: var(--primary); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Discours</p>
                 <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Format accepté : .pdf</p>
             </div>
-            <input type="file" id="file-input" class="entree-fichier" accept=".pdf" onchange="chargeurFichierPDF(event)">
+            <input type="file" id="file-input-discours" class="entree-fichier" accept=".pdf" onchange="chargeurFichierPDF(event)">
             <div class="emballage-de-table">
                 <table>
                     <thead>
@@ -89,30 +90,28 @@
 
     <div id="vie-ministere" class="panneau">
         <div class="boite">
-            <h3>📖 Pôle Cahier Vie et Ministère — Importer le programme du milieu de semaine</h3>
-            <p>Sélectionnez le fichier PDF de votre programme Vie et Ministère :</p>
-            <div class="zone-telechargement" onclick="document.getElementById('file-input-cahier').click()">
+            <h3>📖 Pôle Cahier Vie et Ministère — Importer le programme</h3>
+            <p>Sélectionnez le fichier PDF du programme de milieu de semaine :</p>
+            <div class="zone-telechargement" onclick="document.getElementById('file-input-cahier-bouton').click()">
                 <span class="icone-fichier">📖</span>
                 <p style="color: var(--success); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Cahier</p>
                 <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Format accepté : .pdf</p>
             </div>
-            <input type="file" id="file-input-cahier" class="entree-fichier" accept=".pdf" onchange="chargeurPDFVieEtMinistere(event)">
+            <input type="file" id="file-input-cahier-bouton" class="entree-fichier" accept=".pdf" onchange="chargeurPDFVieEtMinistere(event)">
             <div class="emballage-de-table">
                 <table>
                     <thead>
                         <tr>
-                            <th>Semaine</th>
+                            <th>Semaine / Lecture</th>
                             <th>Président</th>
-                            <th>Lecture Bible</th>
-                            <th>Première conv. / Intérêt</th>
-                            <th>Vie Chrétienne / Discours</th>
-                            <th>Étude biblique (Conducteur)</th>
-                            <th>Étude biblique (Lecteur)</th>
+                            <th>Lecture Bible (p.3)</th>
+                            <th>Étude de livre (Conducteur)</th>
+                            <th>Étude de livre (Lecteur)</th>
                         </tr>
                     </thead>
                     <tbody id="corps-tableau-cahier">
                         <tr>
-                            <td colspan="7" style="text-align: center; color: #64748b;">Aucun programme de réunion de semaine chargé pour le moment.</td>
+                            <td colspan="5" style="text-align: center; color: #64748b;">Aucun programme de semaine chargé. Cliquez sur le bouton vert ci-dessus.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -233,13 +232,13 @@
                     }
                 }
                 if (ligneAjoutee) { alert("Fichier PDF Discours chargé avec succès !"); }
-                else { alert("Le PDF a été analysé mais aucune ligne de Discours n'a été détectée."); }
+                else { alert("Ce fichier ne semble pas correspondre au format du programme Discours."); }
             } catch (error) { alert("Erreur lors de la lecture du fichier PDF Discours."); }
         };
         reader.readAsArrayBuffer(file);
     }
 
-    // NOUVELLE FONCTION COMPLÈTEMENT ISOLÉE POUR LE CAHIER DE RÉUNION
+    // EXTRACTION DU CAHIER V2 RECRÉÉE SUR MESURE ET TRÈS SOUPLE
     function chargeurPDFVieEtMinistere(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -252,61 +251,62 @@
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const textContent = await page.getTextContent();
-                    texteComplet += textContent.items.map(item => item.str).join(" ") + " ";
+                    texteComplet += textContent.items.map(item => item.str).join(" ") + " \n";
                 }
+                
                 const corpsCahier = document.getElementById('corps-tableau-cahier');
                 corpsCahier.innerHTML = "";
                 
-                // Extraction par bloc de semaine basé sur les formats "DD/MM/YYYY | TEXTE"
-                const semaineRegex = /(\d{2}\/\d{2}\/\d{4}\s*\|\s*[^0-9]+?)(?=\d{2}\/\d{2}\/\d{4}|$)/gs;
-                let match;
+                // Découpage automatique très large par bloc de date (DD/MM/YYYY)
+                const blocs = texteComplet.split(/(\d{2}\/\d{2}\/\d{4})/g);
                 let ligneAjoutee = false;
 
-                while ((match = semaineRegex.exec(texteComplet)) !== null) {
-                    ligneAjoutee = true;
-                    const blocSemaine = match[1];
-                    
-                    // Récupération du titre de la semaine
-                    const enteteSemaine = blocSemaine.split("\n")[0].split("Cantique")[0].trim();
-                    
-                    // Recherche du Président
-                    const presidentMatch = blocSemaine.match(/Président\s+([A-Za-zÀ-ÖØ-öø-ÿ\s\-]+?)(?=(Joyaux|Prière|$))/i);
-                    const president = presidentMatch ? presidentMatch[1].trim() : '--';
+                for (let j = 1; j < blocs.length; j += 2) {
+                    const dateSemaine = blocs[j];
+                    const contenuBloc = blocs[j+1];
 
-                    // Recherche du lecteur de la Bible (partie 3)
-                    const lectureMatch = blocSemaine.match(/3\.\s*Lecture\s*de\s*la\s*Bible.*?\)\s+([A-Za-zÀ-ÖØ-öø-ÿ\s\-]+?)(?=(Applique|$))/i);
-                    const lectureBible = lectureMatch ? lectureMatch[1].trim() : '--';
+                    if (contenuBloc && (contenuBloc.includes("Président") || contenuBloc.includes("Bible"))) {
+                        ligneAjoutee = true;
 
-                    // Recherche des participants (partie 4 et 5)
-                    const convMatch = blocSemaine.match(/4\.\s*Engage\s*la\s*conversation.*?\)\s+([A-Za-zÀ-ÖØ-öø-ÿ\s\-\&]+?)(?=(5\.|Vie|$))/i);
-                    const conversation = convMatch ? convMatch[1].trim() : '--';
+                        // Nettoyage de l'entête pour choper le livre étudié (ex: JÉRÉMIE 13-15)
+                        const enteteNettoyee = contenuBloc.split("Cantique")[0].replace(/[^A-ZÉÈÀ0-9\s\-]/g, '').trim();
+                        const affichageSemaine = `<b>${dateSemaine}</b><br><small style="color:#2563eb;">${enteteNettoyee}</small>`;
 
-                    const discoursMatch = blocSemaine.match(/6\.\s*(Discours|Fais\s*des\s*disciples|Explique).*?\)\s+([A-Za-zÀ-ÖØ-öø-ÿ\s\-\&]+?)(?=(Vie|$))/i);
-                    const discoursPartie = discoursMatch ? discoursMatch[2].trim() : '--';
+                        // Extraction du Président (on prend tout ce qui bouge après le mot)
+                        const pMatch = contenuBloc.match(/Président\s+([^0-9\n]{3,35})/i);
+                        const president = pMatch ? pMatch[1].replace(/Joyaux|Prière|18.*/gi, '').trim() : "--";
 
-                    // Recherche de l'étude biblique (Conducteur & Lecteur)
-                    const etudeCondMatch = blocSemaine.match(/Conducteur\s+([A-Za-zÀ-ÖØ-öø-ÿ\s\-]+)/i);
-                    const etudeLectMatch = blocSemaine.match(/Lecteur\s+([A-Za-zÀ-ÖØ-öø-ÿ\s\-]+)/i);
-                    
-                    const conducteur = etudeCondMatch ? etudeCondMatch[1].split("Lecteur")[0].trim() : '--';
-                    const lecteurEtude = etudeLectMatch ? etudeLectMatch[1].split("Prière")[0].trim() : '--';
+                        // Extraction du Lecteur de la Bible (partie 3.)
+                        const lMatch = contenuBloc.match(/3\.\s*Lecture\s*de\s*la\s*Bible.*?\)\s+([^0-9\n]{3,35})/i);
+                        const lecteurBible = lMatch ? lMatch[1].replace(/Applique|Vie|19.*/gi, '').trim() : "--";
 
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><b>${enteteSemaine}</b></td>
-                        <td>${president}</td>
-                        <td>${lectureBible}</td>
-                        <td>${conversation}</td>
-                        <td>${discoursPartie}</td>
-                        <td>${conducteur}</td>
-                        <td>${lecteurEtude}</td>
-                    `;
-                    corpsCahier.appendChild(tr);
+                        // Extraction Étude biblique (Conducteur & Lecteur)
+                        const condMatch = contenuBloc.match(/Conducteur\s+([^0-9\n]{3,35})/i);
+                        const lectMatch = contenuBloc.match(/Lecteur\s+([^0-9\n]{3,35})/i);
+                        
+                        const conducteur = condMatch ? condMatch[1].replace(/Lecteur|Cantique|Prière.*/gi, '').trim() : "--";
+                        const lecteurEtude = lectMatch ? lectMatch[1].replace(/Cantique|Prière|Aperçu.*/gi, '').trim() : "--";
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${affichageSemaine}</td>
+                            <td><span style="color:#0284c7; font-weight:600;">${president}</span></td>
+                            <td>${lecteurBible}</td>
+                            <td><span style="background:#f0fdf4; color:#16a34a; padding:2px 6px; border-radius:4px; font-weight:500;">${conducteur}</span></td>
+                            <td>${lecteurEtude}</td>
+                        `;
+                        corpsCahier.appendChild(tr);
+                    }
                 }
 
-                if (ligneAjoutee) { alert("Fichier PDF Cahier Vie et Ministère chargé avec succès !"); }
-                else { alert("Le PDF a été lu mais le format des semaines n'a pas pu être découpé."); }
-            } catch (error) { alert("Erreur lors de la lecture du Cahier."); }
+                if (ligneAjoutee) { 
+                    alert("Fichier Cahier Vie et Ministère chargé avec succès !"); 
+                } else { 
+                    alert("Le PDF a été lu, mais le format interne n'a pas pu être découpé."); 
+                }
+            } catch (error) { 
+                alert("Erreur lors de l'analyse sur l'iPad."); 
+            }
         };
         reader.readAsArrayBuffer(file);
     }
