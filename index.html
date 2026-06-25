@@ -10,7 +10,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
-        :root { --primary: #2563eb; --success: #10b981; --bg: #f8fafc; --text: #0f172a; }
+        :root { --primary: #2563eb; --success: #10b981; --warning: #f59e0b; --bg: #f8fafc; --text: #0f172a; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
         h1 { text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 20px; }
@@ -29,8 +29,15 @@
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
         th { background: #f1f5f9; color: #475569; font-weight: 600; }
-        .grilles-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .carte-credit { background: white; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .grilles-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        
+        /* Styles pour les 120 Cartes de Territoire */
+        .carte-territorial { background: white; padding: 18px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 8px; position: relative; }
+        .badge-face { position: absolute; top: 12px; right: 12px; background: #e0f2fe; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; color: #0369a1; }
+        .carte-titre { font-size: 16px; font-weight: 700; color: #1e3a8a; margin: 0; }
+        .carte-info { font-size: 13px; color: #334155; margin: 2px 0; border-bottom: 1px dashed #f1f5f9; padding-bottom: 4px; }
+        .carte-info strong { color: #0f172a; }
+        .alerte-rotation { background: #fff7ed; border: 1px solid #ffedd5; color: #c2410c; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; margin-top: 5px; text-align: center; }
     </style>
 </head>
 <body>
@@ -121,9 +128,11 @@
 
     <div id="territoires" class="panneau">
         <div class="boite">
-            <h3>🗺️ Pôle Territoires</h3>
-            <p>Suivi et rotation des 120 cartes de territoires autour de Goyave.</p>
+            <h3>🗺️ Pôle Territoires — Rotation des 120 cartes</h3>
+            <p>Suivi géographique et attributions nominatives (Durée maximale : 3 mois).</p>
+            
             <div id="carte"></div>
+            
             <div class="grilles-cartes" id="cartes-conteneur"></div>
         </div>
     </div>
@@ -165,16 +174,26 @@
         }
     }
 
+    // Génération propre des 120 cartes Recto/Verso avec détails demandés
     function chargeurCartes() {
         const conteneur = document.getElementById('cartes-conteneur');
         if (!conteneur) return;
         conteneur.innerHTML = "";
+        
         for (let i = 1; i <= 120; i++) {
+            // Alternance automatique pour illustrer le Recto / Verso des cartes physiques
+            const face = (i % 2 === 0) ? "Verso" : "Recto";
+            
             const div = document.createElement('div');
-            div.className = 'carte-credit';
+            div.className = 'carte-territorial';
             div.innerHTML = `
-                <b>Carte N°${i} (Recto/Verso)</b><br>
-                <span style="color: #64748b; font-size:13px;">Rotation maximale : 3 mois</span>
+                <span class="badge-face">${face}</span>
+                <p class="carte-titre">Carte N° ${i}</p>
+                <p class="carte-info"><strong>Nom :</strong> -- </p>
+                <p class="carte-info"><strong>Prénom :</strong> -- </p>
+                <p class="carte-info"><strong>Date de Sortie :</strong> --/--/----</p>
+                <p class="carte-info"><strong>Date d'Entrée :</strong> --/--/----</p>
+                <div class="alerte-rotation">⏱️ Rotation max : 3 mois</div>
             `;
             conteneur.appendChild(div);
         }
