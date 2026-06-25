@@ -2,6 +2,7 @@
 <html lang="fr" class="notranslate">
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des 7 Pôles</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -122,21 +123,17 @@
         <div class="boite">
             <h3>🗺️ Pôle Territoires</h3>
             <p>Suivi et rotation des 120 cartes de territoires autour de Goyave.</p>
-            
             <div id="carte"></div>
-            
             <div class="grilles-cartes" id="cartes-conteneur"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // Config PDF.js
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
     let map = null;
 
-    // Gestion de la navigation entre onglets
     function switchTab(tabId) {
         document.querySelectorAll('.panneau').forEach(p => p.classList.remove('actif'));
         document.querySelectorAll('.bouton-onglet').forEach(b => b.classList.remove('actif'));
@@ -144,7 +141,6 @@
         document.getElementById(tabId).classList.add('actif');
         event.currentTarget.classList.add('actif');
 
-        // Force la carte à se recalculer correctement si on clique sur l'onglet Territoires
         if (tabId === 'territoires') {
             setTimeout(() => {
                 if (map) {
@@ -156,23 +152,19 @@
         }
     }
 
-    // Initialisation de la carte sur Goyave (Guadeloupe)
     function initMap() {
         if (document.getElementById('carte') && !map) {
-            // Coordonnées approximatives de Goyave : 16.1342, -61.6152
             map = L.map('carte').setView([16.1342, -61.6152], 13);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
 
-            // Petit marqueur central pour Goyave
             L.marker([16.1342, -61.6152]).addTo(map)
                 .bindPopup('<b>Zone de Goyave</b><br>Suivi des 120 cartes.')
                 .openPopup();
         }
     }
 
-    // Génération visuelle des 120 cartes de territoires
     function chargeurCartes() {
         const conteneur = document.getElementById('cartes-conteneur');
         if (!conteneur) return;
@@ -181,14 +173,13 @@
             const div = document.createElement('div');
             div.className = 'carte-credit';
             div.innerHTML = `
-                <b>Carte N°${i}</b><br>
-                <span style="color: #64748b; font-size:13px;">Disponible à la rotation</span>
+                <b>Carte N°${i} (Recto/Verso)</b><br>
+                <span style="color: #64748b; font-size:13px;">Rotation maximale : 3 mois</span>
             `;
             conteneur.appendChild(div);
         }
     }
 
-    // Extraction et tri automatique du PDF Discours
     function chargeurFichierPDF(event) {
         const file = event.target.files[0];
         if (!file) return;
