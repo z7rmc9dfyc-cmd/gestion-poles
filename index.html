@@ -1,79 +1,223 @@
-function chargeurFichierPDF(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+<!DOCTYPE html>
+<html lang="fr" class="notranslate">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Pôles - Goyave</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <style>
+        :root { --primary: #2563eb; --success: #10b981; --bg: #f8fafc; --text: #0f172a; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .recipient { max-width: 1200px; margin: 0 auto; }
+        h1 { text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 20px; }
+        .onglets { display: flex; gap: 8px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .bouton-onglet { padding: 10px 18px; border: none; background: none; cursor: pointer; font-weight: 500; color: #64748b; font-size: 15px; border-radius: 6px; transition: all 0.2s; }
+        .bouton-onglet.actif { background: var(--primary); color: white; }
+        .panneau { display: none; }
+        .panneau.actif { display: block; }
+        .boite { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        #carte { height: 350px; border-radius: 12px; margin-top: 20px; z-index: 1; }
+        .zone-telechargement { border: 3px dashed #cbd5e1; padding: 30px; text-align: center; background: #f8fafc; border-radius: 12px; cursor: pointer; transition: border-color 0.2s; }
+        .zone-telechargement:hover { border-color: var(--primary); }
+        .entree-fichier { display: none; }
+        .icone-fichier { font-size: 40px; margin-bottom: 10px; display: block; }
+        .emballage-de-table { overflow-x: auto; margin-top: 25px; background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
+        th { background: #f1f5f9; color: #475569; font-weight: 600; }
+        .grilles-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .carte-credit { background: white; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
 
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-        try {
-            const typedarray = new Uint8Array(e.target.result);
-            const pdf = await pdfjsLib.getDocument(typedarray).promise;
+<div class="recipient">
+    <h1>Gestion des 7 Pôles – Goyave</h1>
+    
+    <div class="onglets">
+        <button class="bouton-onglet actif" onclick="switchTab('territoires')">🗺️ Territoires</button>
+        <button class="bouton-onglet" onclick="switchTab('discours')">🎤 Discours</button>
+        <button class="bouton-onglet" onclick="switchTab('nettoyage')">🧹 Nettoyage</button>
+        <button class="bouton-onglet" onclick="switchTab('sonorisation')">🔊 Sonorisation</button>
+        <button class="bouton-onglet" onclick="switchTab('estrade')">🎭 Estrade</button>
+        <button class="bouton-onglet" onclick="switchTab('accueil')">🤝 Accueil</button>
+        <button class="bouton-onglet" onclick="switchTab('secretariat')">📁 Secrétariat</button>
+    </div>
+
+    <div id="territoires" class="panneau panneau_actif actif">
+        <div class="boite">
+            <h3>📌 Pôle Territoires – Goyave</h3>
+            <p>Visualisation et gestion de la rotation des 120 cartes (3 mois maximum).</p>
+            <div id="carte"></div>
+            <div class="grilles-cartes" id="cartes-conteneur">
+                <p style="color: #64748b;">Chargement de vos 120 cartes...</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="discours" class="panneau">
+        <div class="boite">
+            <h3>🎤 Pôle Discours — Importer un document PDF</h3>
+            <p>Sélectionnez directement votre fichier PDF de programme depuis votre iPad :</p>
             
-            let texteComplet = "";
-            for (let i = 1; i <= pdf.numPages; i++) {
-                const page = await pdf.getPage(i);
-                const textContent = await page.getTextContent();
-                const pageText = textContent.items.map(item => item.str).join(" ");
-                texteComplet += pageText + " ";
-            }
+            <div class="zone-telechargement" onclick="document.getElementById('file-input').click()">
+                <span class="icone-fichier">📕</span>
+                <p style="color: var(--primary); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF</p>
+                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Format : .pdf</p>
+            </div>
+            <input type="file" id="file-input" class="entree-fichier" accept=".pdf" onchange="chargeurFichierPDF(event)">
+            
+            <div class="emballage-de-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Thème</th>
+                            <th>N°</th>
+                            <th>Orateur</th>
+                            <th>Assemblée</th>
+                            <th>Président</th>
+                            <th>Lecteur</th>
+                            <th>Groupe</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corps-tableau-discours">
+                        <tr>
+                            <td colspan="8" style="text-align: center; color: #64748b;">Aucun programme chargé pour le moment. Cliquez sur le bouton rouge ci-dessus.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-            const corpsDeT = document.getElementById('corps-tableau-discours');
-            corpsDeT.innerHTML = "";
+    <div id="nettoyage" class="panneau"><div class="boite"><h3>🧹 Pôle Nettoyage</h3><p>Planning et suivi des tâches de nettoyage.</p></div></div>
+    <div id="sonorisation" class="panneau"><div class="boite"><h3>🔊 Pôle Sonorisation</h3><p>Gestion de la sono et des micros.</p></div></div>
+    <div id="estrade" class="panneau"><div class="boite"><h3>🎭 Pôle Estrade</h3><p>Suivi des attributions de l'estrade.</p></div></div>
+    <div id="accueil" class="panneau"><div class="boite"><h3>🤝 Pôle Accueil</h3><p>Planning des frères à l'accueil.</p></div></div>
+    <div id="secretariat" class="panneau"><div class="boite"><h3>📁 Pôle Secrétariat</h3><p>Données et rapports du secrétariat.</p></div></div>
+</div>
 
-            // Nettoyage des entêtes du PDF
-            let cleanText = texteComplet.replace(/DATE THEME N° ORATEUR ASSEMBLEE PRESIDENT LECTEUR GROUPE qui reçoit l'orateur/gi, '').trim();
+<script>
+    // Configuration de base de PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
-            // RegEx pour découper proprement chaque ligne par sa date (format DD/MM/YYYY)
-            const entryRegex = /(\d{2}\/\d{2}\/\d{4})(.*?)(?=\d{2}\/\d{2}\/\d{4}|PROGRAMME|$)/gs;
-            let match;
-            let ligneAjoutee = false;
+    // Logique des Onglets
+    function switchTab(tabId) {
+        document.querySelectorAll('.panneau').forEach(p => p.classList.remove('actif'));
+        document.querySelectorAll('.bouton-onglet').forEach(b => b.classList.remove('actif'));
+        
+        document.getElementById(tabId).classList.add('actif');
+        event.currentTarget.classList.add('actif');
+    }
 
-            while ((match = entryRegex.exec(cleanText)) !== null) {
-                const date = match[1];
-                const reste = match[2].trim();
-
-                // On cherche le numéro du thème (1 à 3 chiffres) qui sépare le Thème de l'Orateur
-                const numMatch = reste.match(/(\d{1,3})\s+(.+)/);
-                
-                if (numMatch) {
-                    ligneAjoutee = true;
-                    const theme = reste.split(/\s\d{1,3}\s/)[0].trim();
-                    const numero = numMatch[1];
-                    const suite = numMatch[2].trim();
-
-                    // Découpage des éléments restants
-                    const mots = suite.split(/\s+/);
-                    
-                    const orateur = `${mots[0] || ''} ${mots[1] || ''}`.trim();
-                    const assemblee = mots[2] || '';
-                    const president = `${mots[3] || ''} ${mots[4] || ''}`.trim();
-                    const lecteur = `${mots[5] || ''} ${mots[6] || ''}`.trim();
-                    const groupe = mots.slice(7).join(' ') || '--';
-
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><b>${date}</b></td>
-                        <td>${theme}</td>
-                        <td><span style="background:#e8f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">${numero}</span></td>
-                        <td>${orateur}</td>
-                        <td>${assemblee}</td>
-                        <td>${president}</td>
-                        <td>${lecteur}</td>
-                        <td>${groupe}</td>
-                    `;
-                    corpsDeT.appendChild(tr);
-                }
-            }
-
-            if (ligneAjoutee) {
-                alert("Fichier PDF chargé et structuré avec succès !");
-            } else {
-                alert("Le PDF a été lu, mais le format n'a pas pu être découpé.");
-            }
-
-        } catch (error) {
-            console.error(error);
-            alert("Erreur lors de la lecture du fichier PDF.");
+    // Simulation/Chargement des cartes territoires
+    function chargeurCartes() {
+        const conteneur = document.getElementById('cartes-conteneur');
+        if (!conteneur) return;
+        conteneur.innerHTML = "";
+        
+        // Exemple pour simuler vos cartes
+        for (let i = 1; i <= 6; i++) {
+            const div = document.createElement('div');
+            div.className = 'carte-credit';
+            div.innerHTML = `
+                <b>Carte N°${i}</b><br>
+                <strong>Nom :</strong> Non affecté<br>
+                <strong>Sortie :</strong> -- | <strong>Entrée :</strong> --
+            `;
+            conteneur.appendChild(div);
         }
+    }
+
+    // FONCTION CRITIQUE : LECTURE ET TRI AUTOMATIQUE DU PDF DISCOURS
+    function chargeurFichierPDF(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const typedarray = new Uint8Array(e.target.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                
+                let texteComplet = "";
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join(" ");
+                    texteComplet += pageText + " ";
+                }
+
+                const corpsDeT = document.getElementById('corps-tableau-discours');
+                corpsDeT.innerHTML = "";
+
+                // Nettoyage initial du texte
+                let cleanText = texteComplet.replace(/DATE THEME N° ORATEUR ASSEMBLEE PRESIDENT LECTEUR GROUPE qui reçoit l'orateur/gi, '').trim();
+
+                // Expression régulière pour couper par la date (DD/MM/YYYY)
+                const entryRegex = /(\d{2}\/\d{2}\/\d{4})(.*?)(?=\d{2}\/\d{2}\/\d{4}|PROGRAMME|$)/gs;
+                let match;
+                let ligneAjoutee = false;
+
+                while ((match = entryRegex.exec(cleanText)) !== null) {
+                    const date = match[1];
+                    const reste = match[2].trim();
+
+                    // Séparation du numéro de thème (1 à 3 chiffres)
+                    const numMatch = reste.match(/(\d{1,3})\s+(.+)/);
+                    
+                    if (numMatch) {
+                        ligneAjoutee = true;
+                        const theme = reste.split(/\s\d{1,3}\s/)[0].trim();
+                        const numero = numMatch[1];
+                        const suite = numMatch[2].trim();
+
+                        // Extraction des colonnes restantes
+                        const mots = suite.split(/\s+/);
+                        const orateur = `${mots[0] || ''} ${mots[1] || ''}`.trim();
+                        const assemblee = mots[2] || '--';
+                        const president = `${mots[3] || ''} ${mots[4] || ''}`.trim();
+                        const lecteur = `${mots[5] || ''} ${mots[6] || ''}`.trim();
+                        const groupe = mots.slice(7).join(' ') || '--';
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><b>${date}</b></td>
+                            <td>${theme}</td>
+                            <td><span style="background:#e8f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">${numero}</span></td>
+                            <td>${orateur}</td>
+                            <td>${assemblee}</td>
+                            <td>${president}</td>
+                            <td>${lecteur}</td>
+                            <td>${groupe}</td>
+                        `;
+                        corpsDeT.appendChild(tr);
+                    }
+                }
+
+                if (ligneAjoutee) {
+                    alert("Fichier PDF chargé et structuré dans le tableau avec succès !");
+                } else {
+                    alert("Le PDF a été lu, mais aucune structure de date n'a été détectée.");
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Erreur lors de la lecture du fichier PDF.");
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // Initialisation au chargement de la page
+    window.onload = () => {
+        chargeurCartes();
+        // Optionnel : initMap(); si vous utilisez Leaflet
     };
-    reader.readAsArrayBuffer(file);
-}
+</script>
+</body>
+</html>
