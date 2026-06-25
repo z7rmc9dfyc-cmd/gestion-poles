@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Pôles - Goyave</title>
-    <!-- Supabase & Leaflet (Cartographie) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -22,8 +21,12 @@
         .panel.active { display: block; }
         .box { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 25px; }
         #map { height: 350px; border-radius: 12px; margin-bottom: 20px; z-index: 1; }
-        textarea { width: 100%; height: 120px; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
-        .action-btn { background: var(--success); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; font-size: 16px; }
+        
+        /* Zone d'importation de fichier moderne */
+        .file-upload-zone { border: 3px dashed #cbd5e1; padding: 30px; text-align: center; border-radius: 12px; background: #f8fafc; cursor: pointer; margin-bottom: 15px; }
+        .file-upload-zone:hover { border-color: var(--primary); background: #eff6ff; }
+        .file-input { display: none; }
+        .file-icon { font-size: 40px; margin-bottom: 10px; display: block; }
         
         .table-wrapper { overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         table { width: 100%; border-collapse: collapse; }
@@ -39,7 +42,6 @@
 <div class="container">
     <h1>Gestion des 7 Pôles — Goyave</h1>
     
-    <!-- Les 7 Onglets -->
     <div class="tabs">
         <button class="tab-btn active" onclick="switchTab('territoires')">🗺️ Territoires</button>
         <button class="tab-btn" onclick="switchTab('discours')">🎤 Discours</button>
@@ -50,7 +52,6 @@
         <button class="tab-btn" onclick="switchTab('secretariat')">📂 Secrétariat</button>
     </div>
     
-    <!-- 1. PANNEAU : TERRITOIRES -->
     <div id="panel-territoires" class="panel active">
         <div class="box">
             <h3>Pôle Territoires — Goyave</h3>
@@ -62,13 +63,19 @@
         </div>
     </div>
     
-    <!-- 2. PANNEAU : DISCOURS -->
     <div id="panel-discours" class="panel">
         <div class="box">
-            <h3>Pôle Discours — Copier-Coller</h3>
-            <textarea id="paste-zone" placeholder="Exemple : 11/07/2026 Préservez votre identité... 160 BOLUS Laurent..."></textarea>
-            <button class="action-btn" onclick="traiterCopierColler()">Importer le programme</button>
+            <h3>Pôle Discours — Importer un document</h3>
+            <p>Sélectionnez directement le fichier de votre programme (Excel, CSV ou texte) depuis votre iPad :</p>
+            
+            <div class="file-upload-zone" onclick="document.getElementById('file-input').click()">
+                <span class="file-icon">📄</span>
+                <strong style="color: var(--primary);">Cliquez ici pour choisir votre fichier</strong>
+                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Formats acceptés : .xlsx, .csv, .txt</p>
+            </div>
+            <input type="file" id="file-input" class="file-input" onchange="chargerFichierProgramme(event)">
         </div>
+        
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -77,13 +84,12 @@
                     </tr>
                 </thead>
                 <tbody id="discours-table-body">
-                    <tr><td colspan="8" style="text-align:center; color:#64748b;">Aucun discours affiché. Collez un programme ci-dessus.</td></tr>
+                    <tr><td colspan="8" style="text-align:center; color:#64748b;">Aucun discours affiché. Chargez un fichier de programme ci-dessus.</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
     
-    <!-- LES AUTRES PANNEAUX RESTENT INTACTS -->
     <div id="panel-nettoyage" class="panel"><div class="box"><h3>Pôle Nettoyage</h3><p style="color: #64748b;">Interface en cours de liaison...</p></div></div>
     <div id="panel-sonorisation" class="panel"><div class="box"><h3>Pôle Sonorisation</h3><p style="color: #64748b;">Interface en cours de liaison...</p></div></div>
     <div id="panel-estrade" class="panel"><div class="box"><h3>Pôle Estrade</h3><p style="color: #64748b;">Interface en cours de liaison...</p></div></div>
@@ -140,50 +146,48 @@
         });
     }
 
-    // NOUVEAU MOTEUR DE TRAITEMENT DU COPIER-COLLER
-    function traiterCopierColler() {
-        const texte = document.getElementById('paste-zone').value.trim();
-        if (!texte) {
-            alert("Veuillez d'abord coller du texte dans la zone.");
-            return;
-        }
+    // LECTURE DIRECTE DU FICHIER CHARGÉ
+    function chargerFichierProgramme(event) {
+        const file = event.target.files[0];
+        if (!file) return;
 
-        const lignes = texte.split('\n');
-        const tbody = document.getElementById('discours-table-body');
-        tbody.innerHTML = ""; // On vide le tableau avant d'ajouter
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const contenu = e.target.result;
+            const lignes = contenu.split('\n');
+            const tbody = document.getElementById('discours-table-body');
+            tbody.innerHTML = ""; 
 
-        let ligneAjoutee = false;
+            let ligneAjoutee = false;
 
-        lignes.forEach(ligne => {
-            if (ligne.trim() === "") return;
+            lignes.forEach(ligne => {
+                if (!ligne.trim()) return;
+                const elements = ligne.split(/,|;|\t| {2,}/).map(el => el.trim());
 
-            // Découpage par tabulation ou espaces multiples
-            const elements = ligne.split(/\t| {2,}/).map(el => el.trim()).filter(el => el !== "");
+                if (elements.length >= 3) {
+                    ligneAjoutee = true;
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><b>${elements[0] || '--'}</b></td>
+                        <td>${elements[1] || '--'}</td>
+                        <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-weight:bold;">${elements[2] || '--'}</span></td>
+                        <td>${elements[3] || '--'}</td>
+                        <td>${elements[4] || 'Goyave'}</td>
+                        <td>${elements[5] || '--'}</td>
+                        <td>${elements[6] || '--'}</td>
+                        <td>${elements[7] || '--'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                }
+            });
 
-            if (elements.length >= 4) {
-                ligneAjoutee = true;
-                const tr = document.createElement('tr');
-                
-                // Remplissage dynamique des colonnes
-                tr.innerHTML = `
-                    <td><b>${elements[0] || '--'}</b></td>
-                    <td>${elements[1] || '--'}</td>
-                    <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-weight:bold;">${elements[2] || '--'}</span></td>
-                    <td>${elements[3] || '--'}</td>
-                    <td>${elements[4] || 'Goyave'}</td>
-                    <td>${elements[5] || '--'}</td>
-                    <td>${elements[6] || '--'}</td>
-                    <td>${elements[7] || '--'}</td>
-                `;
-                tbody.appendChild(tr);
+            if (ligneAjoutee) {
+                alert("Fichier lu avec succès ! Le programme s'est affiché dans votre tableau.");
+            } else {
+                alert("Le fichier a été lu mais aucune ligne correspondante n'a été trouvée.");
             }
-        });
-
-        if (ligneAjoutee) {
-            alert("Importation réussie dans le tableau !");
-        } else {
-            alert("Format non reconnu. Assurez-vous de bien copier des lignes entières de votre tableau.");
-        }
+        };
+        reader.readAsText(file);
     }
 
     window.onload = () => {
