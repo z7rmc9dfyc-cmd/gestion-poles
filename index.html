@@ -1,226 +1,79 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Pôles - Goyave</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-    <style>
-        :root { --primary: #2563eb; --success: #10b981; --bg: #f8fafc; --text: #0f172a; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 20px; }
-        
-        .tabs { display: flex; gap: 8px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
-        .tab-btn { background: #e2e8f0; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 15px; flex-shrink: 0; }
-        .tab-btn.active { background: var(--primary); color: white; }
-        
-        .panel { display: none; }
-        .panel.active { display: block; }
-        .box { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 25px; }
-        #map { height: 350px; border-radius: 12px; margin-bottom: 20px; z-index: 1; }
-        
-        .file-upload-zone { border: 3px dashed #cbd5e1; padding: 30px; text-align: center; border-radius: 12px; background: #f8fafc; cursor: pointer; margin-bottom: 15px; }
-        .file-upload-zone:hover { border-color: var(--primary); background: #eff6ff; }
-        .file-input { display: none; }
-        .file-icon { font-size: 40px; margin-bottom: 10px; display: block; }
-        
-        .table-wrapper { overflow-x: auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
-        th { background: #f1f5f9; color: #475569; }
-        
-        .grid-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; margin-top: 20px; }
-        .carte-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 5px solid var(--primary); }
-    </style>
-</head>
-<body>
+function chargeurFichierPDF(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-<div class="container">
-    <h1>Gestion des 7 Pôles — Goyave</h1>
-    
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('territoires')">🗺️ Territoires</button>
-        <button class="tab-btn" onclick="switchTab('discours')">🎤 Discours</button>
-        <button class="tab-btn" onclick="switchTab('nettoyage')">🧹 Nettoyage</button>
-        <button class="tab-btn" onclick="switchTab('sonorisation')">🔊 Sonorisation</button>
-        <button class="tab-btn" onclick="switchTab('estrade')">🎭 Estrade</button>
-        <button class="tab-btn" onclick="switchTab('accueil')">🤝 Accueil</button>
-        <button class="tab-btn" onclick="switchTab('secretariat')">📂 Secrétariat</button>
-    </div>
-    
-    <div id="panel-territoires" class="panel active">
-        <div class="box">
-            <h3>Pôle Territoires — Goyave</h3>
-            <p>Visualisation et gestion de la rotation des 120 cartes (3 mois maximum).</p>
-            <div id="map"></div>
-            <div class="grid-cartes" id="cartes-container">
-                <p style="color: #64748b;">Chargement de vos 120 cartes...</p>
-            </div>
-        </div>
-    </div>
-    
-    <div id="panel-discours" class="panel">
-        <div class="box">
-            <h3>Pôle Discours — Importer un document PDF</h3>
-            <p>Sélectionnez directement votre fichier PDF de programme depuis votre iPad :</p>
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            const typedarray = new Uint8Array(e.target.result);
+            const pdf = await pdfjsLib.getDocument(typedarray).promise;
             
-            <div class="file-upload-zone" onclick="document.getElementById('file-input').click()">
-                <span class="file-icon">📕</span>
-                <strong style="color: var(--primary);">Cliquez ici pour choisir votre fichier PDF</strong>
-                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Format : .pdf</p>
-            </div>
-            <input type="file" id="file-input" class="file-input" accept=".pdf" onchange="chargerFichierPDF(event)">
-        </div>
-        
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th><th>Thème</th><th>N°</th><th>Orateur</th><th>Assemblée</th><th>Président</th><th>Lecteur</th><th>Groupe</th>
-                    </tr>
-                </thead>
-                <tbody id="discours-table-body">
-                    <tr><td colspan="8" style="text-align:center; color:#64748b;">Aucun discours affiché. Chargez un fichier PDF ci-dessus.</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    
-    <div id="panel-nettoyage" class="panel"><div class="box"><h3>Pôle Nettoyage</h3><p style="color: #64748b;">Interface en cours de liaison...</p></div></div>
-    <div id="panel-sonorisation" class="panel"><div class="box"><h3>Pôle Sonorisation</h3><p style="color: #64748b;">Interface en cours de liaison...</p></div></div>
-    <div id="panel-estrade" class="panel"><div class="box"><h3>Pôle Estrade</h3><p style="color: #64748b;">Interface en cours de liaison...</p></div></div>
-    <div id="panel-accueil" class="panel"><div class="box"><h3>Pôle Accueil</h3><p style="color: #64748b;">Interface en cours de liaison...</p></div></div>
-    <div id="panel-secretariat" class="panel"><div class="box"><h3>Pôle Secrétariat</h3><p style="color: #64748b;">Interface en cours de liaison...</p></div></div>
-</div>
-
-<script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-
-    const supabaseUrl = "https://wjgwodsxxjylyndylfnf.supabase.co";
-    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqZ3dvZHN4eGoueWx5bmR5bGZuZiIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzE2NDY1NTA0LCJleHAiOjIwMzIwMjE1MDR9.bC_X9z3U_Z_t7xcl9_Q2n3M_4jYf3lP7fX2L8vK5hYg"; 
-    const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
-    let map;
-
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
-        
-        const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabName));
-        if(btn) btn.classList.add('active');
-        
-        const panel = document.getElementById(`panel-${tabName}`);
-        if(panel) panel.classList.add('active');
-        
-        if(tabName === 'territoires' && map) setTimeout(() => map.invalidateSize(), 100);
-    }
-
-    function initMap() {
-        map = L.map('map').setView([16.134, -61.571], 14);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        L.marker([16.134, -61.571]).addTo(map).bindPopup('<b>Goyave</b>').openPopup();
-    }
-
-    async function chargerCartes() {
-        const container = document.getElementById('cartes-container');
-        const { data: cartes, error } = await _supabase.from('territoires').select('*').order('numero');
-        
-        if (error || !cartes || cartes.length === 0) {
-            container.innerHTML = "";
-            for(let i=1; i<=120; i++) {
-                container.innerHTML += `<div class="carte-card"><b>Carte N° ${i} (Recto/Verso)</b><br>Statut : Disponible<br><small>Rotation : 3 mois max</small></div>`;
+            let texteComplet = "";
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                const pageText = textContent.items.map(item => item.str).join(" ");
+                texteComplet += pageText + " ";
             }
-            return;
+
+            const corpsDeT = document.getElementById('corps-tableau-discours');
+            corpsDeT.innerHTML = "";
+
+            // Nettoyage des entêtes du PDF
+            let cleanText = texteComplet.replace(/DATE THEME N° ORATEUR ASSEMBLEE PRESIDENT LECTEUR GROUPE qui reçoit l'orateur/gi, '').trim();
+
+            // RegEx pour découper proprement chaque ligne par sa date (format DD/MM/YYYY)
+            const entryRegex = /(\d{2}\/\d{2}\/\d{4})(.*?)(?=\d{2}\/\d{2}\/\d{4}|PROGRAMME|$)/gs;
+            let match;
+            let ligneAjoutee = false;
+
+            while ((match = entryRegex.exec(cleanText)) !== null) {
+                const date = match[1];
+                const reste = match[2].trim();
+
+                // On cherche le numéro du thème (1 à 3 chiffres) qui sépare le Thème de l'Orateur
+                const numMatch = reste.match(/(\d{1,3})\s+(.+)/);
+                
+                if (numMatch) {
+                    ligneAjoutee = true;
+                    const theme = reste.split(/\s\d{1,3}\s/)[0].trim();
+                    const numero = numMatch[1];
+                    const suite = numMatch[2].trim();
+
+                    // Découpage des éléments restants
+                    const mots = suite.split(/\s+/);
+                    
+                    const orateur = `${mots[0] || ''} ${mots[1] || ''}`.trim();
+                    const assemblee = mots[2] || '';
+                    const president = `${mots[3] || ''} ${mots[4] || ''}`.trim();
+                    const lecteur = `${mots[5] || ''} ${mots[6] || ''}`.trim();
+                    const groupe = mots.slice(7).join(' ') || '--';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><b>${date}</b></td>
+                        <td>${theme}</td>
+                        <td><span style="background:#e8f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">${numero}</span></td>
+                        <td>${orateur}</td>
+                        <td>${assemblee}</td>
+                        <td>${president}</td>
+                        <td>${lecteur}</td>
+                        <td>${groupe}</td>
+                    `;
+                    corpsDeT.appendChild(tr);
+                }
+            }
+
+            if (ligneAjoutee) {
+                alert("Fichier PDF chargé et structuré avec succès !");
+            } else {
+                alert("Le PDF a été lu, mais le format n'a pas pu être découpé.");
+            }
+
+        } catch (error) {
+            console.error(error);
+            alert("Erreur lors de la lecture du fichier PDF.");
         }
-
-        container.innerHTML = "";
-        cartes.forEach(c => {
-            container.innerHTML += `
-                <div class="carte-card">
-                    <b>Carte N° ${c.numero}</b> (${c.type || 'Recto/Verso'})<br>
-                    <strong>Nom :</strong> ${c.NomPrenom || 'Non assigné'}<br>
-                    <strong>Sortie :</strong> ${c.date_sortie || '--'} | <strong>Entrée :</strong> ${c.date_entree || '--'}
-                </div>`;
-        });
-    }
-
-    function chargerFichierPDF(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
-                const typedarray = new Uint8Array(e.target.result);
-                const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                
-                let texteComplet = "";
-                
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-                    const pageText = textContent.items.map(item => item.str).join("  ");
-                    texteComplet += pageText + "\n";
-                }
-
-                const lignes = texteComplet.split('\n');
-                const tbody = document.getElementById('discours-table-body');
-                tbody.innerHTML = ""; 
-
-                let ligneAjoutee = false;
-
-                lignes.forEach((ligne) => {
-                    if (!ligne.trim()) return;
-
-                    if (ligne.toLowerCase().includes("juillet") || ligne.toLowerCase().includes("août") || ligne.toLowerCase().includes("programme")) {
-                        ligneAjoutee = true;
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `<td colspan="8" style="background: #f1f5f9; color: #1e3a8a; font-weight: bold; text-align: center; font-size: 16px;">${ligne.trim()}</td>`;
-                        tbody.appendChild(tr);
-                        return;
-                    }
-
-                    const elements = ligne.split(/ {2,}/).map(el => el.trim()).filter(el => el !== "");
-
-                    if (elements.length >= 2) {
-                        ligneAjoutee = true;
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td><b>${elements[0] || '--'}</b></td>
-                            <td>${elements[1] || '--'}</td>
-                            <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-weight:bold;">${elements[2] || '--'}</span></td>
-                            <td>${elements[3] || '--'}</td>
-                            <td>${elements[4] || 'Goyave'}</td>
-                            <td>${elements[5] || '--'}</td>
-                            <td>${elements[6] || '--'}</td>
-                            <td>${elements[7] || '--'}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    }
-                });
-
-                if (ligneAjoutee) {
-                    alert("Fichier PDF chargé et structuré avec succès !");
-                } else {
-                    alert("Le PDF a été lu, mais le format n'a pas pu être découpé.");
-                }
-
-            } catch (err) {
-                console.error(err);
-                alert("Erreur lors de la lecture du fichier PDF.");
-            }
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    window.onload = () => {
-        initMap();
-        chargerCartes();
     };
-</script>
-</body>
-</html>
+    reader.readAsArrayBuffer(file);
+}
