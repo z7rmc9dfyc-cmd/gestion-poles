@@ -4,11 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Pôles - Goyave</title>
-    <!-- Supabase, Leaflet & Traducteur Excel (SheetJS) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
         :root { --primary: #2563eb; --success: #10b981; --bg: #f8fafc; --text: #0f172a; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 15px; }
@@ -53,7 +52,6 @@
         <button class="tab-btn" onclick="switchTab('secretariat')">📂 Secrétariat</button>
     </div>
     
-    <!-- 1. PANNEAU : TERRITOIRES -->
     <div id="panel-territoires" class="panel active">
         <div class="box">
             <h3>Pôle Territoires — Goyave</h3>
@@ -65,18 +63,17 @@
         </div>
     </div>
     
-    <!-- 2. PANNEAU : DISCOURS -->
     <div id="panel-discours" class="panel">
         <div class="box">
-            <h3>Pôle Discours — Importer un document Excel</h3>
-            <p>Sélectionnez directement votre fichier Excel de programme depuis votre iPad :</p>
+            <h3>Pôle Discours — Importer un document PDF</h3>
+            <p>Sélectionnez directement votre fichier PDF de programme depuis votre iPad :</p>
             
             <div class="file-upload-zone" onclick="document.getElementById('file-input').click()">
-                <span class="file-icon">📊</span>
-                <strong style="color: var(--primary);">Cliquez ici pour choisir votre fichier Excel</strong>
-                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Format recommandé : .xlsx ou .xls</p>
+                <span class="file-icon">📕</span>
+                <strong style="color: var(--primary);">Cliquez ici pour choisir votre fichier PDF</strong>
+                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Format : .pdf</p>
             </div>
-            <input type="file" id="file-input" class="file-input" accept=".xlsx, .xls" onchange="chargerFichierExcel(event)">
+            <input type="file" id="file-input" class="file-input" accept=".pdf" onchange="chargerFichierPDF(event)">
         </div>
         
         <div class="table-wrapper">
@@ -87,13 +84,12 @@
                     </tr>
                 </thead>
                 <tbody id="discours-table-body">
-                    <tr><td colspan="8" style="text-align:center; color:#64748b;">Aucun discours affiché. Chargez un fichier Excel ci-dessus.</td></tr>
+                    <tr><td colspan="8" style="text-align:center; color:#64748b;">Aucun discours affiché. Chargez un fichier PDF ci-dessus.</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
     
-    <!-- AUTRES PANNEAUX INTACTS -->
     <div id="panel-nettoyage" class="panel"><div class="box"><h3>Pôle Nettoyage</h3><p style="color: #64748b;">Interface en cours de liaison...</p></div></div>
     <div id="panel-sonorisation" class="panel"><div class="box"><h3>Pôle Sonorisation</h3><p style="color: #64748b;">Interface en cours de liaison...</p></div></div>
     <div id="panel-estrade" class="panel"><div class="box"><h3>Pôle Estrade</h3><p style="color: #64748b;">Interface en cours de liaison...</p></div></div>
@@ -102,6 +98,8 @@
 </div>
 
 <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
     const supabaseUrl = "https://wjgwodsxxjylyndylfnf.supabase.co";
     const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqZ3dvZHN4eGoueWx5bmR5bGZuZiIsInJvbGUiOiJhbm9uIiwiaWF0IjoxNzE2NDY1NTA0LCJleHAiOjIwMzIwMjE1MDR9.bC_X9z3U_Z_t7xcl9_Q2n3M_4jYf3lP7fX2L8vK5hYg"; 
     const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
@@ -150,57 +148,70 @@
         });
     }
 
-    // NOUVEAU LECTEUR EXCEL INTELLIGENT
-    function chargerFichierExcel(event) {
+    function chargerFichierPDF(event) {
         const file = event.target.files[0];
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onerror = () => alert("Erreur lors de la lecture du fichier.");
-        reader.onload = function(e) {
+        reader.onload = async function(e) {
             try {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
+                const typedarray = new Uint8Array(e.target.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
                 
-                // On prend la première feuille du classeur Excel
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
+                let texteComplet = "";
                 
-                // Transformation des lignes en tableau de texte
-                const lignes = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    const pageText = textContent.items.map(item => item.str).join("  ");
+                    texteComplet += pageText + "\n";
+                }
+
+                const lignes = texteComplet.split('\n');
                 const tbody = document.getElementById('discours-table-body');
                 tbody.innerHTML = ""; 
 
                 let ligneAjoutee = false;
 
-                lignes.forEach((elements, index) => {
-                    // On saute la première ligne si c'est l'entête (Date, Thème, etc.)
-                    if (index === 0 && isNaN(Date.parse(elements[0]))) return;
-                    if (!elements || elements.length === 0 || !elements[0]) return;
+                lignes.forEach((ligne) => {
+                    if (!ligne.trim()) return;
 
-                    ligneAjoutee = true;
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><b>${elements[0] || '--'}</b></td>
-                        <td>${elements[1] || '--'}</td>
-                        <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-weight:bold;">${elements[2] || '--'}</span></td>
-                        <td>${elements[3] || '--'}</td>
-                        <td>${elements[4] || 'Goyave'}</td>
-                        <td>${elements[5] || '--'}</td>
-                        <td>${elements[6] || '--'}</td>
-                        <td>${elements[7] || '--'}</td>
-                    `;
-                    tbody.appendChild(tr);
+                    if (ligne.toLowerCase().includes("juillet") || ligne.toLowerCase().includes("août") || ligne.toLowerCase().includes("programme")) {
+                        ligneAjoutee = true;
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td colspan="8" style="background: #f1f5f9; color: #1e3a8a; font-weight: bold; text-align: center; font-size: 16px;">${ligne.trim()}</td>`;
+                        tbody.appendChild(tr);
+                        return;
+                    }
+
+                    const elements = ligne.split(/ {2,}/).map(el => el.trim()).filter(el => el !== "");
+
+                    if (elements.length >= 2) {
+                        ligneAjoutee = true;
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td><b>${elements[0] || '--'}</b></td>
+                            <td>${elements[1] || '--'}</td>
+                            <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-weight:bold;">${elements[2] || '--'}</span></td>
+                            <td>${elements[3] || '--'}</td>
+                            <td>${elements[4] || 'Goyave'}</td>
+                            <td>${elements[5] || '--'}</td>
+                            <td>${elements[6] || '--'}</td>
+                            <td>${elements[7] || '--'}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    }
                 });
 
                 if (ligneAjoutee) {
-                    alert("Fichier Excel décodé avec succès !");
+                    alert("Fichier PDF chargé et structuré avec succès !");
                 } else {
-                    alert("Fichier lu, mais aucune donnée exploitable trouvée.");
+                    alert("Le PDF a été lu, mais le format n'a pas pu être découpé.");
                 }
+
             } catch (err) {
                 console.error(err);
-                alert("Impossible de lire ce fichier Excel. Assurez-vous qu'il n'est pas corrompu.");
+                alert("Erreur lors de la lecture du fichier PDF.");
             }
         };
         reader.readAsArrayBuffer(file);
