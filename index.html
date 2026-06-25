@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Pôles - Goyave</title>
+    <title>Gestion des 7 Pôles</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -11,10 +11,10 @@
     <style>
         :root { --primary: #2563eb; --success: #10b981; --bg: #f8fafc; --text: #0f172a; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .recipient { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
         h1 { text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 20px; }
-        .onglets { display: flex; gap: 8px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
-        .bouton-onglet { padding: 10px 18px; border: none; background: none; cursor: pointer; font-weight: 500; color: #64748b; font-size: 15px; border-radius: 6px; transition: all 0.2s; }
+        .onglets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .bouton-onglet { padding: 10px 14px; border: none; background: none; cursor: pointer; font-weight: 500; color: #64748b; font-size: 14px; border-radius: 6px; transition: all 0.2s; }
         .bouton-onglet.actif { background: var(--primary); color: white; }
         .panneau { display: none; }
         .panneau.actif { display: block; }
@@ -34,39 +34,28 @@
 </head>
 <body>
 
-<div class="recipient">
-    <h1>Gestion des 7 Pôles – Goyave</h1>
+<div class="container">
+    <h1>Gestion des 7 Pôles</h1>
     
     <div class="onglets">
-        <button class="bouton-onglet actif" onclick="switchTab('territoires')">🗺️ Territoires</button>
-        <button class="bouton-onglet" onclick="switchTab('discours')">🎤 Discours</button>
+        <button class="bouton-onglet actif" onclick="switchTab('discours')">🎤 Discours</button>
+        <button class="bouton-onglet" onclick="switchTab('vie-ministere')">📖 Cahier Vie et Ministère</button>
+        <button class="bouton-onglet" onclick="switchTab('sortie-semaine')">🚶 Sortie en Semaine</button>
+        <button class="bouton-onglet" onclick="switchTab('presentoir')">🛒 Présentoir</button>
+        <button class="bouton-onglet" onclick="switchTab('sono-video')">🖥️ Sono-Video-Estrade</button>
         <button class="bouton-onglet" onclick="switchTab('nettoyage')">🧹 Nettoyage</button>
-        <button class="bouton-onglet" onclick="switchTab('sonorisation')">🔊 Sonorisation</button>
-        <button class="bouton-onglet" onclick="switchTab('estrade')">🎭 Estrade</button>
-        <button class="bouton-onglet" onclick="switchTab('accueil')">🤝 Accueil</button>
-        <button class="bouton-onglet" onclick="switchTab('secretariat')">📁 Secrétariat</button>
+        <button class="bouton-onglet" onclick="switchTab('territoires')">🗺️ Territoires</button>
     </div>
 
-    <div id="territoires" class="panneau panneau_actif actif">
+    <div id="discours" class="panneau actif">
         <div class="boite">
-            <h3>📌 Pôle Territoires – Goyave</h3>
-            <p>Visualisation et gestion de la rotation des 120 cartes (3 mois maximum).</p>
-            <div id="carte"></div>
-            <div class="grilles-cartes" id="cartes-conteneur">
-                <p style="color: #64748b;">Chargement de vos 120 cartes...</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="discours" class="panneau">
-        <div class="boite">
-            <h3>🎤 Pôle Discours — Importer un document PDF</h3>
-            <p>Sélectionnez directement votre fichier PDF de programme depuis votre iPad :</p>
+            <h3>🎤 Pôle Discours — Importer le programme PDF</h3>
+            <p>Sélectionnez le fichier PDF de votre programme :</p>
             
             <div class="zone-telechargement" onclick="document.getElementById('file-input').click()">
                 <span class="icone-fichier">📕</span>
                 <p style="color: var(--primary); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF</p>
-                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Format : .pdf</p>
+                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Format accepté : .pdf</p>
             </div>
             <input type="file" id="file-input" class="entree-fichier" accept=".pdf" onchange="chargeurFichierPDF(event)">
             
@@ -86,7 +75,7 @@
                     </thead>
                     <tbody id="corps-tableau-discours">
                         <tr>
-                            <td colspan="8" style="text-align: center; color: #64748b;">Aucun programme chargé pour le moment. Cliquez sur le bouton rouge ci-dessus.</td>
+                            <td colspan="8" style="text-align: center; color: #64748b;">Aucun programme chargé. Utilisez le bouton ci-dessus pour importer un PDF.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -94,18 +83,56 @@
         </div>
     </div>
 
-    <div id="nettoyage" class="panneau"><div class="boite"><h3>🧹 Pôle Nettoyage</h3><p>Planning et suivi des tâches de nettoyage.</p></div></div>
-    <div id="sonorisation" class="panneau"><div class="boite"><h3>🔊 Pôle Sonorisation</h3><p>Gestion de la sono et des micros.</p></div></div>
-    <div id="estrade" class="panneau"><div class="boite"><h3>🎭 Pôle Estrade</h3><p>Suivi des attributions de l'estrade.</p></div></div>
-    <div id="accueil" class="panneau"><div class="boite"><h3>🤝 Pôle Accueil</h3><p>Planning des frères à l'accueil.</p></div></div>
-    <div id="secretariat" class="panneau"><div class="boite"><h3>📁 Pôle Secrétariat</h3><p>Données et rapports du secrétariat.</p></div></div>
+    <div id="vie-ministere" class="panneau">
+        <div class="boite">
+            <h3>📖 Pôle Cahier Vie et Ministère</h3>
+            <p>Gestion des attributions et des réunions de milieu de semaine.</p>
+        </div>
+    </div>
+
+    <div id="sortie-semaine" class="panneau">
+        <div class="boite">
+            <h3>🚶 Pôle Sortie en Semaine</h3>
+            <p>Rendez-vous et organisation de la prédication en semaine.</p>
+        </div>
+    </div>
+
+    <div id="presentoir" class="panneau">
+        <div class="boite">
+            <h3>🛒 Pôle Présentoir</h3>
+            <p>Plannings des volontaires pour les présentoirs publics.</p>
+        </div>
+    </div>
+
+    <div id="sono-video" class="panneau">
+        <div class="boite">
+            <h3>🖥️ Pôle Sono-Video-Estrade</h3>
+            <p>Attributions à la régie, gestion du système audio, de la vidéo et de l'estrade.</p>
+        </div>
+    </div>
+
+    <div id="nettoyage" class="panneau">
+        <div class="boite">
+            <h3>🧹 Pôle Nettoyage</h3>
+            <p>Planning des groupes pour l'entretien de la Salle du Royaume.</p>
+        </div>
+    </div>
+
+    <div id="territoires" class="panneau">
+        <div class="boite">
+            <h3>🗺️ Pôle Territoires</h3>
+            <p>Suivi et rotation des 120 cartes de territoires.</p>
+            <div id="carte"></div>
+            <div class="grilles-cartes" id="cartes-conteneur" style="margin-top: 20px;"></div>
+        </div>
+    </div>
 </div>
 
 <script>
-    // Configuration de base de PDF.js
+    // Config PDF.js
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
-    // Logique des Onglets
+    // Gestion de la navigation entre onglets
     function switchTab(tabId) {
         document.querySelectorAll('.panneau').forEach(p => p.classList.remove('actif'));
         document.querySelectorAll('.bouton-onglet').forEach(b => b.classList.remove('actif'));
@@ -114,26 +141,23 @@
         event.currentTarget.classList.add('actif');
     }
 
-    // Simulation/Chargement des cartes territoires
+    // Génération visuelle rapide des 120 cartes de territoires
     function chargeurCartes() {
         const conteneur = document.getElementById('cartes-conteneur');
         if (!conteneur) return;
         conteneur.innerHTML = "";
-        
-        // Exemple pour simuler vos cartes
-        for (let i = 1; i <= 6; i++) {
+        for (let i = 1; i <= 120; i++) {
             const div = document.createElement('div');
             div.className = 'carte-credit';
             div.innerHTML = `
                 <b>Carte N°${i}</b><br>
-                <strong>Nom :</strong> Non affecté<br>
-                <strong>Sortie :</strong> -- | <strong>Entrée :</strong> --
+                <span style="color: #64748b; font-size:13px;">Disponible à la rotation</span>
             `;
             conteneur.appendChild(div);
         }
     }
 
-    // FONCTION CRITIQUE : LECTURE ET TRI AUTOMATIQUE DU PDF DISCOURS
+    // Extraction et tri automatique du PDF Discours
     function chargeurFichierPDF(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -155,10 +179,9 @@
                 const corpsDeT = document.getElementById('corps-tableau-discours');
                 corpsDeT.innerHTML = "";
 
-                // Nettoyage initial du texte
                 let cleanText = texteComplet.replace(/DATE THEME N° ORATEUR ASSEMBLEE PRESIDENT LECTEUR GROUPE qui reçoit l'orateur/gi, '').trim();
 
-                // Expression régulière pour couper par la date (DD/MM/YYYY)
+                // Découpage automatique basé sur les formats de date (DD/MM/YYYY)
                 const entryRegex = /(\d{2}\/\d{2}\/\d{4})(.*?)(?=\d{2}\/\d{2}\/\d{4}|PROGRAMME|$)/gs;
                 let match;
                 let ligneAjoutee = false;
@@ -167,7 +190,6 @@
                     const date = match[1];
                     const reste = match[2].trim();
 
-                    // Séparation du numéro de thème (1 à 3 chiffres)
                     const numMatch = reste.match(/(\d{1,3})\s+(.+)/);
                     
                     if (numMatch) {
@@ -176,7 +198,6 @@
                         const numero = numMatch[1];
                         const suite = numMatch[2].trim();
 
-                        // Extraction des colonnes restantes
                         const mots = suite.split(/\s+/);
                         const orateur = `${mots[0] || ''} ${mots[1] || ''}`.trim();
                         const assemblee = mots[2] || '--';
@@ -200,9 +221,9 @@
                 }
 
                 if (ligneAjoutee) {
-                    alert("Fichier PDF chargé et structuré dans le tableau avec succès !");
+                    alert("Fichier PDF chargé et structuré avec succès !");
                 } else {
-                    alert("Le PDF a été lu, mais aucune structure de date n'a été détectée.");
+                    alert("Le PDF a été analysé mais aucune ligne n'a pu être triée automatiquement.");
                 }
 
             } catch (error) {
@@ -213,10 +234,8 @@
         reader.readAsArrayBuffer(file);
     }
 
-    // Initialisation au chargement de la page
     window.onload = () => {
         chargeurCartes();
-        // Optionnel : initMap(); si vous utilisez Leaflet
     };
 </script>
 </body>
