@@ -10,7 +10,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
-        :root { --primary: #2563eb; --success: #16a34a; --warning: #f59e0b; --bg: #f8fafc; --text: #0f172a; }
+        :root { --primary: #2563eb; --success: #16a34a; --purple: #7c3aed; --warning: #f59e0b; --bg: #f8fafc; --text: #0f172a; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
         h1 { text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 20px; }
@@ -23,6 +23,7 @@
         #carte { height: 380px; border-radius: 12px; margin-top: 15px; margin-bottom: 20px; z-index: 1; border: 1px solid #cbd5e1; }
         .zone-telechargement { border: 3px dashed #cbd5e1; padding: 30px; text-align: center; background: #f8fafc; border-radius: 12px; cursor: pointer; transition: border-color 0.2s; }
         .zone-telechargement.cahier-zone:hover { border-color: var(--success); }
+        .zone-telechargement.sono-zone:hover { border-color: var(--purple); }
         .zone-telechargement:hover { border-color: var(--primary); }
         .entree-fichier { display: none; }
         .icone-fichier { font-size: 40px; margin-bottom: 10px; display: block; }
@@ -54,6 +55,7 @@
         <button class="bouton-onglet" onclick="switchTab('territoires')">🗺️ Territoires</button>
     </div>
 
+    <!-- 1. DISCOURS -->
     <div id="discours" class="panneau actif">
         <div class="boite">
             <h3>🎤 Pôle Discours — Importer le programme PDF</h3>
@@ -88,6 +90,7 @@
         </div>
     </div>
 
+    <!-- 2. CAHIER VIE ET MINISTERE -->
     <div id="vie-ministere" class="panneau">
         <div class="boite">
             <h3>📖 Pôle Cahier Vie et Ministère — Importer le programme</h3>
@@ -119,14 +122,49 @@
         </div>
     </div>
 
+    <!-- 3. SORTIE EN SEMAINE -->
     <div id="sortie-semaine" class="panneau"><div class="boite"><h3>🚶 Pôle Sortie en Semaine</h3><p>Rendez-vous et organisation de la prédication en semaine.</p></div></div>
 
+    <!-- 4. PRESENTOIR -->
     <div id="presentoir" class="panneau"><div class="boite"><h3>🛒 Pôle Présentoir</h3><p>Plannings des volontaires pour les présentoirs publics.</p></div></div>
 
-    <div id="sono-video" class="panneau"><div class="boite"><h3>🖥️ Pôle Sono-Video-Estrade</h3><p>Attributions à la régie, gestion du système audio, de la vidéo et de l'estrade.</p></div></div>
+    <!-- 5. SONO-VIDEO-ESTRADE -->
+    <div id="sono-video" class="panneau">
+        <div class="boite">
+            <h3>🖥️ Pôle Sono-Video-Estrade — Importer le programme</h3>
+            <p>Sélectionnez le fichier PDF de planification de la régie et de l'estrade :</p>
+            <div class="zone-telechargement sono-zone" onclick="document.getElementById('file-input-sono').click()">
+                <span class="icone-fichier">🖥️</span>
+                <p style="color: var(--purple); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Sono-Vidéo</p>
+                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Format accepté : .pdf</p>
+            </div>
+            <input type="file" id="file-input-sono" class="entree-fichier" accept=".pdf" onchange="chargeurPDFSonoVideo(event)">
+            <div class="emballage-de-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mardi (Semaine)</th>
+                            <th>Samedi (Week-end)</th>
+                            <th>Audio-Vidéo</th>
+                            <th>Accueil Zoom</th>
+                            <th>Estrade</th>
+                            <th>Perchistes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corps-tableau-sono">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #64748b;">Aucun programme de sonorisation chargé. Cliquez sur le bouton violet ci-dessus.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
+    <!-- 6. NETTOYAGE -->
     <div id="nettoyage" class="panneau"><div class="boite"><h3>🧹 Pôle Nettoyage</h3><p>Planning des groupes pour l'entretien de la Salle du Royaume.</p></div></div>
 
+    <!-- 7. TERRITOIRES -->
     <div id="territoires" class="panneau">
         <div class="boite">
             <h3>🗺️ Pôle Territoires — Rotation des 120 cartes</h3>
@@ -238,7 +276,6 @@
         reader.readAsArrayBuffer(file);
     }
 
-    // EXTRACTION DU CAHIER V2 RECRÉÉE SUR MESURE ET TRÈS SOUPLE
     function chargeurPDFVieEtMinistere(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -253,59 +290,123 @@
                     const textContent = await page.getTextContent();
                     texteComplet += textContent.items.map(item => item.str).join(" ") + " \n";
                 }
-                
                 const corpsCahier = document.getElementById('corps-tableau-cahier');
                 corpsCahier.innerHTML = "";
-                
-                // Découpage automatique très large par bloc de date (DD/MM/YYYY)
                 const blocs = texteComplet.split(/(\d{2}\/\d{2}\/\d{4})/g);
                 let ligneAjoutee = false;
-
                 for (let j = 1; j < blocs.length; j += 2) {
                     const dateSemaine = blocs[j];
                     const contenuBloc = blocs[j+1];
-
                     if (contenuBloc && (contenuBloc.includes("Président") || contenuBloc.includes("Bible"))) {
                         ligneAjoutee = true;
-
-                        // Nettoyage de l'entête pour choper le livre étudié (ex: JÉRÉMIE 13-15)
                         const enteteNettoyee = contenuBloc.split("Cantique")[0].replace(/[^A-ZÉÈÀ0-9\s\-]/g, '').trim();
                         const affichageSemaine = `<b>${dateSemaine}</b><br><small style="color:#2563eb;">${enteteNettoyee}</small>`;
-
-                        // Extraction du Président (on prend tout ce qui bouge après le mot)
                         const pMatch = contenuBloc.match(/Président\s+([^0-9\n]{3,35})/i);
                         const president = pMatch ? pMatch[1].replace(/Joyaux|Prière|18.*/gi, '').trim() : "--";
-
-                        // Extraction du Lecteur de la Bible (partie 3.)
                         const lMatch = contenuBloc.match(/3\.\s*Lecture\s*de\s*la\s*Bible.*?\)\s+([^0-9\n]{3,35})/i);
                         const lecteurBible = lMatch ? lMatch[1].replace(/Applique|Vie|19.*/gi, '').trim() : "--";
-
-                        // Extraction Étude biblique (Conducteur & Lecteur)
                         const condMatch = contenuBloc.match(/Conducteur\s+([^0-9\n]{3,35})/i);
                         const lectMatch = contenuBloc.match(/Lecteur\s+([^0-9\n]{3,35})/i);
-                        
                         const conducteur = condMatch ? condMatch[1].replace(/Lecteur|Cantique|Prière.*/gi, '').trim() : "--";
                         const lecteurEtude = lectMatch ? lectMatch[1].replace(/Cantique|Prière|Aperçu.*/gi, '').trim() : "--";
-
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>${affichageSemaine}</td>
-                            <td><span style="color:#0284c7; font-weight:600;">${president}</span></td>
-                            <td>${lecteurBible}</td>
-                            <td><span style="background:#f0fdf4; color:#16a34a; padding:2px 6px; border-radius:4px; font-weight:500;">${conducteur}</span></td>
-                            <td>${lecteurEtude}</td>
-                        `;
+                        tr.innerHTML = `<td>${affichageSemaine}</td><td><span style="color:#0284c7; font-weight:600;">${president}</span></td><td>${lecteurBible}</td><td><span style="background:#f0fdf4; color:#16a34a; padding:2px 6px; border-radius:4px; font-weight:500;">${conducteur}</span></td><td>${lecteurEtude}</td>`;
                         corpsCahier.appendChild(tr);
                     }
                 }
+                if (ligneAjoutee) { alert("Fichier Cahier Vie et Ministère chargé avec succès !"); }
+                else { alert("Le PDF a été lu, mais le format interne n'a pas pu être découpé."); }
+            } catch (error) { alert("Erreur lors de l'analyse sur l'iPad."); }
+        };
+        reader.readAsArrayBuffer(file);
+    }
 
-                if (ligneAjoutee) { 
-                    alert("Fichier Cahier Vie et Ministère chargé avec succès !"); 
-                } else { 
-                    alert("Le PDF a été lu, mais le format interne n'a pas pu être découpé."); 
+    // NOUVELLE FONCTION ISOLÉE POUR LE PÔLE SONO-VIDÉO-ESTRADE
+    function chargeurPDFSonoVideo(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const typedarray = new Uint8Array(e.target.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                let texteComplet = "";
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    texteComplet += textContent.items.map(item => item.str).join(" ") + " \n";
                 }
-            } catch (error) { 
-                alert("Erreur lors de l'analyse sur l'iPad."); 
+
+                const corpsSono = document.getElementById('corps-tableau-sono');
+                corpsSono.innerHTML = "";
+
+                // Extraction par bloc de lignes contenant des dates au format DD/MM/YYYY
+                const lignes = texteComplet.split("\n");
+                let entries = [];
+
+                // Recherche et regroupement des structures de données du texte brut
+                const dateRegex = /(\d{2}\/\d{2}\/\d{4})/g;
+                let matchesDates = texteComplet.match(dateRegex);
+
+                if (matchesDates) {
+                    // On filtre le texte brut pour nettoyer les résidus de barres verticales
+                    let motsCles = texteComplet.replace(/\|/g, " ").global ? texteComplet.replace(/\|/g, " ") : texteComplet.replace(/\|/g, " ");
+                    
+                    // Découpage par double date (Mardi et Samedi)
+                    const blocsDate = texteComplet.split(/(\d{2}\/\d{2}\/\d{4})\s*\|\s*(\d{2}\/\d{2}\/\d{4})/g);
+                    
+                    // Méthode de lecture séquentielle adaptée à la structure fournie
+                    // On extrait le flot des noms : Audio-Vidéo | Accueil Zoom | Estrade | Perchistes | Mardi | Samedi
+                    let fragments = texteComplet.split(/\s*\|\s*/);
+                    let curseur = 0;
+                    let ligneAjoutee = false;
+
+                    // Nettoyage des entêtes de colonne
+                    fragments = fragments.filter(f => f.trim() !== "" && !f.includes("Assemblée") && !f.includes("Programme") && !f.includes("Audio-Vidéo") && !f.includes("Accueil Zoom") && !f.includes("Estrade") && !f.includes("Perchistes") && !f.includes("Mardi") && !f.includes("Samedi"));
+
+                    for (let k = 0; k < fragments.length; k++) {
+                        let f = fragments[k].trim();
+                        // Si on tombe sur deux dates consécutives ou proches, on capture la séquence
+                        if (f.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+                            let dateMardi = f;
+                            let dateSamedi = fragments[k+1] ? fragments[k+1].trim() : "--/--/----";
+                            
+                            // Les noms affectés se trouvent juste avant dans la pile
+                            let perchistes = fragments[k-1] ? fragments[k-1].trim() : "--";
+                            let estrade = fragments[k-2] ? fragments[k-2].trim() : "--";
+                            let zoom = fragments[k-3] ? fragments[k-3].trim() : "--";
+                            let audioVideo = fragments[k-4] ? fragments[k-4].trim() : "--";
+
+                            // Validation pour éviter les lignes d'entête ou de semaines spéciales vides
+                            if (audioVideo !== "--" && !audioVideo.match(/^\d{2}/) && !audioVideo.includes("Semaine") && !audioVideo.includes("Assemblée")) {
+                                ligneAjoutee = true;
+                                const tr = document.createElement('tr');
+                                tr.innerHTML = `
+                                    <td><b>🟢 ${dateMardi}</b></td>
+                                    <td><b>🔵 ${dateSamedi}</b></td>
+                                    <td><span style="color:#7c3aed; font-weight:600;">${audioVideo}</span></td>
+                                    <td>${zoom}</td>
+                                    <td>${estrade}</td>
+                                    <td><small>${perchistes}</small></td>
+                                `;
+                                corpsSono.appendChild(tr);
+                            }
+                            k++; // On saute la deuxième date
+                        }
+                    }
+
+                    if (ligneAjoutee) {
+                        alert("Fichier de sonorisation intégré et traité avec succès !");
+                    } else {
+                        alert("Le document a été lu mais le tri automatique nécessite un format standard. Saisie manuelle prête.");
+                    }
+                } else {
+                    alert("Aucune date détectée dans ce document Sono.");
+                }
+
+            } catch (error) {
+                console.error(error);
+                alert("Erreur lors de la lecture du programme Sono.");
             }
         };
         reader.readAsArrayBuffer(file);
