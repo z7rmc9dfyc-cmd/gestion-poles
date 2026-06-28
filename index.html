@@ -10,7 +10,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
-        :root { --primary: #2563eb; --success: #16a34a; --purple: #7c3aed; --orange: #ea580c; --warning: #f59e0b; --bg: #f8fafc; --text: #0f172a; }
+        :root { --primary: #2563eb; --success: #16a34a; --purple: #7c3aed; --orange: #ea580c; --pink: #db2777; --warning: #f59e0b; --bg: #f8fafc; --text: #0f172a; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
         h1 { text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 20px; }
@@ -25,6 +25,7 @@
         .zone-telechargement.cahier-zone:hover { border-color: var(--success); }
         .zone-telechargement.sono-zone:hover { border-color: var(--purple); }
         .zone-telechargement.nettoyage-zone:hover { border-color: var(--orange); }
+        .zone-telechargement.presentoir-zone:hover { border-color: var(--pink); }
         .zone-telechargement:hover { border-color: var(--primary); }
         .entree-fichier { display: none; }
         .icone-fichier { font-size: 40px; margin-bottom: 10px; display: block; }
@@ -127,7 +128,34 @@
     <div id="sortie-semaine" class="panneau"><div class="boite"><h3>🚶 Pôle Sortie en Semaine</h3><p>Rendez-vous et organisation de la prédication en semaine.</p></div></div>
 
     <!-- 4. PRESENTOIR -->
-    <div id="presentoir" class="panneau"><div class="boite"><h3>🛒 Pôle Présentoir</h3><p>Plannings des volontaires pour les présentoirs publics.</p></div></div>
+    <div id="presentoir" class="panneau">
+        <div class="boite">
+            <h3>🛒 Pôle Présentoir — Importer le planning</h3>
+            <p>Sélectionnez le fichier PDF contenant les attributions du présentoir :</p>
+            <div class="zone-telechargement presentoir-zone" onclick="document.getElementById('file-input-presentoir').click()">
+                <span class="icone-fichier">🛒</span>
+                <p style="color: var(--pink); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Présentoir</p>
+                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Format accepté : .pdf</p>
+            </div>
+            <input type="file" id="file-input-presentoir" class="entree-fichier" accept=".pdf" onchange="chargeurPDFPresentoir(event)">
+            <div class="emballage-de-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Créneau Horaire</th>
+                            <th>Volontaires assignés</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corps-tableau-presentoir">
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: #64748b;">Aucun planning de présentoir chargé. Cliquez sur le bouton rose ci-dessus.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
     <!-- 5. SONO-VIDEO-ESTRADE -->
     <div id="sono-video" class="panneau">
@@ -386,7 +414,6 @@
         reader.readAsArrayBuffer(file);
     }
 
-    // NOUVELLE FONCTION EXCLUSIVE ET TOTALEMENT ISOLÉE POUR LE NETTOYAGE
     function chargeurPDFNettoyage(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -396,79 +423,150 @@
                 const typedarray = new Uint8Array(e.target.result);
                 const pdf = await pdfjsLib.getDocument(typedarray).promise;
                 let boitesDeTexte = [];
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    let elements = textContent.items.map(item => ({ text: item.str.trim(), x: item.transform[4], y: item.transform[5] })).filter(item => item.text !== "");
+                    boitesDeTexte.push(...elements);
+                }
+                let lignesPhysiques = {};
+                boitesDeTexte.forEach(b => {
+                    let ySimilaire = Object.keys(lignesPhysiques).find(key => Math.abs(parseFloat(key) - b.y) < 6);
+                    if (ySimilaire) { lignesPhysiques[ySimilaire].push(b); } else { lignesPhysiques[b.y] = [b]; }
+                });
+                const corpsNettoyage = document.getElementById('corps-tableau-nettoyage');
+                corpsNettoyage.innerHTML = "";
+                let ligneAjoutee = false;
+                let clesY = Object.keys(lignesPhysiques).sort((a, b) => parseFloat(b) - parseFloat(a));
+                clesY.forEach(y => {
+                    let cellules = lignesPhysiques[y].sort((a, b) => a.x - b.x);
+                    let ligneTexteBrut = cellules.map(c => c.text).join(" | ");
+                    const formatFormatsDate = /(\d{2}\/\d{2}\/\d{2,4})/g;
+                    let datesLigne = ligneTexteBrut.match(formatFormatsDate);
+                    if (datesLigne && datesLigne.length >= 2) {
+                        let dateMardi = datesLigne[0];
+                        let dateSamedi = datesLigne[1];
+                        let resteTexte = cellules.filter(c => !c.text.match(formatFormatsDate) && !c.text.match(/Mardi|Samedi|Groupes|Programme|Entretien/i));
+                        let nomGroupe = resteTexte.map(c => c.text).join(" ") || "--";
+                        if (nomGroupe !== "" && nomGroupe !== "--" && !nomGroupe.includes("Assemblée")) {
+                            ligneAjoutee = true;
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `<td><b>🟢 ${dateMardi}</b></td><td><b>🔵 ${dateSamedi}</b></td><td><span style="color:#ea580c; font-weight:600;">🧹 Groupe ${nomGroupe}</span></td>`;
+                            corpsNettoyage.appendChild(tr);
+                        }
+                    } else if (ligneTexteBrut.includes("Assemblée") || ligneTexteBrut.includes("Circonscription")) {
+                        let explication = cellules.map(c => c.text).filter(t => !t.includes("|")).join(" ");
+                        ligneAjoutee = true;
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td colspan="2" style="background:#fff7ed; text-align:center; color:#c2410c; font-weight:700;">⚠️ ÉVÉNEMENT SPECIAL</td><td style="background:#fff7ed; color:#c2410c; font-weight:600;">${explication}</td>`;
+                        corpsNettoyage.appendChild(tr);
+                    }
+                });
+                if (ligneAjoutee) { alert("Fichier de Nettoyage chargé avec succès ! Aucune interférence avec les autres onglets."); }
+                else { alert("Document lu mais format de cellules non reconnu."); }
+            } catch (error) { alert("Erreur lors de l'lecture du pôle Nettoyage."); }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // NOUVELLE FONCTION ULTRA-INTELLIGENTE ET TOTALEMENT ISOLÉE POUR LE PRÉSENTOIR
+    function chargeurPDFPresentoir(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const typedarray = new Uint8Array(e.target.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                let casesBrutes = [];
 
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const textContent = await page.getTextContent();
-                    let elements = textContent.items.map(item => ({
+                    let items = textContent.items.map(item => ({
                         text: item.str.trim(),
                         x: item.transform[4],
                         y: item.transform[5]
                     })).filter(item => item.text !== "");
-                    boitesDeTexte.push(...elements);
+                    casesBrutes.push(...items);
                 }
 
                 // Regroupement par lignes physiques horizontales
-                let lignesPhysiques = {};
-                boitesDeTexte.forEach(b => {
-                    let ySimilaire = Object.keys(lignesPhysiques).find(key => Math.abs(parseFloat(key) - b.y) < 6);
-                    if (ySimilaire) { lignesPhysiques[ySimilaire].push(b); }
-                    else { lignesPhysiques[b.y] = [b]; }
+                let lignesMap = {};
+                casesBrutes.forEach(item => {
+                    let yTrouve = Object.keys(lignesMap).find(y => Math.abs(parseFloat(y) - item.y) < 7);
+                    if (yTrouve) { lignesMap[yTrouve].push(item); } 
+                    else { lignesMap[item.y] = [item]; }
                 });
 
-                const corpsNettoyage = document.getElementById('corps-tableau-nettoyage');
-                corpsNettoyage.innerHTML = "";
+                const corpsPresentoir = document.getElementById('corps-tableau-presentoir');
+                corpsPresentoir.innerHTML = "";
                 let ligneAjoutee = false;
 
-                let clesY = Object.keys(lignesPhysiques).sort((a, b) => parseFloat(b) - parseFloat(a));
+                let ordonnesY = Object.keys(lignesMap).sort((a, b) => parseFloat(b) - parseFloat(a));
 
-                clesY.forEach(y => {
-                    let cellules = lignesPhysiques[y].sort((a, b) => a.x - b.x);
-                    let ligneTexteBrut = cellules.map(c => c.text).join(" | ");
+                ordonnesY.forEach(y => {
+                    let caseLigne = lignesMap[y].sort((a, b) => a.x - b.x);
+                    let texteLigne = caseLigne.map(c => c.text).join(" | ");
 
-                    // Format des dates dans le document : DD/MM/YY ou DD/MM/YYYY
-                    const formatFormatsDate = /(\d{2}\/\d{2}\/\d{2,4})/g;
-                    let datesLigne = ligneTexteBrut.match(formatFormatsDate);
+                    // Détection des dates (ex: 01/07/25, 11/07/25, 04/07//25)
+                    const dateRegex = /(\d{2}\/\d{2}\/+\d{2,4})/g;
+                    let dates = texteLigne.match(dateRegex);
 
-                    if (datesLigne && datesLigne.length >= 2) {
-                        let dateMardi = datesLigne[0];
-                        let dateSamedi = datesLigne[1];
+                    if (dates) {
+                        let dateAffiche = dates[0].replace(/\/+/g, '/'); // Nettoie les doubles barres générées par l'iPad
+                        
+                        // Extraire le jour de la semaine associé (Mardi, Jeudi, Vendredi, Samedi, Dimanche)
+                        let jourMatch = texteLigne.match(/(Mardi|Jeudi|Vendredi|Samedi|Dimanche)/i);
+                        let jour = jourMatch ? jourMatch[0] : "";
+                        let dateComplete = `${jour} ${dateAffiche}`.trim();
 
-                        // Isoler le groupe responsable (ce qui n'est pas une date, ni un en-tête)
-                        let resteTexte = cellules.filter(c => !c.text.match(formatFormatsDate) && !c.text.match(/Mardi|Samedi|Groupes|Programme|Entretien/i));
-                        let nomGroupe = resteTexte.map(c => c.text).join(" ") || "--";
+                        // Extraction des créneaux horaires (7h-9h, 9h-11h, 16h-18h)
+                        let heuresArr = caseLigne.filter(c => c.text.match(/\d{1,2}h/i));
+                        let créneau = heuresArr.map(h => h.text).join(" / ") || "7h-9h / 9h-11h+";
 
-                        if (nomGroupe !== "" && nomGroupe !== "--" && !nomGroupe.includes("Assemblée")) {
+                        // Extraction des noms (Filtre les dates, heures, lieux et barres obliques)
+                        let elementsNoms = caseLigne.filter(c => 
+                            !c.text.match(dateRegex) && 
+                            !c.text.match(/(Mardi|Jeudi|Vendredi|Samedi|Dimanche|Dates|Heures|Participants|Lieux|Planning)/i) &&
+                            !c.text.match(/\d{1,2}h/i) &&
+                            !c.text.match(/(8à8|Monbin|Port|pêche|parking|Leader|Price|Sainte|Marie|école|fermée|hall|sports|Teddy|Riner|transformateur|Salle|Royaume)/i) &&
+                            c.text !== "/" && c.text !== "|" && c.text !== "///////"
+                        );
+
+                        let participants = elementsNoms.map(c => c.text).join(" / ");
+
+                        // Gérer l'affichage des assemblées régionales ou des cellules vides de volontaires
+                        if (texteLigne.includes("Assemblée Régionale") || texteLigne.includes("Assemblée régionale")) {
+                            participants = "<span style='color:#db2777; font-weight:700;'>🏟️ Assemblée Régionale (Pas de présentoir)</span>";
+                        }
+
+                        if (participants === "" || participants === "///////") {
+                            participants = "<span style='color:#64748b; font-style: italic;'>Aucun volontaire assigné (Créneau libre)</span>";
+                        }
+
+                        // Filtrer les lignes d'en-tête du document
+                        if (!texteLigne.includes("Planning du PRESENTOIR") && !texteLigne.includes("Participants")) {
                             ligneAjoutee = true;
                             const tr = document.createElement('tr');
                             tr.innerHTML = `
-                                <td><b>🟢 ${dateMardi}</b></td>
-                                <td><b>🔵 ${dateSamedi}</b></td>
-                                <td><span style="color:#ea580c; font-weight:600;">🧹 Groupe ${nomGroupe}</span></td>
+                                <td><b>📅 ${dateComplete}</b></td>
+                                <td><span style="background:#fce7f3; color:#db2777; padding:2px 6px; border-radius:4px; font-weight:500;">⏱️ ${créneau}</span></td>
+                                <td><span style="color:#0f172a; font-weight:600;">${participants}</span></td>
                             `;
-                            corpsNettoyage.appendChild(tr);
+                            corpsPresentoir.appendChild(tr);
                         }
-                    } else if (ligneTexteBrut.includes("Assemblée") || ligneTexteBrut.includes("Circonscription")) {
-                        // Permet d'attraper les événements spéciaux (Semaine d'assemblée)
-                        let explication = cellules.map(c => c.text).filter(t => !t.includes("|")).join(" ");
-                        ligneAjoutee = true;
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td colspan="2" style="background:#fff7ed; text-align:center; color:#c2410c; font-weight:700;">⚠️ ÉVÉNEMENT SPECIAL</td>
-                            <td style="background:#fff7ed; color:#c2410c; font-weight:600;">${explication}</td>
-                        `;
-                        corpsNettoyage.appendChild(tr);
                     }
                 });
 
                 if (ligneAjoutee) {
-                    alert("Fichier de Nettoyage chargé avec succès ! Aucune interférence avec les autres onglets.");
+                    alert("Le planning du Présentoir a été intégré avec succès !");
                 } else {
-                    alert("Document lu mais format de cellules non reconnu.");
+                    alert("Fichier ouvert mais aucune ligne d'attribution valide n'a pu être générée.");
                 }
 
             } catch (error) {
-                alert("Erreur lors de la lecture du pôle Nettoyage.");
+                alert("Erreur lors de la lecture fine du Présentoir.");
             }
         };
         reader.readAsArrayBuffer(file);
