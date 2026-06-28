@@ -62,11 +62,9 @@
     <div id="discours" class="panneau actif">
         <div class="boite">
             <h3>🎤 Pôle Discours — Importer le programme PDF</h3>
-            <p>Sélectionnez le fichier PDF de votre programme :</p>
             <div class="zone-telechargement" onclick="document.getElementById('file-input-discours').click()">
                 <span class="icone-fichier">📕</span>
                 <p style="color: var(--primary); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Discours</p>
-                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Format accepté : .pdf</p>
             </div>
             <input type="file" id="file-input-discours" class="entree-fichier" accept=".pdf" onchange="chargeurFichierPDF(event)">
             <div class="emballage-de-table">
@@ -82,7 +80,6 @@
     <div id="vie-ministere" class="panneau">
         <div class="boite">
             <h3>📖 Pôle Cahier Vie et Ministère — Importer le programme</h3>
-            <p>Sélectionnez le fichier PDF du programme de milieu de semaine :</p>
             <div class="zone-telechargement" onclick="document.getElementById('file-input-cahier-bouton').click()">
                 <span class="icone-fichier">📖</span>
                 <p style="color: var(--success); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Cahier</p>
@@ -97,15 +94,14 @@
         </div>
     </div>
 
-    <!-- 3. SORTIE EN SEMAINE -->
+    <!-- 3. SORTIE EN SEMAINE (À JOUR DIRECTEMENT) -->
     <div id="sortie-semaine" class="panneau">
         <div class="boite">
             <h3>🚶 Pôle Sortie en Semaine — Importer le planning</h3>
-            <p>Sélectionnez le fichier PDF ou issu de Word contenant la planification des sorties :</p>
+            <p>Sélectionnez le fichier contenant la planification des sorties (Affiche uniquement à partir d'aujourd'hui) :</p>
             <div class="zone-telechargement sorties-zone" onclick="document.getElementById('file-input-sorties').click()">
                 <span class="icone-fichier">🚶</span>
                 <p style="color: var(--sky); font-weight: 600;">Cliquez ici pour choisir votre fichier Sorties en Semaine</p>
-                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Format accepté : .pdf</p>
             </div>
             <input type="file" id="file-input-sorties" class="entree-fichier" accept=".pdf" onchange="chargeurPDFSorties(event)">
             <div class="emballage-de-table">
@@ -132,7 +128,6 @@
     <div id="presentoir" class="panneau">
         <div class="boite">
             <h3>🛒 Pôle Présentoir — Importer le planning</h3>
-            <p>Sélectionnez le fichier PDF contenant les attributions du présentoir :</p>
             <div class="zone-telechargement presentoir-zone" onclick="document.getElementById('file-input-presentoir').click()">
                 <span class="icone-fichier">🛒</span>
                 <p style="color: var(--pink); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Présentoir</p>
@@ -151,7 +146,6 @@
     <div id="sono-video" class="panneau">
         <div class="boite">
             <h3>🖥️ Pôle Sono-Video-Estrade — Importer le programme</h3>
-            <p>Sélectionnez le fichier PDF de sonorisation :</p>
             <div class="zone-telechargement sono-zone" onclick="document.getElementById('file-input-sono').click()">
                 <span class="icone-fichier">🖥️</span>
                 <p style="color: var(--purple); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Sono-Vidéo</p>
@@ -170,7 +164,6 @@
     <div id="nettoyage" class="panneau">
         <div class="boite">
             <h3>🧹 Pôle Nettoyage — Importer le programme</h3>
-            <p>Sélectionnez le fichier PDF du planning d'entretien :</p>
             <div class="zone-telechargement nettoyage-zone" onclick="document.getElementById('file-input-nettoyage').click()">
                 <span class="icone-fichier">🧹</span>
                 <p style="color: var(--orange); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Nettoyage</p>
@@ -227,7 +220,7 @@
         }
     }
 
-    // NOUVELLE FONCTION ULTRA-STABLE POUR LES SORTIES EN SEMAINE (EXTRAIT ET TRIE PAR RAPPORT À LA DATE DU JOUR)
+    // EXTRACTION INTELLIGENTE CALÉE SUR LA DATE D'AUJOURD'HUI (28 JUIN 2026)
     function chargeurPDFSorties(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -241,12 +234,7 @@
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const textContent = await page.getTextContent();
-                    // Tri par axe horizontal puis vertical
-                    let items = textContent.items.map(item => ({
-                        text: item.str.trim(),
-                        x: item.transform[4],
-                        y: item.transform[5]
-                    })).filter(item => item.text !== "");
+                    let items = textContent.items.map(item => ({ text: item.str.trim(), x: item.transform[4], y: item.transform[5] })).filter(item => item.text !== "");
                     fragmentsBruts.push(...items);
                 }
 
@@ -254,10 +242,10 @@
                 corpsSorties.innerHTML = "";
                 let listeSorties = [];
 
-                // Capturer l'année en cours (2026)
                 const anneeCourante = 2026;
+                // Définition stricte de la date du jour (28 juin 2026)
+                const dateAujourdhui = new Date(2026, 5, 28); 
 
-                // Parcourir chaque bloc de texte pour extraire les dates au format DD / MM
                 fragmentsBruts.forEach((item, index) => {
                     const dateMatch = item.text.match(/(\d{2})\s*\/\s*(\d{2})/);
                     if (dateMatch) {
@@ -265,7 +253,6 @@
                         let moisNum = dateMatch[2];
                         let dateConstruite = `${jourNum}/${moisNum}/${anneeCourante}`;
 
-                        // Retrouver le jour écrit juste avant ou autour dans la cellule
                         let texteAutour = fragmentsBruts.slice(Math.max(0, index - 2), index + 5).map(f => f.text).join(" ");
                         
                         let jourNom = "Mardi";
@@ -273,35 +260,33 @@
                         else if (texteAutour.match(/JEUDI/i)) jourNom = "Jeudi";
                         else if (texteAutour.match(/VEMDREDI|VENDREDI/i)) jourNom = "Vendredi";
 
-                        // Déterminer l'horaire théorique selon le jour décrit dans l'en-tête
                         let horaire = "9H00 (Matin)";
                         if (jourNom.includes("Après-midi")) horaire = "16H00";
                         if (jourNom === "Vendredi") horaire = texteAutour.includes("A17H") ? "17H00" : "9H00";
 
-                        // Trouver le nom du conducteur (situé immédiatement après la date)
                         let conducteur = "--";
                         let suiteText = fragmentsBruts.slice(index + 1, index + 4);
                         if (suiteText.length > 0) {
-                            conducteur = suiteText.map(s => s.text)
-                                                   .join(" ")
-                                                   .replace(/PREMIERE|DEUXIEME|TROIXIEME|QUATRIEME|SEMAINE|A17H|\/|:/g, '')
-                                                   .trim();
+                            conducteur = suiteText.map(s => s.text).join(" ").replace(/PREMIERE|DEUXIEME|TROIXIEME|QUATRIEME|SEMAINE|A17H|\/|:/g, '').trim();
                         }
-
                         if (conducteur === "" || conducteur.length < 3) conducteur = "Semaine Spéciale / En attente";
 
-                        // Stocker l'objet pour pouvoir effectuer le tri chronologique automatique
-                        listeSorties.push({
-                            dateObjet: new Date(anneeCourante, parseInt(moisNum) - 1, parseInt(jourNum)),
-                            dateStr: dateConstruite,
-                            jourStr: jourNom,
-                            conducteurStr: conducteur,
-                            heureStr: horaire
-                        });
+                        let dateVerif = new Date(anneeCourante, parseInt(moisNum) - 1, parseInt(jourNum));
+
+                        // SÉCURITÉ : On ne garde la ligne que si elle est égale ou postérieure au 28 juin 2026
+                        if (dateVerif >= dateAujourdhui) {
+                            listeSorties.push({
+                                dateObjet: dateVerif,
+                                dateStr: dateConstruite,
+                                jourStr: jourNom,
+                                conducteurStr: conducteur,
+                                heureStr: horaire
+                            });
+                        }
                     }
                 });
 
-                // Tri par rapport à la date du jour
+                // Tri par ordre chronologique
                 listeSorties.sort((a, b) => a.dateObjet - b.dateObjet);
 
                 let ligneAjoutee = false;
@@ -317,21 +302,20 @@
                     corpsSorties.appendChild(tr);
                 });
 
-                if (ligneAjoutee) { alert("Le programme de Sorties en Semaine a été trié chronologiquement et intégré !"); }
-                else { alert("Le document a été ouvert mais aucune planification de date n'a été interceptée."); }
+                if (ligneAjoutee) { alert("Le programme a été mis à jour à la date d'aujourd'hui (28/06/2026) !"); }
+                else { alert("Aucune sortie future trouvée dans ce fichier pour la période actuelle."); }
 
-            } catch (error) { alert("Erreur lors de l'alignement des colonnes Word/PDF."); }
+            } catch (error) { alert("Erreur de traitement."); }
         };
         reader.readAsArrayBuffer(file);
     }
 
-    // Fonctions précédentes conservées à l'identique (Discours, Cahier, Sono, Nettoyage, Présentoir)
-    function chargeurFichierPDF(e) { /* ... */ }
-    function chargeurPDFVieEtMinistere(e) { /* ... */ }
-    function chargeurPDFSonoVideo(e) { /* ... */ }
-    function chargeurPDFNettoyage(e) { /* ... */ }
-    function chargeurPDFPresentoir(e) { /* ... */ }
-
+    // Autres fonctions inchangées
+    function chargeurFichierPDF(e) {}
+    function chargeurPDFVieEtMinistere(e) {}
+    function chargeurPDFSonoVideo(e) {}
+    function chargeurPDFNettoyage(e) {}
+    function chargeurPDFPresentoir(e) {}
     window.onload = () => { chargeurCartes(); };
 </script>
 </body>
