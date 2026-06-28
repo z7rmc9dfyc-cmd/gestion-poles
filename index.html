@@ -55,7 +55,6 @@
         <button class="bouton-onglet" onclick="switchTab('territoires')">🗺️ Territoires</button>
     </div>
 
-    <!-- 1. DISCOURS -->
     <div id="discours" class="panneau actif">
         <div class="boite">
             <h3>🎤 Pôle Discours — Importer le programme PDF</h3>
@@ -90,7 +89,6 @@
         </div>
     </div>
 
-    <!-- 2. CAHIER VIE ET MINISTERE -->
     <div id="vie-ministere" class="panneau">
         <div class="boite">
             <h3>📖 Pôle Cahier Vie et Ministère — Importer le programme</h3>
@@ -122,13 +120,10 @@
         </div>
     </div>
 
-    <!-- 3. SORTIE EN SEMAINE -->
     <div id="sortie-semaine" class="panneau"><div class="boite"><h3>🚶 Pôle Sortie en Semaine</h3><p>Rendez-vous et organisation de la prédication en semaine.</p></div></div>
 
-    <!-- 4. PRESENTOIR -->
     <div id="presentoir" class="panneau"><div class="boite"><h3>🛒 Pôle Présentoir</h3><p>Plannings des volontaires pour les présentoirs publics.</p></div></div>
 
-    <!-- 5. SONO-VIDEO-ESTRADE -->
     <div id="sono-video" class="panneau">
         <div class="boite">
             <h3>🖥️ Pôle Sono-Video-Estrade — Importer le programme</h3>
@@ -161,10 +156,8 @@
         </div>
     </div>
 
-    <!-- 6. NETTOYAGE -->
     <div id="nettoyage" class="panneau"><div class="boite"><h3>🧹 Pôle Nettoyage</h3><p>Planning des groupes pour l'entretien de la Salle du Royaume.</p></div></div>
 
-    <!-- 7. TERRITOIRES -->
     <div id="territoires" class="panneau">
         <div class="boite">
             <h3>🗺️ Pôle Territoires — Rotation des 120 cartes</h3>
@@ -305,7 +298,7 @@
         reader.readAsArrayBuffer(file);
     }
 
-    // ANALYSEUR ULTRA-ROBUSTE POUR LE PROGRAMME SONO (BASÉ SUR LES DATES)
+    // NOUVEL EXTRACO-TRIEUR DE TABLEAU ULTRA-PRÉCIS POUR LA SONO
     function chargeurPDFSonoVideo(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -314,47 +307,65 @@
             try {
                 const typedarray = new Uint8Array(e.target.result);
                 const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                let texteComplet = "";
+                let casesBrutes = [];
+
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const textContent = await page.getTextContent();
-                    texteComplet += textContent.items.map(item => item.str).join(" | ") + " \n";
+                    
+                    // Récupération des éléments textuels avec leurs positions réelles
+                    let items = textContent.items.map(item => ({
+                        text: item.str.trim(),
+                        x: item.transform[4],
+                        y: item.transform[5]
+                    })).filter(item => item.text !== "");
+
+                    casesBrutes.push(...items);
                 }
+
+                // Regroupement par lignes physiques (y similaire)
+                let lignesMap = {};
+                casesBrutes.forEach(item => {
+                    let yTrouve = Object.keys(lignesMap).find(y => Math.abs(parseFloat(y) - item.y) < 6);
+                    if (yTrouve) {
+                        lignesMap[yTrouve].push(item);
+                    } else {
+                        lignesMap[item.y] = [item];
+                    }
+                });
 
                 const corpsSono = document.getElementById('corps-tableau-sono');
                 corpsSono.innerHTML = "";
-
-                // Nettoyer les doubles espaces et simplifier le flux
-                let cleanText = texteComplet.replace(/\s+/g, ' ');
-                
-                // Repérer toutes les dates du type DD/MM/YYYY
-                const dateRegex = /(\d{2}\/\d{2}\/\d{4})/g;
-                let ttesLesDates = cleanText.match(dateRegex);
-
-                if (!ttesLesDates || ttesLesDates.length < 2) {
-                    alert("Aucun bloc de dates complet trouvé dans le fichier.");
-                    return;
-                }
-
-                let fragments = cleanText.split("|").map(f => f.trim()).filter(f => f !== "");
                 let ligneAjoutee = false;
 
-                // On parcourt la pile pour associer chaque paire de dates (Mardi / Samedi) à ses attributions
-                for (let idx = 0; idx < fragments.length; idx++) {
-                    let textItem = fragments[idx];
-                    
-                    if (textItem.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
-                        let dateMardi = textItem;
-                        let dateSamedi = fragments[idx + 1] && fragments[idx + 1].match(/^\d{2}\/\d{2}\/\d{4}$/) ? fragments[idx + 1] : "--/--/----";
+                // Tri des lignes du haut vers le bas
+                let ordonnesY = Object.keys(lignesMap).sort((a, b) => parseFloat(b) - parseFloat(a));
 
-                        // Récupération sécurisée à rebours dans la pile textuelle
-                        let perchistes = fragments[idx - 1] || "--";
-                        let estrade = fragments[idx - 2] || "--";
-                        let zoom = fragments[idx - 3] || "--";
-                        let audioVideo = fragments[idx - 4] || "--";
+                ordonnesY.forEach(y => {
+                    let caseLigne = lignesMap[y].sort((a, b) => a.x - b.x);
+                    let texteLigne = caseLigne.map(c => c.text).join(" | ");
 
-                        // Sécurité pour écarter les faux positifs (comme la ligne de titre)
-                        if (audioVideo !== "--" && !audioVideo.includes("Audio") && !audioVideo.includes("Programme") && !audioVideo.match(/^\d{2}/) && !audioVideo.includes("Semaine") && !audioVideo.includes("Assemblée")) {
+                    // Détection des dates au format DD/MM/YYYY
+                    const dateRegex = /(\d{2}\/\d{2}\/\d{4})/g;
+                    let dates = texteLigne.match(dateRegex);
+
+                    if (dates && dates.length >= 2) {
+                        let dateMardi = dates[0];
+                        let dateSamedi = dates[1];
+
+                        // Extraction ordonnée en ignorant les titres et dates
+                        let elementsNoms = caseLigne.filter(c => !c.text.match(dateRegex) && !c.text.match(/Mardi|Samedi|Audio|Régie|Estrade/i));
+                        
+                        let audioVideo = elementsNoms[0] ? elementsNoms[0].text : "--";
+                        let zoom = elementsNoms[1] ? elementsNoms[1].text : "--";
+                        let estrade = elementsNoms[2] ? elementsNoms[2].text : "--";
+                        
+                        // Rassembler le restant des colonnes pour les perchistes (gère le séparateur '/')
+                        let perchistesArr = elementsNoms.slice(3).map(c => c.text);
+                        let perchistes = perchistesArr.length > 0 ? perchistesArr.join(" ") : "--";
+
+                        // Élimination des fausses lignes d'entête de tableau
+                        if (audioVideo !== "Accueil" && !audioVideo.includes("Vidéo") && !audioVideo.includes("Perchistes")) {
                             ligneAjoutee = true;
                             const tr = document.createElement('tr');
                             tr.innerHTML = `
@@ -367,18 +378,17 @@
                             `;
                             corpsSono.appendChild(tr);
                         }
-                        if (dateSamedi !== "--/--/----") idx++; // Sauter l'élément du samedi
                     }
-                }
+                });
 
                 if (ligneAjoutee) {
-                    alert("Fichier de sonorisation traité avec succès ! Tout est calé.");
+                    alert("Le programme de sonorisation a été extrait avec une précision absolue !");
                 } else {
-                    alert("Le fichier a été ouvert. Assurez-vous d'importer le fichier dans l'onglet violet 'Sono-Video-Estrade'.");
+                    alert("Fichier lu mais aucune ligne n'a pu être construite. Vérifiez le format.");
                 }
 
             } catch (error) {
-                alert("Erreur lors du décodage du fichier Sono.");
+                alert("Erreur lors de l'alignement des lignes Sono.");
             }
         };
         reader.readAsArrayBuffer(file);
