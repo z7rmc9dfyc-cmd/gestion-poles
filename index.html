@@ -10,7 +10,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
-        :root { --primary: #2563eb; --success: #16a34a; --purple: #7c3aed; --warning: #f59e0b; --bg: #f8fafc; --text: #0f172a; }
+        :root { --primary: #2563eb; --success: #16a34a; --purple: #7c3aed; --orange: #ea580c; --warning: #f59e0b; --bg: #f8fafc; --text: #0f172a; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
         h1 { text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 20px; }
@@ -24,6 +24,7 @@
         .zone-telechargement { border: 3px dashed #cbd5e1; padding: 30px; text-align: center; background: #f8fafc; border-radius: 12px; cursor: pointer; transition: border-color 0.2s; }
         .zone-telechargement.cahier-zone:hover { border-color: var(--success); }
         .zone-telechargement.sono-zone:hover { border-color: var(--purple); }
+        .zone-telechargement.nettoyage-zone:hover { border-color: var(--orange); }
         .zone-telechargement:hover { border-color: var(--primary); }
         .entree-fichier { display: none; }
         .icone-fichier { font-size: 40px; margin-bottom: 10px; display: block; }
@@ -55,6 +56,7 @@
         <button class="bouton-onglet" onclick="switchTab('territoires')">🗺️ Territoires</button>
     </div>
 
+    <!-- 1. DISCOURS -->
     <div id="discours" class="panneau actif">
         <div class="boite">
             <h3>🎤 Pôle Discours — Importer le programme PDF</h3>
@@ -89,6 +91,7 @@
         </div>
     </div>
 
+    <!-- 2. CAHIER VIE ET MINISTERE -->
     <div id="vie-ministere" class="panneau">
         <div class="boite">
             <h3>📖 Pôle Cahier Vie et Ministère — Importer le programme</h3>
@@ -120,10 +123,13 @@
         </div>
     </div>
 
+    <!-- 3. SORTIE EN SEMAINE -->
     <div id="sortie-semaine" class="panneau"><div class="boite"><h3>🚶 Pôle Sortie en Semaine</h3><p>Rendez-vous et organisation de la prédication en semaine.</p></div></div>
 
+    <!-- 4. PRESENTOIR -->
     <div id="presentoir" class="panneau"><div class="boite"><h3>🛒 Pôle Présentoir</h3><p>Plannings des volontaires pour les présentoirs publics.</p></div></div>
 
+    <!-- 5. SONO-VIDEO-ESTRADE -->
     <div id="sono-video" class="panneau">
         <div class="boite">
             <h3>🖥️ Pôle Sono-Video-Estrade — Importer le programme</h3>
@@ -156,8 +162,37 @@
         </div>
     </div>
 
-    <div id="nettoyage" class="panneau"><div class="boite"><h3>🧹 Pôle Nettoyage</h3><p>Planning des groupes pour l'entretien de la Salle du Royaume.</p></div></div>
+    <!-- 6. NETTOYAGE -->
+    <div id="nettoyage" class="panneau">
+        <div class="boite">
+            <h3>🧹 Pôle Nettoyage — Importer le programme</h3>
+            <p>Sélectionnez le fichier PDF du planning d'entretien de la Salle :</p>
+            <div class="zone-telechargement nettoyage-zone" onclick="document.getElementById('file-input-nettoyage').click()">
+                <span class="icone-fichier">🧹</span>
+                <p style="color: var(--orange); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Nettoyage</p>
+                <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">Format accepté : .pdf</p>
+            </div>
+            <input type="file" id="file-input-nettoyage" class="entree-fichier" accept=".pdf" onchange="chargeurPDFNettoyage(event)">
+            <div class="emballage-de-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Mardi</th>
+                            <th>Samedi</th>
+                            <th>Groupe / Responsable d'entretien</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corps-tableau-nettoyage">
+                        <tr>
+                            <td colspan="3" style="text-align: center; color: #64748b;">Aucun programme d'entretien chargé. Cliquez sur le bouton orange ci-dessus.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
+    <!-- 7. TERRITOIRES -->
     <div id="territoires" class="panneau">
         <div class="boite">
             <h3>🗺️ Pôle Territoires — Rotation des 120 cartes</h3>
@@ -298,7 +333,6 @@
         reader.readAsArrayBuffer(file);
     }
 
-    // NOUVEL EXTRACO-TRIEUR DE TABLEAU ULTRA-PRÉCIS POUR LA SONO
     function chargeurPDFSonoVideo(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -308,87 +342,133 @@
                 const typedarray = new Uint8Array(e.target.result);
                 const pdf = await pdfjsLib.getDocument(typedarray).promise;
                 let casesBrutes = [];
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    let items = textContent.items.map(item => ({ text: item.str.trim(), x: item.transform[4], y: item.transform[5] })).filter(item => item.text !== "");
+                    casesBrutes.push(...items);
+                }
+                let lignesMap = {};
+                casesBrutes.forEach(item => {
+                    let yTrouve = Object.keys(lignesMap).find(y => Math.abs(parseFloat(y) - item.y) < 6);
+                    if (yTrouve) { lignesMap[yTrouve].push(item); } else { lignesMap[item.y] = [item]; }
+                });
+                const corpsSono = document.getElementById('corps-tableau-sono');
+                corpsSono.innerHTML = "";
+                let ligneAjoutee = false;
+                let ordonnesY = Object.keys(lignesMap).sort((a, b) => parseFloat(b) - parseFloat(a));
+                ordonnesY.forEach(y => {
+                    let caseLigne = lignesMap[y].sort((a, b) => a.x - b.x);
+                    let texteLigne = caseLigne.map(c => c.text).join(" | ");
+                    const dateRegex = /(\d{2}\/\d{2}\/\d{4})/g;
+                    let dates = texteLigne.match(dateRegex);
+                    if (dates && dates.length >= 2) {
+                        let dateMardi = dates[0];
+                        let dateSamedi = dates[1];
+                        let elementsNoms = caseLigne.filter(c => !c.text.match(dateRegex) && !c.text.match(/Mardi|Samedi|Audio|Régie|Estrade/i));
+                        let audioVideo = elementsNoms[0] ? elementsNoms[0].text : "--";
+                        let zoom = elementsNoms[1] ? elementsNoms[1].text : "--";
+                        let estrade = elementsNoms[2] ? elementsNoms[2].text : "--";
+                        let perchistesArr = elementsNoms.slice(3).map(c => c.text);
+                        let perchistes = perchistesArr.length > 0 ? perchistesArr.join(" ") : "--";
+                        if (audioVideo !== "Accueil" && !audioVideo.includes("Vidéo") && !audioVideo.includes("Perchistes")) {
+                            ligneAjoutee = true;
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `<td><b>🟢 ${dateMardi}</b></td><td><b>🔵 ${dateSamedi}</b></td><td><span style="color:#7c3aed; font-weight:600;">${audioVideo}</span></td><td>${zoom}</td><td>${estrade}</td><td><small>${perchistes}</small></td>`;
+                            corpsSono.appendChild(tr);
+                        }
+                    }
+                });
+                if (ligneAjoutee) { alert("Le programme de sonorisation a été extrait avec une précision absolue !"); }
+                else { alert("Fichier lu mais aucune ligne n'a pu être construite. Vérifiez le format."); }
+            } catch (error) { alert("Erreur lors de l'alignement des lignes Sono."); }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // NOUVELLE FONCTION EXCLUSIVE ET TOTALEMENT ISOLÉE POUR LE NETTOYAGE
+    function chargeurPDFNettoyage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const typedarray = new Uint8Array(e.target.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                let boitesDeTexte = [];
 
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const textContent = await page.getTextContent();
-                    
-                    // Récupération des éléments textuels avec leurs positions réelles
-                    let items = textContent.items.map(item => ({
+                    let elements = textContent.items.map(item => ({
                         text: item.str.trim(),
                         x: item.transform[4],
                         y: item.transform[5]
                     })).filter(item => item.text !== "");
-
-                    casesBrutes.push(...items);
+                    boitesDeTexte.push(...elements);
                 }
 
-                // Regroupement par lignes physiques (y similaire)
-                let lignesMap = {};
-                casesBrutes.forEach(item => {
-                    let yTrouve = Object.keys(lignesMap).find(y => Math.abs(parseFloat(y) - item.y) < 6);
-                    if (yTrouve) {
-                        lignesMap[yTrouve].push(item);
-                    } else {
-                        lignesMap[item.y] = [item];
-                    }
+                // Regroupement par lignes physiques horizontales
+                let lignesPhysiques = {};
+                boitesDeTexte.forEach(b => {
+                    let ySimilaire = Object.keys(lignesPhysiques).find(key => Math.abs(parseFloat(key) - b.y) < 6);
+                    if (ySimilaire) { lignesPhysiques[ySimilaire].push(b); }
+                    else { lignesPhysiques[b.y] = [b]; }
                 });
 
-                const corpsSono = document.getElementById('corps-tableau-sono');
-                corpsSono.innerHTML = "";
+                const corpsNettoyage = document.getElementById('corps-tableau-nettoyage');
+                corpsNettoyage.innerHTML = "";
                 let ligneAjoutee = false;
 
-                // Tri des lignes du haut vers le bas
-                let ordonnesY = Object.keys(lignesMap).sort((a, b) => parseFloat(b) - parseFloat(a));
+                let clesY = Object.keys(lignesPhysiques).sort((a, b) => parseFloat(b) - parseFloat(a));
 
-                ordonnesY.forEach(y => {
-                    let caseLigne = lignesMap[y].sort((a, b) => a.x - b.x);
-                    let texteLigne = caseLigne.map(c => c.text).join(" | ");
+                clesY.forEach(y => {
+                    let cellules = lignesPhysiques[y].sort((a, b) => a.x - b.x);
+                    let ligneTexteBrut = cellules.map(c => c.text).join(" | ");
 
-                    // Détection des dates au format DD/MM/YYYY
-                    const dateRegex = /(\d{2}\/\d{2}\/\d{4})/g;
-                    let dates = texteLigne.match(dateRegex);
+                    // Format des dates dans le document : DD/MM/YY ou DD/MM/YYYY
+                    const formatFormatsDate = /(\d{2}\/\d{2}\/\d{2,4})/g;
+                    let datesLigne = ligneTexteBrut.match(formatFormatsDate);
 
-                    if (dates && dates.length >= 2) {
-                        let dateMardi = dates[0];
-                        let dateSamedi = dates[1];
+                    if (datesLigne && datesLigne.length >= 2) {
+                        let dateMardi = datesLigne[0];
+                        let dateSamedi = datesLigne[1];
 
-                        // Extraction ordonnée en ignorant les titres et dates
-                        let elementsNoms = caseLigne.filter(c => !c.text.match(dateRegex) && !c.text.match(/Mardi|Samedi|Audio|Régie|Estrade/i));
-                        
-                        let audioVideo = elementsNoms[0] ? elementsNoms[0].text : "--";
-                        let zoom = elementsNoms[1] ? elementsNoms[1].text : "--";
-                        let estrade = elementsNoms[2] ? elementsNoms[2].text : "--";
-                        
-                        // Rassembler le restant des colonnes pour les perchistes (gère le séparateur '/')
-                        let perchistesArr = elementsNoms.slice(3).map(c => c.text);
-                        let perchistes = perchistesArr.length > 0 ? perchistesArr.join(" ") : "--";
+                        // Isoler le groupe responsable (ce qui n'est pas une date, ni un en-tête)
+                        let resteTexte = cellules.filter(c => !c.text.match(formatFormatsDate) && !c.text.match(/Mardi|Samedi|Groupes|Programme|Entretien/i));
+                        let nomGroupe = resteTexte.map(c => c.text).join(" ") || "--";
 
-                        // Élimination des fausses lignes d'entête de tableau
-                        if (audioVideo !== "Accueil" && !audioVideo.includes("Vidéo") && !audioVideo.includes("Perchistes")) {
+                        if (nomGroupe !== "" && nomGroupe !== "--" && !nomGroupe.includes("Assemblée")) {
                             ligneAjoutee = true;
                             const tr = document.createElement('tr');
                             tr.innerHTML = `
                                 <td><b>🟢 ${dateMardi}</b></td>
                                 <td><b>🔵 ${dateSamedi}</b></td>
-                                <td><span style="color:#7c3aed; font-weight:600;">${audioVideo}</span></td>
-                                <td>${zoom}</td>
-                                <td>${estrade}</td>
-                                <td><small>${perchistes}</small></td>
+                                <td><span style="color:#ea580c; font-weight:600;">🧹 Groupe ${nomGroupe}</span></td>
                             `;
-                            corpsSono.appendChild(tr);
+                            corpsNettoyage.appendChild(tr);
                         }
+                    } else if (ligneTexteBrut.includes("Assemblée") || ligneTexteBrut.includes("Circonscription")) {
+                        // Permet d'attraper les événements spéciaux (Semaine d'assemblée)
+                        let explication = cellules.map(c => c.text).filter(t => !t.includes("|")).join(" ");
+                        ligneAjoutee = true;
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td colspan="2" style="background:#fff7ed; text-align:center; color:#c2410c; font-weight:700;">⚠️ ÉVÉNEMENT SPECIAL</td>
+                            <td style="background:#fff7ed; color:#c2410c; font-weight:600;">${explication}</td>
+                        `;
+                        corpsNettoyage.appendChild(tr);
                     }
                 });
 
                 if (ligneAjoutee) {
-                    alert("Le programme de sonorisation a été extrait avec une précision absolue !");
+                    alert("Fichier de Nettoyage chargé avec succès ! Aucune interférence avec les autres onglets.");
                 } else {
-                    alert("Fichier lu mais aucune ligne n'a pu être construite. Vérifiez le format.");
+                    alert("Document lu mais format de cellules non reconnu.");
                 }
 
             } catch (error) {
-                alert("Erreur lors de l'alignement des lignes Sono.");
+                alert("Erreur lors de la lecture du pôle Nettoyage.");
             }
         };
         reader.readAsArrayBuffer(file);
