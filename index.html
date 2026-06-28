@@ -94,7 +94,7 @@
         </div>
     </div>
 
-    <!-- 3. SORTIE EN SEMAINE (À JOUR DIRECTEMENT) -->
+    <!-- 3. SORTIE EN SEMAINE -->
     <div id="sortie-semaine" class="panneau">
         <div class="boite">
             <h3>🚶 Pôle Sortie en Semaine — Importer le planning</h3>
@@ -220,7 +220,100 @@
         }
     }
 
-    // EXTRACTION INTELLIGENTE CALÉE SUR LA DATE D'AUJOURD'HUI (28 JUIN 2026)
+    // 1. DISCOURS
+    function chargeurFichierPDF(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const typedarray = new Uint8Array(e.target.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                let texteComplet = "";
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    texteComplet += textContent.items.map(item => item.str).join(" ") + " ";
+                }
+                const corpsDeT = document.getElementById('corps-tableau-discours');
+                corpsDeT.innerHTML = "";
+                let cleanText = texteComplet.replace(/DATE THEME N° ORATEUR ASSEMBLEE PRESIDENT LECTEUR GROUPE qui reçoit l'orateur/gi, '').trim();
+                const entryRegex = /(\d{2}\/\d{2}\/\d{4})(.*?)(?=\d{2}\/\d{2}\/\d{4}|PROGRAMME|$)/gs;
+                let match;
+                let ligneAjoutee = false;
+                while ((match = entryRegex.exec(cleanText)) !== null) {
+                    const date = match[1];
+                    const reste = match[2].trim();
+                    const numMatch = reste.match(/(\d{1,3})\s+(.+)/);
+                    if (numMatch) {
+                        ligneAjoutee = true;
+                        const theme = reste.split(/\s\d{1,3}\s/)[0].trim();
+                        const numero = numMatch[1];
+                        const suite = numMatch[2].trim();
+                        const mots = suite.split(/\s+/);
+                        const orateur = `${mots[0] || ''} ${mots[1] || ''}`.trim();
+                        const assemblee = mots[2] || '--';
+                        const president = `${mots[3] || ''} ${mots[4] || ''}`.trim();
+                        const lecteur = `${mots[5] || ''} ${mots[6] || ''}`.trim();
+                        const groupe = mots.slice(7).join(' ') || '--';
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td><b>${date}</b></td><td>${theme}</td><td><span style="background:#e8f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">${numero}</span></td><td>${orateur}</td><td>${assemblee}</td><td>${president}</td><td>${lecteur}</td><td>${groupe}</td>`;
+                        corpsDeT.appendChild(tr);
+                    }
+                }
+                if (ligneAjoutee) { alert("Fichier PDF Discours chargé avec succès !"); }
+                else { alert("Ce fichier ne semble pas correspondre au format."); }
+            } catch (error) { alert("Erreur de lecture."); }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // 2. CAHIER VIE ET MINISTERE
+    function chargeurPDFVieEtMinistere(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const typedarray = new Uint8Array(e.target.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                let texteComplet = "";
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    texteComplet += textContent.items.map(item => item.str).join(" ") + " \n";
+                }
+                const corpsCahier = document.getElementById('corps-tableau-cahier');
+                corpsCahier.innerHTML = "";
+                const blocs = texteComplet.split(/(\d{2}\/\d{2}\/\d{4})/g);
+                let ligneAjoutee = false;
+                for (let j = 1; j < blocs.length; j += 2) {
+                    const dateSemaine = blocs[j];
+                    const contenuBloc = blocs[j+1];
+                    if (contenuBloc && (contenuBloc.includes("Président") || contenuBloc.includes("Bible"))) {
+                        ligneAjoutee = true;
+                        const enteteNettoyee = contenuBloc.split("Cantique")[0].replace(/[^A-ZÉÈÀ0-9\s\-]/g, '').trim();
+                        const affichageSemaine = `<b>${dateSemaine}</b><br><small style="color:#2563eb;">${enteteNettoyee}</small>`;
+                        const pMatch = contenuBloc.match(/Président\s+([^0-9\n]{3,35})/i);
+                        const president = pMatch ? pMatch[1].replace(/Joyaux|Prière|18.*/gi, '').trim() : "--";
+                        const lMatch = contenuBloc.match(/3\.\s*Lecture\s*de\s*la\s*Bible.*?\)\s+([^0-9\n]{3,35})/i);
+                        const lecteurBible = lMatch ? lMatch[1].replace(/Applique|Vie|19.*/gi, '').trim() : "--";
+                        const condMatch = contenuBloc.match(/Conducteur\s+([^0-9\n]{3,35})/i);
+                        const lectMatch = contenuBloc.match(/Lecteur\s+([^0-9\n]{3,35})/i);
+                        const conducteur = condMatch ? condMatch[1].replace(/Lecteur|Cantique|Prière.*/gi, '').trim() : "--";
+                        const lecteurEtude = lectMatch ? lectMatch[1].replace(/Cantique|Prière|Aperçu.*/gi, '').trim() : "--";
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${affichageSemaine}</td><td><span style="color:#0284c7; font-weight:600;">${president}</span></td><td>${lecteurBible}</td><td><span style="background:#f0fdf4; color:#16a34a; padding:2px 6px; border-radius:4px; font-weight:500;">${conducteur}</span></td><td>${lecteurEtude}</td>`;
+                        corpsCahier.appendChild(tr);
+                    }
+                }
+                if (ligneAjoutee) { alert("Fichier Cahier chargé avec succès !"); }
+            } catch (error) { alert("Erreur d'analyse."); }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // 3. SORTIE EN SEMAINE
     function chargeurPDFSorties(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -230,20 +323,16 @@
                 const typedarray = new Uint8Array(e.target.result);
                 const pdf = await pdfjsLib.getDocument(typedarray).promise;
                 let fragmentsBruts = [];
-
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const textContent = await page.getTextContent();
                     let items = textContent.items.map(item => ({ text: item.str.trim(), x: item.transform[4], y: item.transform[5] })).filter(item => item.text !== "");
                     fragmentsBruts.push(...items);
                 }
-
                 const corpsSorties = document.getElementById('corps-tableau-sorties');
                 corpsSorties.innerHTML = "";
                 let listeSorties = [];
-
                 const anneeCourante = 2026;
-                // Définition stricte de la date du jour (28 juin 2026)
                 const dateAujourdhui = new Date(2026, 5, 28); 
 
                 fragmentsBruts.forEach((item, index) => {
@@ -252,9 +341,7 @@
                         let jourNum = dateMatch[1];
                         let moisNum = dateMatch[2];
                         let dateConstruite = `${jourNum}/${moisNum}/${anneeCourante}`;
-
                         let texteAutour = fragmentsBruts.slice(Math.max(0, index - 2), index + 5).map(f => f.text).join(" ");
-                        
                         let jourNom = "Mardi";
                         if (texteAutour.match(/MERCERDI|MERCREDI/i)) jourNom = texteAutour.includes("APRÈS") ? "Mercredi (Après-midi)" : "Mercredi";
                         else if (texteAutour.match(/JEUDI/i)) jourNom = "Jeudi";
@@ -270,52 +357,198 @@
                             conducteur = suiteText.map(s => s.text).join(" ").replace(/PREMIERE|DEUXIEME|TROIXIEME|QUATRIEME|SEMAINE|A17H|\/|:/g, '').trim();
                         }
                         if (conducteur === "" || conducteur.length < 3) conducteur = "Semaine Spéciale / En attente";
-
                         let dateVerif = new Date(anneeCourante, parseInt(moisNum) - 1, parseInt(jourNum));
 
-                        // SÉCURITÉ : On ne garde la ligne que si elle est égale ou postérieure au 28 juin 2026
                         if (dateVerif >= dateAujourdhui) {
-                            listeSorties.push({
-                                dateObjet: dateVerif,
-                                dateStr: dateConstruite,
-                                jourStr: jourNom,
-                                conducteurStr: conducteur,
-                                heureStr: horaire
-                            });
+                            listeSorties.push({ dateObjet: dateVerif, dateStr: dateConstruite, jourStr: jourNom, conducteurStr: conducteur, heureStr: horaire });
                         }
                     }
                 });
-
-                // Tri par ordre chronologique
                 listeSorties.sort((a, b) => a.dateObjet - b.dateObjet);
-
                 let ligneAjoutee = false;
                 listeSorties.forEach(s => {
                     ligneAjoutee = true;
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><b>📅 ${s.dateStr}</b></td>
-                        <td><span style="color:#0ea5e9; font-weight:600;">${s.jourStr}</span></td>
-                        <td><b>${s.conducteurStr}</b></td>
-                        <td><small style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">${s.heureStr}</small></td>
-                    `;
+                    tr.innerHTML = `<td><b>📅 ${s.dateStr}</b></td><td><span style="color:#0ea5e9; font-weight:600;">${s.jourStr}</span></td><td><b>${s.conducteurStr}</b></td><td><small style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">${s.heureStr}</small></td>`;
                     corpsSorties.appendChild(tr);
                 });
-
-                if (ligneAjoutee) { alert("Le programme a été mis à jour à la date d'aujourd'hui (28/06/2026) !"); }
-                else { alert("Aucune sortie future trouvée dans ce fichier pour la période actuelle."); }
-
-            } catch (error) { alert("Erreur de traitement."); }
+                if (ligneAjoutee) { alert("Le programme de Sorties a été actualisé !"); }
+            } catch (error) { alert("Erreur."); }
         };
         reader.readAsArrayBuffer(file);
     }
 
-    // Autres fonctions inchangées
-    function chargeurFichierPDF(e) {}
-    function chargeurPDFVieEtMinistere(e) {}
-    function chargeurPDFSonoVideo(e) {}
-    function chargeurPDFNettoyage(e) {}
-    function chargeurPDFPresentoir(e) {}
+    // 4. PRESENTOIR
+    function chargeurPDFPresentoir(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const typedarray = new Uint8Array(e.target.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                let casesBrutes = [];
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    let items = textContent.items.map(item => ({ text: item.str.trim(), x: item.transform[4], y: item.transform[5] })).filter(item => item.text !== "");
+                    casesBrutes.push(...items);
+                }
+                let lignesMap = {};
+                casesBrutes.forEach(item => {
+                    let yTrouve = Object.keys(lignesMap).find(y => Math.abs(parseFloat(y) - item.y) < 7);
+                    if (yTrouve) { lignesMap[yTrouve].push(item); } else { lignesMap[item.y] = [item]; }
+                });
+                const corpsPresentoir = document.getElementById('corps-tableau-presentoir');
+                corpsPresentoir.innerHTML = "";
+                let ligneAjoutee = false;
+                let ordonnesY = Object.keys(lignesMap).sort((a, b) => parseFloat(b) - parseFloat(a));
+                ordonnesY.forEach(y => {
+                    let caseLigne = lignesMap[y].sort((a, b) => a.x - b.x);
+                    let texteLigne = caseLigne.map(c => c.text).join(" | ");
+                    const dateRegex = /(\d{2}\/\d{2}\/+\d{2,4})/g;
+                    let dates = texteLigne.match(dateRegex);
+                    if (dates) {
+                        let dateAffiche = dates[0].replace(/\/+/g, '/');
+                        let jourMatch = texteLigne.match(/(Mardi|Jeudi|Vendredi|Samedi|Dimanche)/i);
+                        let jour = jourMatch ? jourMatch[0] : "";
+                        let dateComplete = `${jour} ${dateAffiche}`.trim();
+                        let heuresArr = caseLigne.filter(c => c.text.match(/\d{1,2}h/i));
+                        let créneau = heuresArr.map(h => h.text).join(" / ") || "7h-9h / 9h-11h+";
+                        let elementsNoms = caseLigne.filter(c => 
+                            !c.text.match(dateRegex) && !c.text.match(/(Mardi|Jeudi|Vendredi|Samedi|Dimanche|Dates|Heures|Participants|Lieux|Planning)/i) &&
+                            !c.text.match(/\d{1,2}h/i) && !c.text.match(/(8à8|Monbin|Port|pêche|parking|Leader|Price|Sainte|Marie|école|fermée|hall|sports|Teddy|Riner|transformateur|Salle|Royaume)/i) &&
+                            c.text !== "/" && c.text !== "|" && c.text !== "///////"
+                        );
+                        let participants = elementsNoms.map(c => c.text).join(" / ");
+                        if (texteLigne.includes("Assemblée Régionale") || texteLigne.includes("Assemblée régionale")) {
+                            participants = "<span style='color:#db2777; font-weight:700;'>🏟️ Assemblée Régionale (Pas de présentoir)</span>";
+                        }
+                        if (participants === "" || participants === "///////") {
+                            participants = "<span style='color:#64748b; font-style: italic;'>Aucun volontaire assigné</span>";
+                        }
+                        if (!texteLigne.includes("Planning du PRESENTOIR") && !texteLigne.includes("Participants")) {
+                            ligneAjoutee = true;
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `<td><b>📅 ${dateComplete}</b></td><td><span style="background:#fce7f3; color:#db2777; padding:2px 6px; border-radius:4px; font-weight:500;">⏱️ ${créneau}</span></td><td><span style="color:#0f172a; font-weight:600;">${participants}</span></td>`;
+                            corpsPresentoir.appendChild(tr);
+                        }
+                    }
+                });
+                if (ligneAjoutee) { alert("Présentoir chargé !"); }
+            } catch (error) { alert("Erreur."); }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // 5. SONO-VIDEO-ESTRADE
+    function chargeurPDFSonoVideo(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const typedarray = new Uint8Array(e.target.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                let casesBrutes = [];
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    let items = textContent.items.map(item => ({ text: item.str.trim(), x: item.transform[4], y: item.transform[5] })).filter(item => item.text !== "");
+                    casesBrutes.push(...items);
+                }
+                let lignesMap = {};
+                casesBrutes.forEach(item => {
+                    let yTrouve = Object.keys(lignesMap).find(y => Math.abs(parseFloat(y) - item.y) < 6);
+                    if (yTrouve) { lignesMap[yTrouve].push(item); } else { lignesMap[item.y] = [item]; }
+                });
+                const corpsSono = document.getElementById('corps-tableau-sono');
+                corpsSono.innerHTML = "";
+                let ligneAjoutee = false;
+                let ordonnesY = Object.keys(lignesMap).sort((a, b) => parseFloat(b) - parseFloat(a));
+                ordonnesY.forEach(y => {
+                    let caseLigne = lignesMap[y].sort((a, b) => a.x - b.x);
+                    let texteLigne = caseLigne.map(c => c.text).join(" | ");
+                    const dateRegex = /(\d{2}\/\d{2}\/\d{4})/g;
+                    let dates = texteLigne.match(dateRegex);
+                    if (dates && dates.length >= 2) {
+                        let dateMardi = dates[0];
+                        let dateSamedi = dates[1];
+                        let elementsNoms = caseLigne.filter(c => !c.text.match(dateRegex) && !c.text.match(/Mardi|Samedi|Audio|Régie|Estrade/i));
+                        let audioVideo = elementsNoms[0] ? elementsNoms[0].text : "--";
+                        let zoom = elementsNoms[1] ? elementsNoms[1].text : "--";
+                        let estrade = elementsNoms[2] ? elementsNoms[2].text : "--";
+                        let perchistesArr = elementsNoms.slice(3).map(c => c.text);
+                        let perchistes = perchistesArr.length > 0 ? perchistesArr.join(" ") : "--";
+                        if (audioVideo !== "Accueil" && !audioVideo.includes("Vidéo") && !audioVideo.includes("Perchistes")) {
+                            ligneAjoutee = true;
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `<td><b>🟢 ${dateMardi}</b></td><td><b>🔵 ${dateSamedi}</b></td><td><span style="color:#7c3aed; font-weight:600;">${audioVideo}</span></td><td>${zoom}</td><td>${estrade}</td><td><small>${perchistes}</small></td>`;
+                            corpsSono.appendChild(tr);
+                        }
+                    }
+                });
+                if (ligneAjoutee) { alert("Sono rechargée avec succès !"); }
+            } catch (error) { alert("Erreur."); }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // 6. NETTOYAGE
+    function chargeurPDFNettoyage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            try {
+                const typedarray = new Uint8Array(e.target.result);
+                const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                let boitesDeTexte = [];
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const textContent = await page.getTextContent();
+                    let elements = textContent.items.map(item => ({ text: item.str.trim(), x: item.transform[4], y: item.transform[5] })).filter(item => item.text !== "");
+                    boitesDeTexte.push(...elements);
+                }
+                let lignesPhysiques = {};
+                boitesDeTexte.forEach(b => {
+                    let ySimilaire = Object.keys(lignesPhysiques).find(key => Math.abs(parseFloat(key) - b.y) < 6);
+                    if (ySimilaire) { lignesPhysiques[ySimilaire].push(b); } else { lignesPhysiques[b.y] = [b]; }
+                });
+                const corpsNettoyage = document.getElementById('corps-tableau-nettoyage');
+                corpsNettoyage.innerHTML = "";
+                let ligneAjoutee = false;
+                let clesY = Object.keys(lignesPhysiques).sort((a, b) => parseFloat(b) - parseFloat(a));
+                clesY.forEach(y => {
+                    let cellules = lignesPhysiques[y].sort((a, b) => a.x - b.x);
+                    let ligneTexteBrut = cellules.map(c => c.text).join(" | ");
+                    const formatFormatsDate = /(\d{2}\/\d{2}\/\d{2,4})/g;
+                    let datesLigne = ligneTexteBrut.match(formatFormatsDate);
+                    if (datesLigne && datesLigne.length >= 2) {
+                        let dateMardi = datesLigne[0];
+                        let dateSamedi = datesLigne[1];
+                        let resteTexte = cellules.filter(c => !c.text.match(formatFormatsDate) && !c.text.match(/Mardi|Samedi|Groupes|Programme|Entretien/i));
+                        let nomGroupe = resteTexte.map(c => c.text).join(" ") || "--";
+                        if (nomGroupe !== "" && nomGroupe !== "--" && !nomGroupe.includes("Assemblée")) {
+                            ligneAjoutee = true;
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `<td><b>🟢 ${dateMardi}</b></td><td><b>🔵 ${dateSamedi}</b></td><td><span style="color:#ea580c; font-weight:600;">🧹 Groupe ${nomGroupe}</span></td>`;
+                            corpsNettoyage.appendChild(tr);
+                        }
+                    } else if (ligneTexteBrut.includes("Assemblée") || ligneTexteBrut.includes("Circonscription")) {
+                        let explication = cellules.map(c => c.text).filter(t => !t.includes("|")).join(" ");
+                        ligneAjoutee = true;
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `<td colspan="2" style="background:#fff7ed; text-align:center; color:#c2410c; font-weight:700;">⚠️ ÉVÉNEMENT SPECIAL</td><td style="background:#fff7ed; color:#c2410c; font-weight:600;">${explication}</td>`;
+                        corpsNettoyage.appendChild(tr);
+                    }
+                });
+                if (ligneAjoutee) { alert("Nettoyage chargé !"); }
+            } catch (error) { alert("Erreur."); }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
     window.onload = () => { chargeurCartes(); };
 </script>
 </body>
