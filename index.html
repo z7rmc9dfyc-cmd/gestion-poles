@@ -188,22 +188,14 @@
         event.currentTarget.classList.add('actif');
 
         if (tabId === 'territoires') {
-            setTimeout(() => {
-                if (map) {
-                    map.invalidateSize();
-                } else {
-                    initMap();
-                }
-            }, 200);
+            setTimeout(() => { if (map) { map.invalidateSize(); } else { initMap(); } }, 200);
         }
     }
 
     function initMap() {
         if (document.getElementById('carte') && !map) {
             map = L.map('carte').setView([16.1342, -61.6152], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(map);
             L.marker([16.1342, -61.6152]).addTo(map).bindPopup('<b>Zone de Goyave</b><br>Suivi des 120 cartes.').openPopup();
         }
     }
@@ -216,15 +208,7 @@
             const face = (i % 2 === 0) ? "Verso" : "Recto";
             const div = document.createElement('div');
             div.className = 'carte-territorial';
-            div.innerHTML = `
-                <span class="badge-face">${face}</span>
-                <p class="carte-titre">Carte N° ${i}</p>
-                <p class="carte-info"><strong>Nom :</strong> -- </p>
-                <p class="carte-info"><strong>Prénom :</strong> -- </p>
-                <p class="carte-info"><strong>Date de Sortie :</strong> --/--/----</p>
-                <p class="carte-info"><strong>Date d'Entrée :</strong> --/--/----</p>
-                <div class="alerte-rotation">⏱️ Rotation max : 3 mois</div>
-            `;
+            div.innerHTML = `<span class="badge-face">${face}</span><p class="carte-titre">Carte N° ${i}</p><p class="carte-info"><strong>Nom :</strong> -- </p><p class="carte-info"><strong>Prénom :</strong> -- </p><p class="carte-info"><strong>Date de Sortie :</strong> --/--/----</p><p class="carte-info"><strong>Date d'Entrée :</strong> --/--/----</p><div class="alerte-rotation">⏱️ Rotation max : 3 mois</div>`;
             conteneur.appendChild(div);
         }
     }
@@ -321,7 +305,7 @@
         reader.readAsArrayBuffer(file);
     }
 
-    // NOUVELLE FONCTION ISOLÉE POUR LE PÔLE SONO-VIDÉO-ESTRADE
+    // ANALYSEUR ULTRA-ROBUSTE POUR LE PROGRAMME SONO (BASÉ SUR LES DATES)
     function chargeurPDFSonoVideo(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -334,79 +318,67 @@
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const textContent = await page.getTextContent();
-                    texteComplet += textContent.items.map(item => item.str).join(" ") + " \n";
+                    texteComplet += textContent.items.map(item => item.str).join(" | ") + " \n";
                 }
 
                 const corpsSono = document.getElementById('corps-tableau-sono');
                 corpsSono.innerHTML = "";
 
-                // Extraction par bloc de lignes contenant des dates au format DD/MM/YYYY
-                const lignes = texteComplet.split("\n");
-                let entries = [];
-
-                // Recherche et regroupement des structures de données du texte brut
+                // Nettoyer les doubles espaces et simplifier le flux
+                let cleanText = texteComplet.replace(/\s+/g, ' ');
+                
+                // Repérer toutes les dates du type DD/MM/YYYY
                 const dateRegex = /(\d{2}\/\d{2}\/\d{4})/g;
-                let matchesDates = texteComplet.match(dateRegex);
+                let ttesLesDates = cleanText.match(dateRegex);
 
-                if (matchesDates) {
-                    // On filtre le texte brut pour nettoyer les résidus de barres verticales
-                    let motsCles = texteComplet.replace(/\|/g, " ").global ? texteComplet.replace(/\|/g, " ") : texteComplet.replace(/\|/g, " ");
+                if (!ttesLesDates || ttesLesDates.length < 2) {
+                    alert("Aucun bloc de dates complet trouvé dans le fichier.");
+                    return;
+                }
+
+                let fragments = cleanText.split("|").map(f => f.trim()).filter(f => f !== "");
+                let ligneAjoutee = false;
+
+                // On parcourt la pile pour associer chaque paire de dates (Mardi / Samedi) à ses attributions
+                for (let idx = 0; idx < fragments.length; idx++) {
+                    let textItem = fragments[idx];
                     
-                    // Découpage par double date (Mardi et Samedi)
-                    const blocsDate = texteComplet.split(/(\d{2}\/\d{2}\/\d{4})\s*\|\s*(\d{2}\/\d{2}\/\d{4})/g);
-                    
-                    // Méthode de lecture séquentielle adaptée à la structure fournie
-                    // On extrait le flot des noms : Audio-Vidéo | Accueil Zoom | Estrade | Perchistes | Mardi | Samedi
-                    let fragments = texteComplet.split(/\s*\|\s*/);
-                    let curseur = 0;
-                    let ligneAjoutee = false;
+                    if (textItem.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+                        let dateMardi = textItem;
+                        let dateSamedi = fragments[idx + 1] && fragments[idx + 1].match(/^\d{2}\/\d{2}\/\d{4}$/) ? fragments[idx + 1] : "--/--/----";
 
-                    // Nettoyage des entêtes de colonne
-                    fragments = fragments.filter(f => f.trim() !== "" && !f.includes("Assemblée") && !f.includes("Programme") && !f.includes("Audio-Vidéo") && !f.includes("Accueil Zoom") && !f.includes("Estrade") && !f.includes("Perchistes") && !f.includes("Mardi") && !f.includes("Samedi"));
+                        // Récupération sécurisée à rebours dans la pile textuelle
+                        let perchistes = fragments[idx - 1] || "--";
+                        let estrade = fragments[idx - 2] || "--";
+                        let zoom = fragments[idx - 3] || "--";
+                        let audioVideo = fragments[idx - 4] || "--";
 
-                    for (let k = 0; k < fragments.length; k++) {
-                        let f = fragments[k].trim();
-                        // Si on tombe sur deux dates consécutives ou proches, on capture la séquence
-                        if (f.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
-                            let dateMardi = f;
-                            let dateSamedi = fragments[k+1] ? fragments[k+1].trim() : "--/--/----";
-                            
-                            // Les noms affectés se trouvent juste avant dans la pile
-                            let perchistes = fragments[k-1] ? fragments[k-1].trim() : "--";
-                            let estrade = fragments[k-2] ? fragments[k-2].trim() : "--";
-                            let zoom = fragments[k-3] ? fragments[k-3].trim() : "--";
-                            let audioVideo = fragments[k-4] ? fragments[k-4].trim() : "--";
-
-                            // Validation pour éviter les lignes d'entête ou de semaines spéciales vides
-                            if (audioVideo !== "--" && !audioVideo.match(/^\d{2}/) && !audioVideo.includes("Semaine") && !audioVideo.includes("Assemblée")) {
-                                ligneAjoutee = true;
-                                const tr = document.createElement('tr');
-                                tr.innerHTML = `
-                                    <td><b>🟢 ${dateMardi}</b></td>
-                                    <td><b>🔵 ${dateSamedi}</b></td>
-                                    <td><span style="color:#7c3aed; font-weight:600;">${audioVideo}</span></td>
-                                    <td>${zoom}</td>
-                                    <td>${estrade}</td>
-                                    <td><small>${perchistes}</small></td>
-                                `;
-                                corpsSono.appendChild(tr);
-                            }
-                            k++; // On saute la deuxième date
+                        // Sécurité pour écarter les faux positifs (comme la ligne de titre)
+                        if (audioVideo !== "--" && !audioVideo.includes("Audio") && !audioVideo.includes("Programme") && !audioVideo.match(/^\d{2}/) && !audioVideo.includes("Semaine") && !audioVideo.includes("Assemblée")) {
+                            ligneAjoutee = true;
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td><b>🟢 ${dateMardi}</b></td>
+                                <td><b>🔵 ${dateSamedi}</b></td>
+                                <td><span style="color:#7c3aed; font-weight:600;">${audioVideo}</span></td>
+                                <td>${zoom}</td>
+                                <td>${estrade}</td>
+                                <td><small>${perchistes}</small></td>
+                            `;
+                            corpsSono.appendChild(tr);
                         }
+                        if (dateSamedi !== "--/--/----") idx++; // Sauter l'élément du samedi
                     }
+                }
 
-                    if (ligneAjoutee) {
-                        alert("Fichier de sonorisation intégré et traité avec succès !");
-                    } else {
-                        alert("Le document a été lu mais le tri automatique nécessite un format standard. Saisie manuelle prête.");
-                    }
+                if (ligneAjoutee) {
+                    alert("Fichier de sonorisation traité avec succès ! Tout est calé.");
                 } else {
-                    alert("Aucune date détectée dans ce document Sono.");
+                    alert("Le fichier a été ouvert. Assurez-vous d'importer le fichier dans l'onglet violet 'Sono-Video-Estrade'.");
                 }
 
             } catch (error) {
-                console.error(error);
-                alert("Erreur lors de la lecture du programme Sono.");
+                alert("Erreur lors du décodage du fichier Sono.");
             }
         };
         reader.readAsArrayBuffer(file);
