@@ -193,24 +193,6 @@
             <button class="btn" onclick="saveToSupabase('discours_publics')">Enregistrer les données</button>
             
             <button class="btn-view" onclick="ouvrirPlanning('discours_publics')">📄 Ouvrir le planning des Discours</button>
-            
-            <table id="table-discours">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Thème</th>
-                        <th>N°</th>
-                        <th>Orateur</th>
-                        <th>Assemblée</th>
-                        <th>Président</th>
-                        <th>Lecteur</th>
-                        <th>Groupe qui reçoit l'orateur</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-discours">
-                    <tr><td colspan="8" style="text-align:center; color:#777;">Utilisez le bouton bleu ci-dessus pour consulter le planning officiel.</td></tr>
-                </tbody>
-            </table>
         </div>
 
         <div id="cahier" class="panel">
@@ -269,14 +251,13 @@
                     </tr>
                 </thead>
                 <tbody id="tbody-territoires">
-                    </tbody>
+                </tbody>
             </table>
         </div>
     </div>
 
     <script>
         const SUPABASE_URL = "https://rilsoxeyraysvysfqcuo.supabase.co";
-        // Utilisation de ta clé publique complète (aucun risque de coupure d'écran)
         const SUPABASE_KEY = "sb_publishable_jXFE9t4pf1D-1V62eXCJ5A_YM8Kn"; 
 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -299,7 +280,6 @@
             if (targetPanel) targetPanel.classList.add('active');
         }
 
-        // ENVOI DE PDF VERS LE STORAGE SUPABASE
         async function saveToSupabase(poleName) {
             let fileInput;
             let fileNameOnCloud;
@@ -320,12 +300,13 @@
             const file = fileInput.files[0];
 
             try {
-                alert("Envoi du document en cours vers ton serveur Supabase... Patiente quelques secondes.");
+                alert("Envoi du document en cours...");
 
+                // Changement ici : on utilise le bucket 'yzully' qui possède les bonnes autorisations !
                 const { data, error } = await _supabase.storage
-                    .from('plannings')
+                    .from('yzully')
                     .upload(fileNameOnCloud, file, {
-                        cacheControl: '3600',
+                        cacheControl: '0',
                         upsert: true
                     });
 
@@ -334,12 +315,11 @@
                 alert("Félicitations Fredy ! Le planning a été enregistré avec succès sur Supabase.");
                 
             } catch (err) {
-                console.error("Erreur d'envoi détectée :", err);
-                alert("Erreur lors de l'enregistrement. Vérifie que le dossier 'plannings' est bien en accès Public.");
+                console.error("Détails de l'envoi :", err);
+                alert("Erreur lors de l'enregistrement. Vérifie que le fichier sélectionné est correct.");
             }
         }
 
-        // FONCTION POUR LIRE ET OUVRIR LE PDF DEPUIS LE STORAGE
         function ouvrirPlanning(poleName) {
             let fileNameOnCloud = '';
             if (poleName === 'discours_publics') {
@@ -348,11 +328,11 @@
                 fileNameOnCloud = 'planning_cahier.pdf';
             }
 
-            const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/plannings/${fileNameOnCloud}?t=${new Date().getTime()}`;
+            // Changement ici également pour la lecture dans 'yzully'
+            const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/yzully/${fileNameOnCloud}?t=${new Date().getTime()}`;
             window.open(publicUrl, '_blank');
         }
 
-        // GESTION DES TERRITOIRES LOCAUX
         let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
 
         function attribuerTerritoireLocal() {
