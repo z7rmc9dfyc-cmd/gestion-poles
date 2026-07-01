@@ -184,6 +184,7 @@
     </div>
 
     <div class="container">
+        <!-- 1. PÔLE DISCOURS PUBLICS -->
         <div id="discours" class="panel active">
             <h2>Pôle Discours Publics</h2>
             <div class="file-upload-box">
@@ -191,10 +192,10 @@
                 <input type="file" id="file-discours" accept=".pdf,.docx">
             </div>
             <button class="btn" onclick="saveToSupabase('discours_publics')">Enregistrer les données</button>
-            
             <button class="btn-view" onclick="ouvrirPlanning('discours_publics')">📄 Ouvrir le planning des Discours</button>
         </div>
 
+        <!-- 2. PÔLE CAHIER VIE ET MINISTÈRE -->
         <div id="cahier" class="panel">
             <h2>Pôle Cahier Vie et Ministère</h2>
             <div class="file-upload-box">
@@ -205,29 +206,33 @@
             <button class="btn-view" onclick="ouvrirPlanning('cahier_vie')">📄 Ouvrir le planning Vie et Ministère</button>
         </div>
 
+        <!-- 3. PÔLE SORTIES SEMAINE -->
         <div id="sorties" class="panel">
             <h2>Pôle Sorties en semaine</h2>
             <p>Gestion des rendez-vous et des groupes pour les sorties de la semaine.</p>
         </div>
 
+        <!-- 4. PÔLE PRÉSENTOIR -->
         <div id="presentoir" class="panel">
             <h2>Pôle Présentoir</h2>
             <p>Planning d'attribution et de présence pour les présentoirs mobiles.</p>
         </div>
 
+        <!-- 5. PÔLE SONS VIDÉO ESTRADE -->
         <div id="sono" class="panel">
             <h2>Pôle Sono Video Estrade</h2>
             <p>Gestion de la régie audio, vidéo et des attributions à l'estrade.</p>
         </div>
 
+        <!-- 6. PÔLE NETTOYAGE -->
         <div id="nettoyage" class="panel">
             <h2>Pôle Nettoyage</h2>
             <p>Calendrier et répartition des équipes pour le nettoyage et la maintenance.</p>
         </div>
 
+        <!-- 7. PÔLE TERRITOIRES -->
         <div id="territoires" class="panel">
             <h2>Pôle Territoires (Assistant Localisation & Durée)</h2>
-            
             <div style="background: #f0f4f8; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
                 <input type="number" id="terr-num" placeholder="N° Carte (1-120)" min="1" max="120" style="padding: 8px; width: 120px;">
                 <select id="terr-face" style="padding: 8px;">
@@ -238,7 +243,6 @@
                 <input type="text" id="terr-prenom" placeholder="Prénom" style="padding: 8px;">
                 <button class="btn" onclick="attribuerTerritoireLocal()">Attribuer la carte</button>
             </div>
-
             <table>
                 <thead>
                     <tr>
@@ -250,8 +254,7 @@
                         <th>Actions / Localisation</th>
                     </tr>
                 </thead>
-                <tbody id="tbody-territoires">
-                </tbody>
+                <tbody id="tbody-territoires"></tbody>
             </table>
         </div>
     </div>
@@ -267,29 +270,26 @@
         });
 
         function switchTab(tabId) {
-            const buttons = document.querySelectorAll('.tab-button');
-            buttons.forEach(btn => btn.classList.remove('active'));
-
-            const panels = document.querySelectorAll('.panel');
-            panels.forEach(panel => panel.classList.remove('active'));
-
-            const clickedButton = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes(`'${tabId}'`));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
+            const clickedButton = Array.from(document.querySelectorAll('.tab-button')).find(btn => btn.getAttribute('onclick').includes(`'${tabId}'`));
             if (clickedButton) clickedButton.classList.add('active');
-
-            const targetPanel = document.getElementById(tabId);
-            if (targetPanel) targetPanel.classList.add('active');
+            if (document.getElementById(tabId)) document.getElementById(tabId).classList.add('active');
         }
 
         async function saveToSupabase(poleName) {
             let fileInput;
-            let fileNameOnCloud;
+            let storageKey;
+            let baseName;
 
             if (poleName === 'discours_publics') {
                 fileInput = document.getElementById('file-discours');
-                fileNameOnCloud = 'planning_discours.pdf';
+                storageKey = 'last_file_discours';
+                baseName = 'discours';
             } else if (poleName === 'cahier_vie') {
                 fileInput = document.getElementById('file-cahier');
-                fileNameOnCloud = 'planning_cahier.pdf';
+                storageKey = 'last_file_cahier';
+                baseName = 'cahier';
             }
 
             if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
@@ -298,40 +298,42 @@
             }
 
             const file = fileInput.files[0];
+            // Génération d'un nom unique pour éviter les conflits d'écrasement
+            const uniqueFileName = `${baseName}_${Date.now()}.pdf`;
 
             try {
                 alert("Envoi du document en cours...");
 
-                // Changement ici : on utilise le bucket 'yzully' qui possède les bonnes autorisations !
                 const { data, error } = await _supabase.storage
                     .from('yzully')
-                    .upload(fileNameOnCloud, file, {
+                    .upload(uniqueFileName, file, {
                         cacheControl: '0',
-                        upsert: true
+                        upsert: false
                     });
 
                 if (error) throw error;
 
-                alert("Félicitations Fredy ! Le planning a été enregistré avec succès sur Supabase.");
+                // Sauvegarde locale du nom du dernier fichier réussi
+                localStorage.setItem(storageKey, uniqueFileName);
+                alert("Félicitations Fredy ! Le planning a été enregistré avec succès.");
                 
             } catch (err) {
-                console.error("Détails de l'envoi :", err);
-                alert("Erreur lors de l'enregistrement. Vérifie que le fichier sélectionné est correct.");
+                console.error("Détails :", err);
+                alert("Erreur lors de l'enregistrement. Réessayez à nouveau.");
             }
         }
 
-        function ouvrirPlanning(poleName) {
-            let fileNameOnCloud = '';
-            if (poleName === 'discours_publics') {
-                fileNameOnCloud = 'planning_discours.pdf';
-            } else if (poleName === 'cahier_vie') {
-                fileNameOnCloud = 'planning_cahier.pdf';
-            }
-
-            // Changement ici également pour la lecture dans 'yzully'
-            const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/yzully/${fileNameOnCloud}?t=${new Date().getTime()}`;
+        function abrirPlanning(poleName) {
+            let storageKey = poleName === 'discours_publics' ? 'last_file_discours' : 'last_file_cahier';
+            let defaultName = poleName === 'discours_publics' ? 'discours.pdf' : 'cahier.pdf';
+            
+            const fileNameOnCloud = localStorage.getItem(storageKey) || defaultName;
+            const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/yzully/${fileNameOnCloud}`;
             window.open(publicUrl, '_blank');
         }
+        
+        // Alias de sécurité au cas où l'orthographe change
+        window.ouvrirPlanning = abrirPlanning;
 
         let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
 
