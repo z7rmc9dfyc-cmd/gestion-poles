@@ -145,7 +145,7 @@
 
         iframe {
             width: 100%;
-            height: 500px;
+            height: 600px;
             border: none;
         }
 
@@ -203,7 +203,7 @@
 
     <header>
         <h1>Système de Coordination Général</h1>
-        <p>Gestion unifiée des 7 pôles d'activité</p>
+        <p>Gestion unifiée des 7 pôles d'activité — Assemblée de Monplaisir</p>
     </header>
 
     <div class="nav-tabs">
@@ -217,6 +217,7 @@
     </div>
 
     <div class="container">
+        <!-- 1. PÔLE DISCOURS PUBLICS -->
         <div id="discours" class="panel active">
             <h2>Pôle Discours Publics</h2>
             <div class="file-upload-box">
@@ -227,11 +228,12 @@
                 <iframe id="iframe-discours"></iframe>
             </div>
             <div style="margin-top: 20px;">
-                <button class="btn" onclick="saveToSupabase('discours_publics')">Enregistrer les données</button>
-                <button class="btn-view" onclick="ouvrirPlanning('discours_publics')">📄 Ouvrir en grand</button>
+                <button class="btn" onclick="saveToLocalStorage('discours')">Enregistrer le planning</button>
+                <button class="btn-view" onclick="ouvrirPlanning('discours')">📄 Ouvrir en grand</button>
             </div>
         </div>
 
+        <!-- 2. PÔLE CAHIER VIE ET MINISTÈRE -->
         <div id="cahier" class="panel">
             <h2>Pôle Cahier Vie et Ministère</h2>
             <div class="file-upload-box">
@@ -242,85 +244,76 @@
                 <iframe id="iframe-cahier"></iframe>
             </div>
             <div style="margin-top: 20px;">
-                <button class="btn" onclick="saveToSupabase('cahier_vie')">Enregistrer les données</button>
-                <button class="btn-view" onclick="ouvrirPlanning('cahier_vie')">📄 Ouvrir en grand</button>
+                <button class="btn" onclick="saveToLocalStorage('cahier')">Enregistrer le planning</button>
+                <button class="btn-view" onclick="ouvrirPlanning('cahier')">📄 Ouvrir en grand</button>
             </div>
         </div>
 
+        <!-- 3. PÔLE SORTIES SEMAINE -->
         <div id="sorties" class="panel">
             <h2>Pôle Sorties en Semaine</h2>
-            <div class="form-group">
-                <input type="text" id="sortie-jour" placeholder="Jour (ex: Mardi)">
-                <input type="text" id="sortie-heure" placeholder="Heure (ex: 09:30)">
-                <input type="text" id="sortie-lieu" placeholder="Lieu de rendez-vous">
-                <input type="text" id="sortie-conducteur" placeholder="Conducteur">
-                <button class="btn" onclick="ajouterSortie()">Ajouter le rendez-vous</button>
+            <div class="file-upload-box">
+                <p>Glissez-déposez le programme des Sorties en Semaine PDF ou cliquez pour charger</p>
+                <input type="file" id="file-sorties" accept=".pdf" onchange="visualiserPDF('sorties')">
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Jour</th>
-                        <th>Heure</th>
-                        <th>Lieu de rendez-vous</th>
-                        <th>Conducteur</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-sorties"></tbody>
-            </table>
+            <div id="preview-sorties" class="preview-container">
+                <iframe id="iframe-sorties"></iframe>
+            </div>
+            <div style="margin-top: 20px;">
+                <button class="btn" onclick="saveToLocalStorage('sorties')">Enregistrer le planning</button>
+                <button class="btn-view" onclick="ouvrirPlanning('sorties')">📄 Ouvrir en grand</button>
+            </div>
         </div>
 
+        <!-- 4. PÔLE PRÉSENTOIR -->
         <div id="presentoir" class="panel">
             <h2>Pôle Présentoir</h2>
-            <div class="form-group">
-                <input type="text" id="pres-creneau" placeholder="Créneau (ex: Samedi Matin)">
-                <input type="text" id="pres-lieu" placeholder="Emplacement">
-                <input type="text" id="pres-vol1" placeholder="Volontaire 1">
-                <input type="text" id="pres-vol2" placeholder="Volontaire 2">
-                <button class="btn" onclick="ajouterPresentoir()">Attribuer le créneau</button>
+            <div class="file-upload-box">
+                <p>Glissez-déposez le planning du Présentoir PDF ou cliquez pour charger</p>
+                <input type="file" id="file-presentoir" accept=".pdf" onchange="visualiserPDF('presentoir')">
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Créneau Horaire</th>
-                        <th>Emplacement</th>
-                        <th>Volontaire 1</th>
-                        <th>Volontaire 2</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-presentoir"></tbody>
-            </table>
+            <div id="preview-presentoir" class="preview-container">
+                <iframe id="iframe-presentoir"></iframe>
+            </div>
+            <div style="margin-top: 20px;">
+                <button class="btn" onclick="saveToLocalStorage('presentoir')">Enregistrer le planning</button>
+                <button class="btn-view" onclick="ouvrirPlanning('presentoir')">📄 Ouvrir en grand</button>
+            </div>
         </div>
 
+        <!-- 5. PÔLE SONO VIDÉO ESTRADE -->
         <div id="sono" class="panel">
             <h2>Pôle Sono Vidéo Estrade</h2>
-            <div class="form-group">
-                <input type="date" id="sono-date">
-                <input type="text" id="sono-micro" placeholder="Micro/Salles">
-                <input type="text" id="sono-scene" placeholder="Scène/Estrade">
-                <input type="text" id="sono-regie" placeholder="Régie Audio/Vidéo">
-                <button class="btn" onclick="ajouterSono()">Enregistrer l'attribution</button>
+            <div class="file-upload-box">
+                <p>Glissez-déposez le programme Sonorisation et Estrade PDF ou cliquez pour charger</p>
+                <input type="file" id="file-sono" accept=".pdf" onchange="visualiserPDF('sono')">
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Micro / Salles</th>
-                        <th>Scène / Estrade</th>
-                        <th>Régie Audio/Vidéo</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-sono"></tbody>
-            </table>
+            <div id="preview-sono" class="preview-container">
+                <iframe id="iframe-sono"></iframe>
+            </div>
+            <div style="margin-top: 20px;">
+                <button class="btn" onclick="saveToLocalStorage('sono')">Enregistrer le planning</button>
+                <button class="btn-view" onclick="ouvrirPlanning('sono')">📄 Ouvrir en grand</button>
+            </div>
         </div>
 
+        <!-- 6. PÔLE NETTOYAGE -->
         <div id="nettoyage" class="panel">
             <h2>Pôle Nettoyage</h2>
-            <p>Calendrier et répartition des équipes pour le nettoyage et la maintenance de la Salle du Royaume.</p>
+            <div class="file-upload-box">
+                <p>Glissez-déposez le Programme d'Entretien PDF ou cliquez pour charger</p>
+                <input type="file" id="file-nettoyage" accept=".pdf" onchange="visualiserPDF('nettoyage')">
+            </div>
+            <div id="preview-nettoyage" class="preview-container">
+                <iframe id="iframe-nettoyage"></iframe>
+            </div>
+            <div style="margin-top: 20px;">
+                <button class="btn" onclick="saveToLocalStorage('nettoyage')">Enregistrer le planning</button>
+                <button class="btn-view" onclick="ouvrirPlanning('nettoyage')">📄 Ouvrir en grand</button>
+            </div>
         </div>
 
+        <!-- 7. PÔLE TERRITOIRES -->
         <div id="territoires" class="panel">
             <h2>Pôle Territoires (Assistant Localisation & Durée)</h2>
             <div class="form-group">
@@ -350,15 +343,21 @@
     </div>
 
     <script>
-        const SUPABASE_URL = "https://rilsoxeyraysvysfqcuo.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_jXFE9t4pf1D-1V62eXCJ5A_YM8Kn"; 
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
         document.addEventListener("DOMContentLoaded", function() {
             renderTerritoriesTable();
-            renderSortiesTable();
-            renderPresentoirTable();
-            renderSonoTable();
+            // Charger automatiquement les aperçus des plannings précédemment enregistrés
+            const poles = ['discours', 'cahier', 'sorties', 'presentoir', 'sono', 'nettoyage'];
+            poles.forEach(pole => {
+                const savedData = localStorage.getItem('last_file_' + pole);
+                if (savedData) {
+                    const previewContainer = document.getElementById(`preview-${pole}`);
+                    const iframe = document.getElementById(`iframe-${pole}`);
+                    if (iframe && previewContainer) {
+                        iframe.src = savedData;
+                        previewContainer.style.display = "block";
+                    }
+                }
+            });
         });
 
         function switchTab(tabId) {
@@ -380,121 +379,31 @@
             }
         }
 
-        async function saveToSupabase(poleName) {
-            let fileInput = poleName === 'discours_publics' ? document.getElementById('file-discours') : document.getElementById('file-cahier');
-            let storageKey = poleName === 'discours_publics' ? 'last_file_discours' : 'last_file_cahier';
+        function saveToLocalStorage(pole) {
+            const fileInput = document.getElementById(`file-${pole}`);
+            const storageKey = 'last_file_' + pole;
             if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-                alert("Veuillez d'abord choisir un fichier.");
+                alert("Veuillez d'abord choisir un fichier PDF pour ce pôle.");
                 return;
             }
             const file = fileInput.files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
                 localStorage.setItem(storageKey, e.target.result);
-                alert("Félicitations Fredy ! Le planning a bien été enregistré.");
+                alert("Félicitations Fredy ! Le planning de ce pôle a bien été enregistré avec succès.");
             }
             reader.readAsDataURL(file);
         }
 
-        function ouvrirPlanning(poleName) {
-            let storageKey = poleName === 'discours_publics' ? 'last_file_discours' : 'last_file_cahier';
+        function ouvrirPlanning(pole) {
+            const storageKey = 'last_file_' + pole;
             const localData = localStorage.getItem(storageKey);
             if (localData) {
                 const newWindow = window.open();
                 newWindow.document.write(`<iframe src="${localData}" style="width:100%; height:100%; border:none;"></iframe>`);
             } else {
-                alert("Aucun fichier enregistré pour le moment.");
+                alert("Aucun fichier enregistré pour ce pôle pour le moment.");
             }
-        }
-
-        // --- GESTION DU PÔLE SORTIES ---
-        let databaseSorties = JSON.parse(localStorage.getItem('sorties_data')) || [];
-        function ajouterSortie() {
-            const jour = document.getElementById('sortie-jour').value;
-            const heure = document.getElementById('sortie-heure').value;
-            const lieu = document.getElementById('sortie-lieu').value;
-            const conducteur = document.getElementById('sortie-conducteur').value;
-            if(!jour || !heure || !lieu || !conducteur) return alert("Champs incomplets");
-            databaseSorties.push({ jour, heure, lieu, conducteur });
-            localStorage.setItem('sorties_data', JSON.stringify(databaseSorties));
-            renderSortiesTable();
-            document.getElementById('sortie-jour').value = ''; document.getElementById('sortie-heure').value = '';
-            document.getElementById('sortie-lieu').value = ''; document.getElementById('sortie-conducteur').value = '';
-        }
-        function supprimerSortie(index) {
-            databaseSorties.splice(index, 1);
-            localStorage.setItem('sorties_data', JSON.stringify(databaseSorties));
-            renderSortiesTable();
-        }
-        function renderSortiesTable() {
-            const tbody = document.getElementById('tbody-sorties');
-            if(!tbody) return; tbody.innerHTML = '';
-            databaseSorties.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${item.jour}</td><td>${item.heure}</td><td>${item.lieu}</td><td>${item.conducteur}</td>
-                <td><button class="btn-action" style="background:#e74c3c;" onclick="supprimerSortie(${index})">Supprimer</button></td>`;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // --- GESTION DU PÔLE PRÉSENTOIR ---
-        let databasePresentoir = JSON.parse(localStorage.getItem('presentoir_data')) || [];
-        function ajouterPresentoir() {
-            const creneau = document.getElementById('pres-creneau').value;
-            const lieu = document.getElementById('pres-lieu').value;
-            const vol1 = document.getElementById('pres-vol1').value;
-            const vol2 = document.getElementById('pres-vol2').value;
-            if(!creneau || !lieu || !vol1) return alert("Champs incomplets");
-            databasePresentoir.push({ creneau, lieu, vol1, vol2: vol2 || '-' });
-            localStorage.setItem('presentoir_data', JSON.stringify(databasePresentoir));
-            renderPresentoirTable();
-            document.getElementById('pres-creneau').value = ''; document.getElementById('pres-lieu').value = '';
-            document.getElementById('pres-vol1').value = ''; document.getElementById('pres-vol2').value = '';
-        }
-        function supprimerPresentoir(index) {
-            databasePresentoir.splice(index, 1);
-            localStorage.setItem('presentoir_data', JSON.stringify(databasePresentoir));
-            renderPresentoirTable();
-        }
-        function renderPresentoirTable() {
-            const tbody = document.getElementById('tbody-presentoir');
-            if(!tbody) return; tbody.innerHTML = '';
-            databasePresentoir.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${item.creneau}</td><td>${item.lieu}</td><td>${item.vol1}</td><td>${item.vol2}</td>
-                <td><button class="btn-action" style="background:#e74c3c;" onclick="supprimerPresentoir(${index})">Supprimer</button></td>`;
-                tbody.appendChild(tr);
-            });
-        }
-
-        // --- GESTION DU PÔLE SONO ---
-        let databaseSono = JSON.parse(localStorage.getItem('sono_data')) || [];
-        function ajouterSono() {
-            const date = document.getElementById('sono-date').value;
-            const micro = document.getElementById('sono-micro').value;
-            const scene = document.getElementById('sono-scene').value;
-            const regie = document.getElementById('sono-regie').value;
-            if(!date || !micro || !scene || !regie) return alert("Champs incomplets");
-            databaseSono.push({ date, micro, scene, regie });
-            localStorage.setItem('sono_data', JSON.stringify(databaseSono));
-            renderSonoTable();
-            document.getElementById('sono-date').value = ''; document.getElementById('sono-micro').value = '';
-            document.getElementById('sono-scene').value = ''; document.getElementById('sono-regie').value = '';
-        }
-        function supprimerSono(index) {
-            databaseSono.splice(index, 1);
-            localStorage.setItem('sono_data', JSON.stringify(databaseSono));
-            renderSonoTable();
-        }
-        function renderSonoTable() {
-            const tbody = document.getElementById('tbody-sono');
-            if(!tbody) return; tbody.innerHTML = '';
-            databaseSono.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${item.date}</td><td>${item.micro}</td><td>${item.scene}</td><td>${item.regie}</td>
-                <td><button class="btn-action" style="background:#e74c3c;" onclick="supprimerSono(${index})">Supprimer</button></td>`;
-                tbody.appendChild(tr);
-            });
         }
 
         // --- GESTION DU PÔLE TERRITOIRES ---
@@ -520,7 +429,7 @@
             }
         }
         function localiserCarte(numero) {
-            window.open(`https://maps.google.com/?q=Goyave+Carte+$${numero}`, '_blank');
+            window.open(`https://maps.google.com/?q=Goyave+Carte+${numero}`, '_blank');
         }
         function renderTerritoriesTable() {
             const tbody = document.getElementById('tbody-territoires');
