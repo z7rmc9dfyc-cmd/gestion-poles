@@ -297,7 +297,7 @@
             if (targetPanel) targetPanel.classList.add('active');
         }
 
-        // ENVOI DE PDF VERS LE STORAGE
+        // ENVOI DE PDF VERS LE STORAGE SUPABASE
         async function saveToSupabase(poleName) {
             let fileInput;
             let fileNameOnCloud;
@@ -337,7 +337,7 @@
             }
         }
 
-        // FONCTION POUR LIRE ET OUVRIR LE PDF
+        // FONCTION POUR LIRE ET OUVRIR LE PDF DEPUIS LE STORAGE
         function ouvrirPlanning(poleName) {
             let fileNameOnCloud = '';
             if (poleName === 'discours_publics') {
@@ -346,10 +346,10 @@
                 fileNameOnCloud = 'planning_cahier.pdf';
             }
 
-            // Génération de l'URL publique de lecture sur Supabase
+            // URL publique directe du fichier dans le bucket Supabase
             const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/plannings/${fileNameOnCloud}?t=${new Date().getTime()}`;
             
-            // Ouvrir le fichier dans un nouvel onglet
+            // Ouvre le fichier dans un nouvel onglet de l'iPad / de la Surface
             window.open(publicUrl, '_blank');
         }
 
