@@ -90,10 +90,29 @@
             cursor: pointer;
             font-weight: bold;
             transition: background 0.3s;
+            margin-right: 10px;
         }
 
         .btn:hover {
             background-color: #439a46;
+        }
+
+        .btn-view {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-top: 15px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-view:hover {
+            background-color: #2980b9;
         }
 
         .btn-action {
@@ -173,6 +192,8 @@
             </div>
             <button class="btn" onclick="saveToSupabase('discours_publics')">Enregistrer les données</button>
             
+            <button class="btn-view" onclick="ouvrirPlanning('discours_publics')">📄 Ouvrir le planning des Discours</button>
+            
             <table id="table-discours">
                 <thead>
                     <tr>
@@ -187,7 +208,7 @@
                     </tr>
                 </thead>
                 <tbody id="tbody-discours">
-                    <tr><td colspan="8" style="text-align:center; color:#777;">Aucun fichier synchronisé (Prêt pour dépôt PDF)</td></tr>
+                    <tr><td colspan="8" style="text-align:center; color:#777;">Utilisez le bouton bleu ci-dessus pour consulter le planning officiel.</td></tr>
                 </tbody>
             </table>
         </div>
@@ -199,6 +220,7 @@
                 <input type="file" id="file-cahier" accept=".pdf,.docx">
             </div>
             <button class="btn" onclick="saveToSupabase('cahier_vie')">Enregistrer les données</button>
+            <button class="btn-view" onclick="ouvrirPlanning('cahier_vie')">📄 Ouvrir le planning Vie et Ministère</button>
         </div>
 
         <div id="sorties" class="panel">
@@ -253,7 +275,6 @@
     </div>
 
     <script>
-        // Identifiants officiels de ton projet Supabase
         const SUPABASE_URL = "https://rilsoxeyraysvysfqcuo.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jXFE9t4pf1D-1V62eXCJ5A_YM8Kn"; 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -276,7 +297,7 @@
             if (targetPanel) targetPanel.classList.add('active');
         }
 
-        // VRAI SYSTÈME D'ENVOI DE PDF VERS TON STORAGE SUPABASE
+        // ENVOI DE PDF VERS LE STORAGE
         async function saveToSupabase(poleName) {
             let fileInput;
             let fileNameOnCloud;
@@ -299,12 +320,11 @@
             try {
                 alert("Envoi du document en cours vers ton serveur Supabase... Patiente quelques secondes.");
 
-                // Téléversement dans le bucket public 'plannings'
                 const { data, error } = await _supabase.storage
                     .from('plannings')
                     .upload(fileNameOnCloud, file, {
                         cacheControl: '3600',
-                        upsert: true // Permet d'écraser et de mettre à jour le fichier automatiquement
+                        upsert: true
                     });
 
                 if (error) throw error;
@@ -313,8 +333,24 @@
                 
             } catch (err) {
                 console.error("Erreur d'envoi détectée :", err);
-                alert("Erreur lors de l'enregistrement. Vérifie que ton dossier sur Supabase s'appelle bien exactement 'plannings'.");
+                alert("Erreur lors de l'enregistrement.");
             }
+        }
+
+        // FONCTION POUR LIRE ET OUVRIR LE PDF
+        function ouvrirPlanning(poleName) {
+            let fileNameOnCloud = '';
+            if (poleName === 'discours_publics') {
+                fileNameOnCloud = 'planning_discours.pdf';
+            } else if (poleName === 'cahier_vie') {
+                fileNameOnCloud = 'planning_cahier.pdf';
+            }
+
+            // Génération de l'URL publique de lecture sur Supabase
+            const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/plannings/${fileNameOnCloud}?t=${new Date().getTime()}`;
+            
+            // Ouvrir le fichier dans un nouvel onglet
+            window.open(publicUrl, '_blank');
         }
 
         // GESTION DES TERRITOIRES LOCALES
