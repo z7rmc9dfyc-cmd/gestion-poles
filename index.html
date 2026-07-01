@@ -188,7 +188,7 @@
         <div id="discours" class="panel active">
             <h2>Pôle Discours Publics</h2>
             <div class="file-upload-box">
-                <p>Glissez-déposez le document de planning PDF ou cliquez pour charger</p>
+                <p>Glissez-deposez le document de planning PDF ou cliquez pour charger</p>
                 <input type="file" id="file-discours" accept=".pdf,.docx">
             </div>
             <button class="btn" onclick="saveToSupabase('discours_publics')">Enregistrer les données</button>
@@ -199,7 +199,7 @@
         <div id="cahier" class="panel">
             <h2>Pôle Cahier Vie et Ministère</h2>
             <div class="file-upload-box">
-                <p>Glissez-déposez le planning Vie et Ministère ou cliquez pour charger</p>
+                <p>Glissez-deposez le planning Vie et Ministère ou cliquez pour charger</p>
                 <input type="file" id="file-cahier" accept=".pdf,.docx">
             </div>
             <button class="btn" onclick="saveToSupabase('cahier_vie')">Enregistrer les données</button>
@@ -298,7 +298,6 @@
             }
 
             const file = fileInput.files[0];
-            // Génération d'un nom unique pour éviter les conflits d'écrasement
             const uniqueFileName = `${baseName}_${Date.now()}.pdf`;
 
             try {
@@ -311,19 +310,22 @@
                         upsert: false
                     });
 
-                if (error) throw error;
+                if (error) {
+                    // Si Supabase renvoie une erreur dans l'objet réponse
+                    alert("Erreur Supabase : " + (error.message || JSON.stringify(error)));
+                    return;
+                }
 
-                // Sauvegarde locale du nom du dernier fichier réussi
                 localStorage.setItem(storageKey, uniqueFileName);
                 alert("Félicitations Fredy ! Le planning a été enregistré avec succès.");
                 
             } catch (err) {
-                console.error("Détails :", err);
-                alert("Erreur lors de l'enregistrement. Réessayez à nouveau.");
+                // Si une erreur réseau ou autre survient
+                alert("Erreur système : " + (err.message || err));
             }
         }
 
-        function abrirPlanning(poleName) {
+        function ouvrirPlanning(poleName) {
             let storageKey = poleName === 'discours_publics' ? 'last_file_discours' : 'last_file_cahier';
             let defaultName = poleName === 'discours_publics' ? 'discours.pdf' : 'cahier.pdf';
             
@@ -331,9 +333,6 @@
             const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/yzully/${fileNameOnCloud}`;
             window.open(publicUrl, '_blank');
         }
-        
-        // Alias de sécurité au cas où l'orthographe change
-        window.ouvrirPlanning = abrirPlanning;
 
         let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
 
