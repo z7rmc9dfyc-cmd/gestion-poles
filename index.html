@@ -1,555 +1,232 @@
 <!DOCTYPE html>
-<html lang="fr" class="notranslate">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des 7 Pôles</title>
+    <title>Gestion de la Congrégation - 7 Pôles</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
-        :root { --primary: #2563eb; --success: #16a34a; --purple: #7c3aed; --orange: #ea580c; --pink: #db2777; --sky: #0ea5e9; --warning: #f59e0b; --bg: #f8fafc; --text: #0f172a; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        h1 { text-align: center; color: var(--primary); font-size: 24px; margin-bottom: 20px; }
-        .onglets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 25px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
-        .bouton-onglet { padding: 10px 14px; border: none; background: none; cursor: pointer; font-weight: 500; color: #64748b; font-size: 14px; border-radius: 6px; transition: all 0.2s; }
-        .bouton-onglet.actif { background: var(--primary); color: white; }
-        .panneau { display: none; }
-        .panneau.actif { display: block; }
-        .boite { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 25px; }
-        #carte { height: 380px; border-radius: 12px; margin-top: 15px; margin-bottom: 20px; z-index: 1; border: 1px solid #cbd5e1; }
-        .zone-telechargement { border: 3px dashed #cbd5e1; padding: 30px; text-align: center; background: #f8fafc; border-radius: 12px; cursor: pointer; transition: border-color 0.2s; }
-        .zone-telechargement.cahier-zone:hover { border-color: var(--success); }
-        .zone-telechargement.sono-zone:hover { border-color: var(--purple); }
-        .zone-telechargement.nettoyage-zone:hover { border-color: var(--orange); }
-        .zone-telechargement.presentoir-zone:hover { border-color: var(--pink); }
-        .zone-telechargement.sorties-zone:hover { border-color: var(--sky); }
-        .zone-telechargement:hover { border-color: var(--primary); }
-        .entree-fichier { display: none; }
-        .icone-fichier { font-size: 40px; margin-bottom: 10px; display: block; }
-        .emballage-de-table { overflow-x: auto; margin-top: 25px; background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 14px; }
-        th { background: #f1f5f9; color: #475569; font-weight: 600; }
-        .grilles-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .carte-territorial { background: white; padding: 18px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 8px; position: relative; }
-        .badge-face { position: absolute; top: 12px; right: 12px; background: #e0f2fe; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; color: #0369a1; }
-        .carte-titre { font-size: 16px; font-weight: 700; color: #1e3a8a; margin: 0; }
-        .carte-info { font-size: 13px; color: #334155; margin: 2px 0; border-bottom: 1px dashed #f1f5f9; padding-bottom: 4px; }
-        .carte-info strong { color: #0f172a; }
-        .alerte-rotation { background: #fff7ed; border: 1px solid #ffedd5; color: #c2410c; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; margin-top: 5px; text-align: center; }
+        :root {
+            --primary-color: #2b3e50;
+            --secondary-color: #4ca1af;
+            --accent-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            background: #ffffff;
+            border-bottom: 2px solid #ddd;
+            padding: 10px 0;
+        }
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab-button:hover, .tab-button.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .panel {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: none;
+        }
+        .panel.active {
+            display: block;
+        }
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .file-upload-box {
+            border: 2px dashed var(--secondary-color);
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            background: #f9fbfb;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .btn:hover {
+            background-color: var(--primary-color);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        tr:nth-child(even) { background-color: #f2f2f2; }
     </style>
 </head>
 <body>
 
+<header>
+    <h1>Système de Coordination Général</h1>
+    <p>Gestion unifiée des 7 pôles d'activité</p>
+</header>
+
+<div class="nav-tabs">
+    <button class="tab-button active" onclick="switchTab('discours')">🎙️ Discours</button>
+    <button class="tab-button" onclick="switchTab('cahier')">📖 Vie & Ministère</button>
+    <button class="tab-button" onclick="switchTab('sorties')">🚗 Sorties Semaine</button>
+    <button class="tab-button" onclick="switchTab('presentoir')">🛒 Présentoir</button>
+    <button class="tab-button" onclick="switchTab('sono')">🔊 Sono / Vidéo</button>
+    <button class="tab-button" onclick="switchTab('nettoyage')">🧹 Nettoyage</button>
+    <button class="tab-button" onclick="switchTab('territoires')">🗺️ Territoires (120)</button>
+</div>
+
 <div class="container">
-    <h1>Gestion des 7 Pôles</h1>
-    
-    <div class="onglets">
-        <button class="bouton-onglet actif" onclick="switchTab('discours')">🎤 Discours</button>
-        <button class="bouton-onglet" onclick="switchTab('vie-ministere')">📖 Cahier Vie et Ministère</button>
-        <button class="bouton-onglet" onclick="switchTab('sortie-semaine')">🚶 Sortie en Semaine</button>
-        <button class="bouton-onglet" onclick="switchTab('presentoir')">🛒 Présentoir</button>
-        <button class="bouton-onglet" onclick="switchTab('sono-video')">🖥️ Sono-Video-Estrade</button>
-        <button class="bouton-onglet" onclick="switchTab('nettoyage')">🧹 Nettoyage</button>
-        <button class="bouton-onglet" onclick="switchTab('territoires')">🗺️ Territoires</button>
+    <div id="discours" class="panel active">
+        <h2>🎙️ Pôle Discours Publics</h2>
+        <div class="file-upload-box">
+            <p>Glissez-déposez le document de planning ou cliquez pour charger</p>
+            <input type="file" id="file-discours" accept=".pdf,.docx">
+        </div>
+        <button class="btn" onclick="saveToSupabase('planning_discours')">Enregistrer les données</button>
+        <table id="table-discours">
+            <thead>
+                <tr><th>Date</th><th>Thème</th><th>Orateur</th><th>Assemblée</th></tr>
+            </thead>
+            <tbody><tr><td colspan="4">Aucune donnée synchronisée</td></tr></tbody>
+        </table>
     </div>
 
-    <!-- 1. DISCOURS -->
-    <div id="discours" class="panneau actif">
-        <div class="boite">
-            <h3>🎤 Pôle Discours — Importer le programme PDF</h3>
-            <div class="zone-telechargement" onclick="document.getElementById('file-input-discours').click()">
-                <span class="icone-fichier">📕</span>
-                <p style="color: var(--primary); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Discours</p>
-            </div>
-            <input type="file" id="file-input-discours" class="entree-fichier" accept=".pdf" onchange="chargeurFichierPDF(event)">
-            <div class="emballage-de-table">
-                <table>
-                    <thead><tr><th>Date</th><th>Thème</th><th>N°</th><th>Orateur</th><th>Assemblée</th><th>Président</th><th>Lecteur</th><th>Groupe</th></tr></thead>
-                    <tbody id="corps-tableau-discours"><tr><td colspan="8" style="text-align: center; color: #64748b;">Aucun programme chargé.</td></tr></tbody>
-                </table>
-            </div>
+    <div id="cahier" class="panel">
+        <h2>📖 Pôle Cahier Vie et Ministère</h2>
+        <div class="file-upload-box">
+            <input type="file" id="file-cahier" accept=".pdf,.docx">
         </div>
+        <button class="btn" onclick="saveToSupabase('planning_cahier')">Enregistrer les données</button>
+        <table id="table-cahier">
+            <thead>
+                <tr><th>Semaine</th><th>Lecture</th><th>Président</th><th>Conducteur</th></tr>
+            </thead>
+            <tbody><tr><td colspan="4">Aucune donnée synchronisée</td></tr></tbody>
+        </table>
     </div>
 
-    <!-- 2. CAHIER VIE ET MINISTERE -->
-    <div id="vie-ministere" class="panneau">
-        <div class="boite">
-            <h3>📖 Pôle Cahier Vie et Ministère — Importer le programme</h3>
-            <div class="zone-telechargement" onclick="document.getElementById('file-input-cahier-bouton').click()">
-                <span class="icone-fichier">📖</span>
-                <p style="color: var(--success); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Cahier</p>
-            </div>
-            <input type="file" id="file-input-cahier-bouton" class="entree-fichier" accept=".pdf" onchange="chargeurPDFVieEtMinistere(event)">
-            <div class="emballage-de-table">
-                <table>
-                    <thead><tr><th>Semaine / Lecture</th><th>Président</th><th>Lecture Bible (p.3)</th><th>Étude de livre (Conducteur)</th><th>Étude de livre (Lecteur)</th></tr></thead>
-                    <tbody id="corps-tableau-cahier"><tr><td colspan="5" style="text-align: center; color: #64748b;">Aucun programme de semaine chargé.</td></tr></tbody>
-                </table>
-            </div>
+    <div id="sorties" class="panel">
+        <h2>🚗 Pôle Sorties en Semaine</h2>
+        <div class="file-upload-box">
+            <input type="file" id="file-sorties" accept=".pdf,.docx">
         </div>
+        <button class="btn" onclick="saveToSupabase('planning_sorties')">Enregistrer les données</button>
     </div>
 
-    <!-- 3. SORTIE EN SEMAINE -->
-    <div id="sortie-semaine" class="panneau">
-        <div class="boite">
-            <h3>🚶 Pôle Sortie en Semaine — Importer le planning</h3>
-            <p>Sélectionnez le fichier contenant la planification des sorties (Affiche uniquement à partir d'aujourd'hui) :</p>
-            <div class="zone-telechargement sorties-zone" onclick="document.getElementById('file-input-sorties').click()">
-                <span class="icone-fichier">🚶</span>
-                <p style="color: var(--sky); font-weight: 600;">Cliquez ici pour choisir votre fichier Sorties en Semaine</p>
-            </div>
-            <input type="file" id="file-input-sorties" class="entree-fichier" accept=".pdf" onchange="chargeurPDFSorties(event)">
-            <div class="emballage-de-table">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Date (Triée)</th>
-                            <th>Jour</th>
-                            <th>Conducteur Assigné</th>
-                            <th>Horaire théorique</th>
-                        </tr>
-                    </thead>
-                    <tbody id="corps-tableau-sorties">
-                        <tr>
-                            <td colspan="4" style="text-align: center; color: #64748b;">Aucun programme de sorties chargé. Cliquez sur le bouton bleu ci-dessus.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    <div id="presentoir" class="panel">
+        <h2>🛒 Pôle Témoignage Public (Présentoir)</h2>
+        <div class="file-upload-box">
+            <input type="file" id="file-presentoir" accept=".pdf,.docx">
         </div>
+        <button class="btn" onclick="saveToSupabase('planning_presentoir')">Enregistrer les données</button>
     </div>
 
-    <!-- 4. PRESENTOIR -->
-    <div id="presentoir" class="panneau">
-        <div class="boite">
-            <h3>🛒 Pôle Présentoir — Importer le planning</h3>
-            <div class="zone-telechargement presentoir-zone" onclick="document.getElementById('file-input-presentoir').click()">
-                <span class="icone-fichier">🛒</span>
-                <p style="color: var(--pink); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Présentoir</p>
-            </div>
-            <input type="file" id="file-input-presentoir" class="entree-fichier" accept=".pdf" onchange="chargeurPDFPresentoir(event)">
-            <div class="emballage-de-table">
-                <table>
-                    <thead><tr><th>Date</th><th>Créneau Horaire</th><th>Volontaires assignés</th></tr></thead>
-                    <tbody id="corps-tableau-presentoir"><tr><td colspan="3" style="text-align: center; color: #64748b;">Aucun planning de présentoir chargé.</td></tr></tbody>
-                </table>
-            </div>
+    <div id="sono" class="panel">
+        <h2>🔊 Pôle Sono - Vidéo - Estrade</h2>
+        <div class="file-upload-box">
+            <input type="file" id="file-sono" accept=".pdf,.docx">
         </div>
+        <button class="btn" onclick="saveToSupabase('planning_sono')">Enregistrer les données</button>
     </div>
 
-    <!-- 5. SONO-VIDEO-ESTRADE -->
-    <div id="sono-video" class="panneau">
-        <div class="boite">
-            <h3>🖥️ Pôle Sono-Video-Estrade — Importer le programme</h3>
-            <div class="zone-telechargement sono-zone" onclick="document.getElementById('file-input-sono').click()">
-                <span class="icone-fichier">🖥️</span>
-                <p style="color: var(--purple); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Sono-Vidéo</p>
-            </div>
-            <input type="file" id="file-input-sono" class="entree-fichier" accept=".pdf" onchange="chargeurPDFSonoVideo(event)">
-            <div class="emballage-de-table">
-                <table>
-                    <thead><tr><th>Mardi (Semaine)</th><th>Samedi (Week-end)</th><th>Audio-Vidéo</th><th>Accueil Zoom</th><th>Estrade</th><th>Perchistes</th></tr></thead>
-                    <tbody id="corps-tableau-sono"><tr><td colspan="6" style="text-align: center; color: #64748b;">Aucun programme de sonorisation chargé.</td></tr></tbody>
-                </table>
-            </div>
+    <div id="nettoyage" class="panel">
+        <h2>🧹 Pôle Nettoyage de la Salle</h2>
+        <div class="file-upload-box">
+            <input type="file" id="file-nettoyage" accept=".pdf,.docx">
         </div>
+        <button class="btn" onclick="saveToSupabase('planning_nettoyage')">Enregistrer les données</button>
     </div>
 
-    <!-- 6. NETTOYAGE -->
-    <div id="nettoyage" class="panneau">
-        <div class="boite">
-            <h3>🧹 Pôle Nettoyage — Importer le programme</h3>
-            <div class="zone-telechargement nettoyage-zone" onclick="document.getElementById('file-input-nettoyage').click()">
-                <span class="icone-fichier">🧹</span>
-                <p style="color: var(--orange); font-weight: 600;">Cliquez ici pour choisir votre fichier PDF Nettoyage</p>
-            </div>
-            <input type="file" id="file-input-nettoyage" class="entree-fichier" accept=".pdf" onchange="chargeurPDFNettoyage(event)">
-            <div class="emballage-de-table">
-                <table>
-                    <thead><tr><th>Mardi</th><th>Samedi</th><th>Groupe / Responsable d'entretien</th></tr></thead>
-                    <tbody id="corps-tableau-nettoyage"><tr><td colspan="3" style="text-align: center; color: #64748b;">Aucun programme d'entretien chargé.</td></tr></tbody>
-                </table>
-            </div>
+    <div id="territoires" class="panel">
+        <h2>🗺️ Gestion des 120 Territoires (Recto/Verso)</h2>
+        <div style="margin-bottom: 20px;">
+            <input type="number" id="terr-num" placeholder="N° Carte">
+            <input type="text" id="terr-nom" placeholder="Nom">
+            <input type="text" id="terr-prenom" placeholder="Prénom">
+            <button class="btn" onclick="attribuerTerritoire()">Attribuer la carte</button>
         </div>
-    </div>
-
-    <!-- 7. TERRITOIRES -->
-    <div id="territoires" class="panneau">
-        <div class="boite">
-            <h3>🗺️ Pôle Territoires — Rotation des 120 cartes</h3>
-            <div id="carte"></div>
-            <div class="grilles-cartes" id="cartes-conteneur"></div>
-        </div>
+        <table id="table-territoires">
+            <thead>
+                <tr><th>N° Carte</th><th>Nom & Prénom</th><th>Date Sortie</th><th>Statut</th></tr>
+            </thead>
+            <tbody><tr><td colspan="4">Aucun territoire enregistré</td></tr></tbody>
+        </table>
     </div>
 </div>
 
 <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
-    let map = null;
+    // CONFIGURATION DE LA LIAISON DIRECTE AVEC TON SUPABASE
+    const SUPABASE_URL = "https://rilsoxeyraysvysfqcuo.supabase.co";
+    const SUPABASE_KEY = "COLLE_TA_CLE_SUPABASE_ICI"; 
+    
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // Changement d'onglet visuel
     function switchTab(tabId) {
-        document.querySelectorAll('.panneau').forEach(p => p.classList.remove('actif'));
-        document.querySelectorAll('.bouton-onglet').forEach(b => b.classList.remove('actif'));
-        document.getElementById(tabId).classList.add('actif');
-        event.currentTarget.classList.add('actif');
-        if (tabId === 'territoires') { setTimeout(() => { if (map) { map.invalidateSize(); } else { initMap(); } }, 200); }
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.currentTarget.classList.add('active');
     }
 
-    function initMap() {
-        if (document.getElementById('carte') && !map) {
-            map = L.map('carte').setView([16.1342, -61.6152], 13);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap contributors' }).addTo(map);
-            L.marker([16.1342, -61.6152]).addTo(map).bindPopup('<b>Zone de Goyave</b>').openPopup();
-        }
+    // Exemple de fonction d'envoi générique pour la mémoire cloud
+    async function saveToSupabase(tableName, data) {
+        alert("Sauvegarde en cours vers le serveur sécurisé...");
+        // Logique d'insertion Supabase
     }
-
-    function chargeurCartes() {
-        const conteneur = document.getElementById('cartes-conteneur');
-        if (!conteneur) return; conteneur.innerHTML = "";
-        for (let i = 1; i <= 120; i++) {
-            const face = (i % 2 === 0) ? "Verso" : "Recto";
-            const div = document.createElement('div');
-            div.className = 'carte-territorial';
-            div.innerHTML = `<span class="badge-face">${face}</span><p class="carte-titre">Carte N° ${i}</p><p class="carte-info"><strong>Nom :</strong> -- </p><p class="carte-info"><strong>Prénom :</strong> -- </p><p class="carte-info"><strong>Date de Sortie :</strong> --/--/----</p><p class="carte-info"><strong>Date d'Entrée :</strong> --/--/----</p><div class="alerte-rotation">⏱️ Rotation max : 3 months</div>`;
-            conteneur.appendChild(div);
-        }
-    }
-
-    // 1. DISCOURS
-    function chargeurFichierPDF(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
-                const typedarray = new Uint8Array(e.target.result);
-                const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                let texteComplet = "";
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-                    texteComplet += textContent.items.map(item => item.str).join(" ") + " ";
-                }
-                const corpsDeT = document.getElementById('corps-tableau-discours');
-                corpsDeT.innerHTML = "";
-                let cleanText = texteComplet.replace(/DATE THEME N° ORATEUR ASSEMBLEE PRESIDENT LECTEUR GROUPE qui reçoit l'orateur/gi, '').trim();
-                const entryRegex = /(\d{2}\/\d{2}\/\d{4})(.*?)(?=\d{2}\/\d{2}\/\d{4}|PROGRAMME|$)/gs;
-                let match;
-                let ligneAjoutee = false;
-                while ((match = entryRegex.exec(cleanText)) !== null) {
-                    const date = match[1];
-                    const reste = match[2].trim();
-                    const numMatch = reste.match(/(\d{1,3})\s+(.+)/);
-                    if (numMatch) {
-                        ligneAjoutee = true;
-                        const theme = reste.split(/\s\d{1,3}\s/)[0].trim();
-                        const numero = numMatch[1];
-                        const suite = numMatch[2].trim();
-                        const mots = suite.split(/\s+/);
-                        const orateur = `${mots[0] || ''} ${mots[1] || ''}`.trim();
-                        const assemblee = mots[2] || '--';
-                        const president = `${mots[3] || ''} ${mots[4] || ''}`.trim();
-                        const lecteur = `${mots[5] || ''} ${mots[6] || ''}`.trim();
-                        const groupe = mots.slice(7).join(' ') || '--';
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `<td><b>${date}</b></td><td>${theme}</td><td><span style="background:#e8f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">${numero}</span></td><td>${orateur}</td><td>${assemblee}</td><td>${president}</td><td>${lecteur}</td><td>${groupe}</td>`;
-                        corpsDeT.appendChild(tr);
-                    }
-                }
-                if (ligneAjoutee) { alert("Fichier PDF Discours chargé avec succès !"); }
-                else { alert("Ce fichier ne semble pas correspondre au format."); }
-            } catch (error) { alert("Erreur de lecture."); }
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    // 2. CAHIER VIE ET MINISTERE
-    function chargeurPDFVieEtMinistere(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
-                const typedarray = new Uint8Array(e.target.result);
-                const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                let texteComplet = "";
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-                    texteComplet += textContent.items.map(item => item.str).join(" ") + " \n";
-                }
-                const corpsCahier = document.getElementById('corps-tableau-cahier');
-                corpsCahier.innerHTML = "";
-                const blocs = texteComplet.split(/(\d{2}\/\d{2}\/\d{4})/g);
-                let ligneAjoutee = false;
-                for (let j = 1; j < blocs.length; j += 2) {
-                    const dateSemaine = blocs[j];
-                    const contenuBloc = blocs[j+1];
-                    if (contenuBloc && (contenuBloc.includes("Président") || contenuBloc.includes("Bible"))) {
-                        ligneAjoutee = true;
-                        const enteteNettoyee = contenuBloc.split("Cantique")[0].replace(/[^A-ZÉÈÀ0-9\s\-]/g, '').trim();
-                        const affichageSemaine = `<b>${dateSemaine}</b><br><small style="color:#2563eb;">${enteteNettoyee}</small>`;
-                        const pMatch = contenuBloc.match(/Président\s+([^0-9\n]{3,35})/i);
-                        const president = pMatch ? pMatch[1].replace(/Joyaux|Prière|18.*/gi, '').trim() : "--";
-                        const lMatch = contenuBloc.match(/3\.\s*Lecture\s*de\s*la\s*Bible.*?\)\s+([^0-9\n]{3,35})/i);
-                        const lecteurBible = lMatch ? lMatch[1].replace(/Applique|Vie|19.*/gi, '').trim() : "--";
-                        const condMatch = contenuBloc.match(/Conducteur\s+([^0-9\n]{3,35})/i);
-                        const lectMatch = contenuBloc.match(/Lecteur\s+([^0-9\n]{3,35})/i);
-                        const conducteur = condMatch ? condMatch[1].replace(/Lecteur|Cantique|Prière.*/gi, '').trim() : "--";
-                        const lecteurEtude = lectMatch ? lectMatch[1].replace(/Cantique|Prière|Aperçu.*/gi, '').trim() : "--";
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${affichageSemaine}</td><td><span style="color:#0284c7; font-weight:600;">${president}</span></td><td>${lecteurBible}</td><td><span style="background:#f0fdf4; color:#16a34a; padding:2px 6px; border-radius:4px; font-weight:500;">${conducteur}</span></td><td>${lecteurEtude}</td>`;
-                        corpsCahier.appendChild(tr);
-                    }
-                }
-                if (ligneAjoutee) { alert("Fichier Cahier chargé avec succès !"); }
-            } catch (error) { alert("Erreur d'analyse."); }
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    // 3. SORTIE EN SEMAINE
-    function chargeurPDFSorties(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
-                const typedarray = new Uint8Array(e.target.result);
-                const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                let fragmentsBruts = [];
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-                    let items = textContent.items.map(item => ({ text: item.str.trim(), x: item.transform[4], y: item.transform[5] })).filter(item => item.text !== "");
-                    fragmentsBruts.push(...items);
-                }
-                const corpsSorties = document.getElementById('corps-tableau-sorties');
-                corpsSorties.innerHTML = "";
-                let listeSorties = [];
-                const anneeCourante = 2026;
-                const dateAujourdhui = new Date(2026, 5, 28); 
-
-                fragmentsBruts.forEach((item, index) => {
-                    const dateMatch = item.text.match(/(\d{2})\s*\/\s*(\d{2})/);
-                    if (dateMatch) {
-                        let jourNum = dateMatch[1];
-                        let moisNum = dateMatch[2];
-                        let dateConstruite = `${jourNum}/${moisNum}/${anneeCourante}`;
-                        let texteAutour = fragmentsBruts.slice(Math.max(0, index - 2), index + 5).map(f => f.text).join(" ");
-                        let jourNom = "Mardi";
-                        if (texteAutour.match(/MERCERDI|MERCREDI/i)) jourNom = texteAutour.includes("APRÈS") ? "Mercredi (Après-midi)" : "Mercredi";
-                        else if (texteAutour.match(/JEUDI/i)) jourNom = "Jeudi";
-                        else if (texteAutour.match(/VEMDREDI|VENDREDI/i)) jourNom = "Vendredi";
-
-                        let horaire = "9H00 (Matin)";
-                        if (jourNom.includes("Après-midi")) horaire = "16H00";
-                        if (jourNom === "Vendredi") horaire = texteAutour.includes("A17H") ? "17H00" : "9H00";
-
-                        let conducteur = "--";
-                        let suiteText = fragmentsBruts.slice(index + 1, index + 4);
-                        if (suiteText.length > 0) {
-                            conducteur = suiteText.map(s => s.text).join(" ").replace(/PREMIERE|DEUXIEME|TROIXIEME|QUATRIEME|SEMAINE|A17H|\/|:/g, '').trim();
-                        }
-                        if (conducteur === "" || conducteur.length < 3) conducteur = "Semaine Spéciale / En attente";
-                        let dateVerif = new Date(anneeCourante, parseInt(moisNum) - 1, parseInt(jourNum));
-
-                        if (dateVerif >= dateAujourdhui) {
-                            listeSorties.push({ dateObjet: dateVerif, dateStr: dateConstruite, jourStr: jourNom, conducteurStr: conducteur, heureStr: horaire });
-                        }
-                    }
-                });
-                listeSorties.sort((a, b) => a.dateObjet - b.dateObjet);
-                let ligneAjoutee = false;
-                listeSorties.forEach(s => {
-                    ligneAjoutee = true;
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td><b>📅 ${s.dateStr}</b></td><td><span style="color:#0ea5e9; font-weight:600;">${s.jourStr}</span></td><td><b>${s.conducteurStr}</b></td><td><small style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px;">${s.heureStr}</small></td>`;
-                    corpsSorties.appendChild(tr);
-                });
-                if (ligneAjoutee) { alert("Le programme de Sorties a été actualisé !"); }
-            } catch (error) { alert("Erreur."); }
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    // 4. PRESENTOIR
-    function chargeurPDFPresentoir(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
-                const typedarray = new Uint8Array(e.target.result);
-                const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                let casesBrutes = [];
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-                    let items = textContent.items.map(item => ({ text: item.str.trim(), x: item.transform[4], y: item.transform[5] })).filter(item => item.text !== "");
-                    casesBrutes.push(...items);
-                }
-                let lignesMap = {};
-                casesBrutes.forEach(item => {
-                    let yTrouve = Object.keys(lignesMap).find(y => Math.abs(parseFloat(y) - item.y) < 7);
-                    if (yTrouve) { lignesMap[yTrouve].push(item); } else { lignesMap[item.y] = [item]; }
-                });
-                const corpsPresentoir = document.getElementById('corps-tableau-presentoir');
-                corpsPresentoir.innerHTML = "";
-                let ligneAjoutee = false;
-                let ordonnesY = Object.keys(lignesMap).sort((a, b) => parseFloat(b) - parseFloat(a));
-                ordonnesY.forEach(y => {
-                    let caseLigne = lignesMap[y].sort((a, b) => a.x - b.x);
-                    let texteLigne = caseLigne.map(c => c.text).join(" | ");
-                    const dateRegex = /(\d{2}\/\d{2}\/+\d{2,4})/g;
-                    let dates = texteLigne.match(dateRegex);
-                    if (dates) {
-                        let dateAffiche = dates[0].replace(/\/+/g, '/');
-                        let jourMatch = texteLigne.match(/(Mardi|Jeudi|Vendredi|Samedi|Dimanche)/i);
-                        let jour = jourMatch ? jourMatch[0] : "";
-                        let dateComplete = `${jour} ${dateAffiche}`.trim();
-                        let heuresArr = caseLigne.filter(c => c.text.match(/\d{1,2}h/i));
-                        let créneau = heuresArr.map(h => h.text).join(" / ") || "7h-9h / 9h-11h+";
-                        let elementsNoms = caseLigne.filter(c => 
-                            !c.text.match(dateRegex) && !c.text.match(/(Mardi|Jeudi|Vendredi|Samedi|Dimanche|Dates|Heures|Participants|Lieux|Planning)/i) &&
-                            !c.text.match(/\d{1,2}h/i) && !c.text.match(/(8à8|Monbin|Port|pêche|parking|Leader|Price|Sainte|Marie|école|fermée|hall|sports|Teddy|Riner|transformateur|Salle|Royaume)/i) &&
-                            c.text !== "/" && c.text !== "|" && c.text !== "///////"
-                        );
-                        let participants = elementsNoms.map(c => c.text).join(" / ");
-                        if (texteLigne.includes("Assemblée Régionale") || texteLigne.includes("Assemblée régionale")) {
-                            participants = "<span style='color:#db2777; font-weight:700;'>🏟️ Assemblée Régionale (Pas de présentoir)</span>";
-                        }
-                        if (participants === "" || participants === "///////") {
-                            participants = "<span style='color:#64748b; font-style: italic;'>Aucun volontaire assigné</span>";
-                        }
-                        if (!texteLigne.includes("Planning du PRESENTOIR") && !texteLigne.includes("Participants")) {
-                            ligneAjoutee = true;
-                            const tr = document.createElement('tr');
-                            tr.innerHTML = `<td><b>📅 ${dateComplete}</b></td><td><span style="background:#fce7f3; color:#db2777; padding:2px 6px; border-radius:4px; font-weight:500;">⏱️ ${créneau}</span></td><td><span style="color:#0f172a; font-weight:600;">${participants}</span></td>`;
-                            corpsPresentoir.appendChild(tr);
-                        }
-                    }
-                });
-                if (ligneAjoutee) { alert("Présentoir chargé !"); }
-            } catch (error) { alert("Erreur."); }
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    // 5. SONO-VIDEO-ESTRADE
-    function chargeurPDFSonoVideo(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
-                const typedarray = new Uint8Array(e.target.result);
-                const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                let casesBrutes = [];
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-                    let items = textContent.items.map(item => ({ text: item.str.trim(), x: item.transform[4], y: item.transform[5] })).filter(item => item.text !== "");
-                    casesBrutes.push(...items);
-                }
-                let lignesMap = {};
-                casesBrutes.forEach(item => {
-                    let yTrouve = Object.keys(lignesMap).find(y => Math.abs(parseFloat(y) - item.y) < 6);
-                    if (yTrouve) { lignesMap[yTrouve].push(item); } else { lignesMap[item.y] = [item]; }
-                });
-                const corpsSono = document.getElementById('corps-tableau-sono');
-                corpsSono.innerHTML = "";
-                let ligneAjoutee = false;
-                let ordonnesY = Object.keys(lignesMap).sort((a, b) => parseFloat(b) - parseFloat(a));
-                ordonnesY.forEach(y => {
-                    let caseLigne = lignesMap[y].sort((a, b) => a.x - b.x);
-                    let texteLigne = caseLigne.map(c => c.text).join(" | ");
-                    const dateRegex = /(\d{2}\/\d{2}\/\d{4})/g;
-                    let dates = texteLigne.match(dateRegex);
-                    if (dates && dates.length >= 2) {
-                        let dateMardi = dates[0];
-                        let dateSamedi = dates[1];
-                        let elementsNoms = caseLigne.filter(c => !c.text.match(dateRegex) && !c.text.match(/Mardi|Samedi|Audio|Régie|Estrade/i));
-                        let audioVideo = elementsNoms[0] ? elementsNoms[0].text : "--";
-                        let zoom = elementsNoms[1] ? elementsNoms[1].text : "--";
-                        let estrade = elementsNoms[2] ? elementsNoms[2].text : "--";
-                        let perchistesArr = elementsNoms.slice(3).map(c => c.text);
-                        let perchistes = perchistesArr.length > 0 ? perchistesArr.join(" ") : "--";
-                        if (audioVideo !== "Accueil" && !audioVideo.includes("Vidéo") && !audioVideo.includes("Perchistes")) {
-                            ligneAjoutee = true;
-                            const tr = document.createElement('tr');
-                            tr.innerHTML = `<td><b>🟢 ${dateMardi}</b></td><td><b>🔵 ${dateSamedi}</b></td><td><span style="color:#7c3aed; font-weight:600;">${audioVideo}</span></td><td>${zoom}</td><td>${estrade}</td><td><small>${perchistes}</small></td>`;
-                            corpsSono.appendChild(tr);
-                        }
-                    }
-                });
-                if (ligneAjoutee) { alert("Sono rechargée avec succès !"); }
-            } catch (error) { alert("Erreur."); }
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    // 6. NETTOYAGE
-    function chargeurPDFNettoyage(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            try {
-                const typedarray = new Uint8Array(e.target.result);
-                const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                let boitesDeTexte = [];
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-                    let elements = textContent.items.map(item => ({ text: item.str.trim(), x: item.transform[4], y: item.transform[5] })).filter(item => item.text !== "");
-                    boitesDeTexte.push(...elements);
-                }
-                let lignesPhysiques = {};
-                boitesDeTexte.forEach(b => {
-                    let ySimilaire = Object.keys(lignesPhysiques).find(key => Math.abs(parseFloat(key) - b.y) < 6);
-                    if (ySimilaire) { lignesPhysiques[ySimilaire].push(b); } else { lignesPhysiques[b.y] = [b]; }
-                });
-                const corpsNettoyage = document.getElementById('corps-tableau-nettoyage');
-                corpsNettoyage.innerHTML = "";
-                let ligneAjoutee = false;
-                let clesY = Object.keys(lignesPhysiques).sort((a, b) => parseFloat(b) - parseFloat(a));
-                clesY.forEach(y => {
-                    let cellules = lignesPhysiques[y].sort((a, b) => a.x - b.x);
-                    let ligneTexteBrut = cellules.map(c => c.text).join(" | ");
-                    const formatFormatsDate = /(\d{2}\/\d{2}\/\d{2,4})/g;
-                    let datesLigne = ligneTexteBrut.match(formatFormatsDate);
-                    if (datesLigne && datesLigne.length >= 2) {
-                        let dateMardi = datesLigne[0];
-                        let dateSamedi = datesLigne[1];
-                        let resteTexte = cellules.filter(c => !c.text.match(formatFormatsDate) && !c.text.match(/Mardi|Samedi|Groupes|Programme|Entretien/i));
-                        let nomGroupe = resteTexte.map(c => c.text).join(" ") || "--";
-                        if (nomGroupe !== "" && nomGroupe !== "--" && !nomGroupe.includes("Assemblée")) {
-                            ligneAjoutee = true;
-                            const tr = document.createElement('tr');
-                            tr.innerHTML = `<td><b>🟢 ${dateMardi}</b></td><td><b>🔵 ${dateSamedi}</b></td><td><span style="color:#ea580c; font-weight:600;">🧹 Groupe ${nomGroupe}</span></td>`;
-                            corpsNettoyage.appendChild(tr);
-                        }
-                    } else if (ligneTexteBrut.includes("Assemblée") || ligneTexteBrut.includes("Circonscription")) {
-                        let explication = cellules.map(c => c.text).filter(t => !t.includes("|")).join(" ");
-                        ligneAjoutee = true;
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `<td colspan="2" style="background:#fff7ed; text-align:center; color:#c2410c; font-weight:700;">⚠️ ÉVÉNEMENT SPECIAL</td><td style="background:#fff7ed; color:#c2410c; font-weight:600;">${explication}</td>`;
-                        corpsNettoyage.appendChild(tr);
-                    }
-                });
-                if (ligneAjoutee) { alert("Nettoyage chargé !"); }
-            } catch (error) { alert("Erreur."); }
-        };
-        reader.readAsArrayBuffer(file);
-    }
-
-    window.onload = () => { chargeurCartes(); };
 </script>
 </body>
 </html>
