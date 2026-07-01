@@ -144,7 +144,7 @@
 
         iframe {
             width: 100%;
-            height: 600px;
+            height: 500px;
             border: none;
         }
 
@@ -232,25 +232,10 @@
             </div>
         </div>
 
-        <div id="sorties" class="panel">
-            <h2>Pôle Sorties en semaine</h2>
-            <p>Gestion des rendez-vous et des groupes pour les sorties de la semaine.</p>
-        </div>
-
-        <div id="presentoir" class="panel">
-            <h2>Pôle Présentoir</h2>
-            <p>Planning d'attribution et de présence pour les présentoirs mobiles.</p>
-        </div>
-
-        <div id="sono" class="panel">
-            <h2>Pôle Sono Video Estrade</h2>
-            <p>Gestion de la régie audio, vidéo et des attributions à l'estrade.</p>
-        </div>
-
-        <div id="nettoyage" class="panel">
-            <h2>Pôle Nettoyage</h2>
-            <p>Calendrier et répartition des équipes pour le nettoyage et la maintenance.</p>
-        </div>
+        <div id="sorties" class="panel"><h2>Pôle Sorties en semaine</h2><p>Gestion des rendez-vous et des groupes pour les sorties de la semaine.</p></div>
+        <div id="presentoir" class="panel"><h2>Pôle Présentoir</h2><p>Planning d'attribution et de présence pour les présentoirs mobiles.</p></div>
+        <div id="sono" class="panel"><h2>Pôle Sono Video Estrade</h2><p>Gestion de la régie audio, vidéo et des attributions à l'estrade.</p></div>
+        <div id="nettoyage" class="panel"><h2>Pôle Nettoyage</h2><p>Calendrier et répartition des équipes pour le nettoyage et la maintenance.</p></div>
 
         <div id="territoires" class="panel">
             <h2>Pôle Territoires (Assistant Localisation & Durée)</h2>
@@ -314,7 +299,6 @@
         async function saveToSupabase(poleName) {
             let fileInput = poleName === 'discours_publics' ? document.getElementById('file-discours') : document.getElementById('file-cahier');
             let storageKey = poleName === 'discours_publics' ? 'last_file_discours' : 'last_file_cahier';
-            let baseName = poleName === 'discours_publics' ? 'discours' : 'cahier';
 
             if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
                 alert("Veuillez d'abord choisir un fichier.");
@@ -322,30 +306,14 @@
             }
 
             const file = fileInput.files[0];
-            const fileName = `${baseName}_official.pdf`;
 
-            try {
-                alert("Envoi en cours...");
-                const { data, error } = await _supabase.storage
-                    .from('yzully')
-                    .upload(fileName, file, { cacheControl: '0', upsert: true });
-
-                if (error) {
-                    // Si refus d'écrasement ou blocage, on utilise la sauvegarde locale pour assurer la continuité
-                    console.log("Supabase restreint, bascule sur sauvegarde mémoire locale.");
-                }
-
-                // Sauvegarde du document dans la mémoire locale du navigateur en secours
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    localStorage.setItem(storageKey, e.target.result);
-                }
-                reader.readAsDataURL(file);
-
-                alert("Félicitations Fredy ! Le planning a bien été enregistré.");
-            } catch (err) {
-                alert("Erreur lors de l'enregistrement.");
+            // Sauvegarde directe en mémoire locale pour contourner le blocage du serveur
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                localStorage.setItem(storageKey, e.target.result);
+                alert("Félicitations Fredy ! Le planning a bien été enregistré localement.");
             }
+            reader.readAsDataURL(file);
         }
 
         function ouvrirPlanning(poleName) {
@@ -356,12 +324,11 @@
                 const newWindow = window.open();
                 newWindow.document.write(`<iframe src="${localData}" style="width:100%; height:100%; border:none;"></iframe>`);
             } else {
-                let fileName = poleName === 'discours_publics' ? 'discours_official.pdf' : 'cahier_official.pdf';
-                window.open(`${SUPABASE_URL}/storage/v1/object/public/yzully/${fileName}`, '_blank');
+                alert("Aucun fichier enregistré pour le moment.");
             }
         }
 
-        // --- CODE DU PÔLE TERRITOIRES ENTIÈREMENT RÉPARÉ ---
+        // --- GESTION DU PÔLE TERRITOIRES ---
         let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
 
         function attribuerTerritoireLocal() {
@@ -401,7 +368,7 @@
         }
 
         function localiserCarte(numero) {
-            window.open(`http://maps.google.com/?q=${numero}`, '_blank');
+            window.open(`https://maps.google.com/?q=Goyave+Carte+${numero}`, '_blank');
         }
 
         function renderTerritoriesTable() {
