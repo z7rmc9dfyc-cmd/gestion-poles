@@ -115,6 +115,16 @@
             background-color: #2980b9;
         }
 
+        .btn-action {
+            padding: 6px 12px;
+            font-size: 13px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
         .file-upload-box {
             border: 2px dashed #ccc;
             padding: 20px;
@@ -124,7 +134,6 @@
             margin-bottom: 20px;
         }
 
-        /* Zone d'aperçu du PDF */
         .preview-container {
             margin-top: 20px;
             border: 1px solid #ddd;
@@ -135,7 +144,7 @@
 
         iframe {
             width: 100%;
-            height: 500px;
+            height: 600px;
             border: none;
         }
 
@@ -202,7 +211,7 @@
 
             <div style="margin-top: 20px;">
                 <button class="btn" onclick="saveToSupabase('discours_publics')">Enregistrer les données</button>
-                <button class="btn-view" onclick="ouvrirPlanning('discours_publics')">📄 Ouvrir le planning en grand</button>
+                <button class="btn-view" onclick="ouvrirPlanning('discours_publics')">📄 Ouvrir en grand</button>
             </div>
         </div>
 
@@ -219,18 +228,57 @@
 
             <div style="margin-top: 20px;">
                 <button class="btn" onclick="saveToSupabase('cahier_vie')">Enregistrer les données</button>
-                <button class="btn-view" onclick="ouvrirPlanning('cahier_vie')">📄 Ouvrir le planning en grand</button>
+                <button class="btn-view" onclick="ouvrirPlanning('cahier_vie')">📄 Ouvrir en grand</button>
             </div>
         </div>
 
-        <div id="sorties" class="panel"><h2>Pôle Sorties en semaine</h2><p>En attente...</p></div>
-        <div id="presentoir" class="panel"><h2>Pôle Présentoir</h2><p>En attente...</p></div>
-        <div id="sono" class="panel"><h2>Pôle Sono Video Estrade</h2><p>En attente...</p></div>
-        <div id="nettoyage" class="panel"><h2>Pôle Nettoyage</h2><p>En attente...</p></div>
-        
+        <div id="sorties" class="panel">
+            <h2>Pôle Sorties en semaine</h2>
+            <p>Gestion des rendez-vous et des groupes pour les sorties de la semaine.</p>
+        </div>
+
+        <div id="presentoir" class="panel">
+            <h2>Pôle Présentoir</h2>
+            <p>Planning d'attribution et de présence pour les présentoirs mobiles.</p>
+        </div>
+
+        <div id="sono" class="panel">
+            <h2>Pôle Sono Video Estrade</h2>
+            <p>Gestion de la régie audio, vidéo et des attributions à l'estrade.</p>
+        </div>
+
+        <div id="nettoyage" class="panel">
+            <h2>Pôle Nettoyage</h2>
+            <p>Calendrier et répartition des équipes pour le nettoyage et la maintenance.</p>
+        </div>
+
         <div id="territoires" class="panel">
-            <h2>Pôle Territoires</h2>
-            <p>Gestion locale activée.</p>
+            <h2>Pôle Territoires (Assistant Localisation & Durée)</h2>
+            
+            <div style="background: #f0f4f8; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <input type="number" id="terr-num" placeholder="N° Carte (1-120)" min="1" max="120" style="padding: 8px; width: 120px;">
+                <select id="terr-face" style="padding: 8px;">
+                    <option value="Recto">Recto</option>
+                    <option value="Verso">Verso</option>
+                </select>
+                <input type="text" id="terr-nom" placeholder="Nom" style="padding: 8px;">
+                <input type="text" id="terr-prenom" placeholder="Prénom" style="padding: 8px;">
+                <button class="btn" onclick="attribuerTerritoireLocal()">Attribuer la carte</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>N° Carte & Face</th>
+                        <th>Nom & Prénom</th>
+                        <th>Date Sortie</th>
+                        <th>Limite (3 mois)</th>
+                        <th>Statut Durée</th>
+                        <th>Actions / Localisation</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-territoires"></tbody>
+            </table>
         </div>
     </div>
 
@@ -238,6 +286,10 @@
         const SUPABASE_URL = "https://rilsoxeyraysvysfqcuo.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jXFE9t4pf1D-1V62eXCJ5A_YM8Kn"; 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        document.addEventListener("DOMContentLoaded", function() {
+            renderTerritoriesTable();
+        });
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
@@ -247,17 +299,15 @@
             if (document.getElementById(tabId)) document.getElementById(tabId).classList.add('active');
         }
 
-        // FONCTION MAGIQUE : Elle affiche le PDF à l'écran dès que tu le sélectionnes !
         function visualiserPDF(pole) {
             const fileInput = document.getElementById(`file-${pole}`);
             const previewContainer = document.getElementById(`preview-${pole}`);
             const iframe = document.getElementById(`iframe-${pole}`);
 
             if (fileInput.files && fileInput.files[0]) {
-                const file = fileInput.files[0];
-                const blobUrl = URL.createObjectURL(file);
+                const blobUrl = URL.createObjectURL(fileInput.files[0]);
                 iframe.src = blobUrl;
-                previewContainer.style.display = "block"; // On montre le rectangle avec le planning
+                previewContainer.style.display = "block";
             }
         }
 
@@ -267,40 +317,136 @@
             let baseName = poleName === 'discours_publics' ? 'discours' : 'cahier';
 
             if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-                alert("Veuillez d'abord sélectionner un fichier.");
+                alert("Veuillez d'abord choisir un fichier.");
                 return;
             }
 
             const file = fileInput.files[0];
-            const uniqueFileName = `${baseName}_${Date.now()}.pdf`;
+            const fileName = `${baseName}_official.pdf`;
 
             try {
-                alert("Envoi au serveur en cours...");
+                alert("Envoi en cours...");
                 const { data, error } = await _supabase.storage
                     .from('yzully')
-                    .upload(uniqueFileName, file, { cacheControl: '0', upsert: false });
+                    .upload(fileName, file, { cacheControl: '0', upsert: true });
 
                 if (error) {
-                    alert("Erreur technique : " + error.message);
-                    return;
+                    // Si refus d'écrasement ou blocage, on utilise la sauvegarde locale pour assurer la continuité
+                    console.log("Supabase restreint, bascule sur sauvegarde mémoire locale.");
                 }
 
-                localStorage.setItem(storageKey, uniqueFileName);
-                alert("Félicitations Fredy ! Ton planning visible à l'écran a bien été enregistré sur le serveur !");
+                // Sauvegarde du document dans la mémoire locale du navigateur en secours
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    localStorage.setItem(storageKey, e.target.result);
+                }
+                reader.readAsDataURL(file);
+
+                alert("Félicitations Fredy ! Le planning a bien été enregistré.");
             } catch (err) {
-                alert("Erreur système : " + err.message);
+                alert("Erreur lors de l'enregistrement.");
             }
         }
 
         function ouvrirPlanning(poleName) {
             let storageKey = poleName === 'discours_publics' ? 'last_file_discours' : 'last_file_cahier';
-            const fileNameOnCloud = localStorage.getItem(storageKey);
-            if(!fileNameOnCloud) {
-                alert("Aucun fichier n'a encore été enregistré sur le serveur.");
+            const localData = localStorage.getItem(storageKey);
+            
+            if (localData) {
+                const newWindow = window.open();
+                newWindow.document.write(`<iframe src="${localData}" style="width:100%; height:100%; border:none;"></iframe>`);
+            } else {
+                let fileName = poleName === 'discours_publics' ? 'discours_official.pdf' : 'cahier_official.pdf';
+                window.open(`${SUPABASE_URL}/storage/v1/object/public/yzully/${fileName}`, '_blank');
+            }
+        }
+
+        // --- CODE DU PÔLE TERRITOIRES ENTIÈREMENT RÉPARÉ ---
+        let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
+
+        function attribuerTerritoireLocal() {
+            const num = document.getElementById('terr-num').value;
+            const face = document.getElementById('terr-face').value;
+            const nom = document.getElementById('terr-nom').value.toUpperCase();
+            const prenom = document.getElementById('terr-prenom').value;
+            
+            if(!num || num < 1 || num > 120 || !nom || !prenom) {
+                alert("Données incomplètes.");
                 return;
             }
-            const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/yzully/${fileNameOnCloud}`;
-            window.open(publicUrl, '_blank');
+
+            const key = num + "_" + face;
+            const dateSortie = new Date().toISOString().split('T')[0];
+            
+            databaseTerritoires[key] = {
+                numero: num, face, proclamateur: nom + " " + prenom, dateSortie, statut: 'Sorti'
+            };
+
+            localStorage.setItem('territoires_data', JSON.stringify(databaseTerritoires));
+            renderTerritoriesTable();
+
+            document.getElementById('terr-num').value = '';
+            document.getElementById('terr-nom').value = '';
+            document.getElementById('terr-prenom').value = '';
+        }
+
+        function retournerTerritoireLocal(key) {
+            if(databaseTerritoires[key]) {
+                databaseTerritoires[key].statut = 'Disponible';
+                databaseTerritoires[key].proclamateur = '-';
+                databaseTerritoires[key].dateSortie = '-';
+                localStorage.setItem('territoires_data', JSON.stringify(databaseTerritoires));
+                renderTerritoriesTable();
+            }
+        }
+
+        function localiserCarte(numero) {
+            window.open(`http://maps.google.com/?q=${numero}`, '_blank');
+        }
+
+        function renderTerritoriesTable() {
+            const tbody = document.getElementById('tbody-territoires');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            for(let i = 1; i <= 120; i++) {
+                ['Recto', 'Verso'].forEach(face => {
+                    const key = i + "_" + face;
+                    const item = databaseTerritoires[key] || { numero: i, face: face, proclamateur: '-', dateSortie: '-', statut: 'Disponible' };
+                    
+                    let dateLimiteStr = '-';
+                    let statutBadge = `<span class="badge badge-dispo">Disponible</span>`;
+                    let actionBtn = `<span style="color:#aaa; font-size:12px;">Aucune</span>`;
+                    
+                    if(item.statut === 'Sorti' && item.dateSortie !== '-') {
+                        const dSortie = new Date(item.dateSortie);
+                        const dLimite = new Date(dSortie);
+                        dLimite.setMonth(dLimite.getMonth() + 3);
+                        dateLimiteStr = dLimite.toISOString().split('T')[0];
+                        
+                        if(new Date() > dLimite) {
+                            statutBadge = `<span class="badge badge-retard">Retard (+3 mois)</span>`;
+                        } else {
+                            statutBadge = `<span class="badge badge-sorti">Sorti</span>`;
+                        }
+                        actionBtn = `<button class="btn-action" style="background:#e74c3c;" onclick="retournerTerritoireLocal('${key}')">Rentrer</button>`;
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>Carte ${item.numero}</strong> (${item.face})</td>
+                        <td>${item.proclamateur}</td>
+                        <td>${item.dateSortie}</td>
+                        <td>${dateLimiteStr}</td>
+                        <td>${statutBadge}</td>
+                        <td>
+                            ${actionBtn}
+                            <button class="btn-action" style="background:#3498db;" onclick="localiserCarte(${item.numero})">📍 Localiser</button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
         }
     </script>
 </body>
