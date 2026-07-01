@@ -167,17 +167,21 @@
     <div class="container">
         <div id="discours" class="panel active">
             <h2>Pôle Discours Publics</h2>
-            <div class="file-upload-box">
-                <p>Glissez-déposez le document de planning ou cliquez pour charger</p>
-                <input type="file" id="file-discours" accept=".pdf,.docx">
+            
+            <div style="background: #f0f4f8; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="date" id="disc-date" style="padding: 8px;">
+                <input type="text" id="disc-theme" placeholder="Thème du discours" style="padding: 8px; flex: 1;">
+                <input type="text" id="disc-orateur" placeholder="Nom de l'orateur" style="padding: 8px;">
+                <input type="text" id="disc-assemblee" placeholder="Congrégation" style="padding: 8px;">
+                <button class="btn" onclick="ajouterDiscoursSupabase()">Ajouter le discours</button>
             </div>
-            <button class="btn" onclick="saveToSupabase('discours_publics')">Enregistrer les données</button>
+
             <table id="table-discours">
                 <thead>
                     <tr><th>Date</th><th>Thème</th><th>Orateur</th><th>Assemblée</th></tr>
                 </thead>
-                <tbody>
-                    <tr><td colspan="4">Aucune donnée synchronisée</td></tr>
+                <tbody id="tbody-discours">
+                    <tr><td colspan="4">Chargement des discours en direct depuis le cloud...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -243,19 +247,18 @@
     </div>
 
     <script>
-        // Configuration de base Supabase
+        // Connexion officielle à ton projet Supabase
         const SUPABASE_URL = "https://rilsoxeyraysvysfqcuo.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jXFE9t4pf1D-1V62eXCJ5A_YM8Kn"; 
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Base locale pour sauvegarder les états des cartes
-        let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
-
-        // Rendu forcé des 120 cartes dès le début
+        // Au démarrage : charger les données
         document.addEventListener("DOMContentLoaded", function() {
             renderTerritoriesTable();
+            chargerDiscours(); // Active la lecture automatique du cloud
         });
 
-        // Logique de navigation réparée et robuste entre les onglets
+        // Navigation entre les onglets
         function switchTab(tabId) {
             const buttons = document.querySelectorAll('.tab-button');
             buttons.forEach(btn => btn.classList.remove('active'));
@@ -263,17 +266,95 @@
             const panels = document.querySelectorAll('.panel');
             panels.forEach(panel => panel.classList.remove('active'));
 
-            // Trouve le bouton cliqué d'après son paramètre tabId
             const clickedButton = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes(`'${tabId}'`));
             if (clickedButton) clickedButton.classList.add('active');
 
             const targetPanel = document.getElementById(tabId);
-            if (targetPanel) {
-                targetPanel.classList.add('active');
+            if (targetPanel) targetPanel.classList.add('active');
+        }
+
+        // ==========================================
+        //        FONCTIONS EN DIRECT SUPABASE
+        // ==========================================
+
+        // 1. LIRE les discours depuis Supabase
+        async function chargerDiscours() {
+            const tbody = document.getElementById('tbody-discours');
+            
+            try {
+                // On va chercher les données dans ta table "discours_publics"
+                let { data: discours, error } = await _supabase
+                    .from('discours_publics')
+                    .select('*')
+                    .order('date', { ascending: true });
+
+                if (error) throw error;
+
+                if (!discours || discours.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#777;">Aucun discours enregistré pour le moment.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                discours.forEach(d => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><strong>${d.date || '-'}</strong></td>
+                        <td>${d.theme || '-'}</td>
+                        <td>${d.orateur || '-'}</td>
+                        <td>${d.assemblee || '-'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+            } catch (err) {
+                console.error("Erreur de chargement:", err);
+                tbody.innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">Erreur de connexion cloud. Vérifie ta table Supabase.</td></tr>`;
             }
         }
 
-        // Action d'attribution avec calcul automatique des 3 mois
+        // 2. ENVOYER un nouveau discours sur Supabase
+        async function ajouterDiscoursSupabase() {
+            const date = document.getElementById('disc-date').value;
+            const theme = document.getElementById('disc-theme').value;
+            const orateur = document.getElementById('disc-orateur').value;
+            const assemblee = document.getElementById('disc-assemblee').value;
+
+            if(!date || !theme || !orateur) {
+                alert("Veuillez renseigner au moins la date, le thème et l'orateur.");
+                return;
+            }
+
+            try {
+                const { error } = await _supabase
+                    .from('discours_publics')
+                    .insert([{ date, theme, orateur, assemblee }]);
+
+                if (error) throw error;
+
+                alert("Discours enregistré avec succès sur le Cloud !");
+                
+                // Nettoyage des cases
+                document.getElementById('disc-date').value = '';
+                document.getElementById('disc-theme').value = '';
+                document.getElementById('disc-orateur').value = '';
+                document.getElementById('disc-assemblee').value = '';
+
+                // On recharge le tableau en direct
+                chargerDiscours();
+
+            } catch (err) {
+                console.error("Erreur d'envoi:", err);
+                alert("Impossible d'enregistrer. Vérifie que le nom de ta table sur Supabase est exactement 'discours_publics'.");
+            }
+        }
+
+
+        // ==========================================
+        //          GESTION DES TERRITOIRES
+        // ==========================================
+        let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
+
         function attribuerTerritoireLocal() {
             const num = document.getElementById('terr-num').value;
             const face = document.getElementById('terr-face').value;
@@ -281,7 +362,7 @@
             const prenom = document.getElementById('terr-prenom').value;
             
             if(!num || num < 1 || num > 120 || !nom || !prenom) {
-                alert("Veuillez remplir correctement le numéro de carte (1-120), le nom et le prénom.");
+                alert("Données incomplètes.");
                 return;
             }
 
@@ -289,11 +370,7 @@
             const dateSortie = new Date().toISOString().split('T')[0];
             
             databaseTerritoires[key] = {
-                numero: num,
-                face: face,
-                proclamateur: nom + " " + prenom,
-                dateSortie: dateSortie,
-                statut: 'Sorti'
+                numero: num, face, proclamateur: nom + " " + prenom, dateSortie, statut: 'Sorti'
             };
 
             localStorage.setItem('territoires_data', JSON.stringify(databaseTerritoires));
@@ -304,7 +381,6 @@
             document.getElementById('terr-prenom').value = '';
         }
 
-        // Action de retour de carte
         function retournerTerritoireLocal(key) {
             if(databaseTerritoires[key]) {
                 databaseTerritoires[key].statut = 'Disponible';
@@ -315,12 +391,10 @@
             }
         }
 
-        // Fonction de Localisation
         function localiserCarte(numero) {
             window.open(`https://www.google.com/maps?q=Carte+Territoire+${numero}`, '_blank');
         }
 
-        // Construction automatique du tableau complet des 120 cartes
         function renderTerritoriesTable() {
             const tbody = document.getElementById('tbody-territoires');
             if(!tbody) return;
@@ -338,8 +412,7 @@
                     if(item.statut === 'Sorti' && item.dateSortie !== '-') {
                         const dSortie = new Date(item.dateSortie);
                         const dLimite = new Date(dSortie);
-                        dLimite.setMonth(dLimite.getMonth() + 3); // Règle stricte des 3 mois
-                        
+                        dLimite.setMonth(dLimite.getMonth() + 3);
                         dateLimiteStr = dLimite.toISOString().split('T')[0];
                         
                         if(new Date() > dLimite) {
@@ -347,7 +420,6 @@
                         } else {
                             statutBadge = `<span class="badge badge-sorti">Sorti</span>`;
                         }
-
                         actionBtn = `<button class="btn-action" style="background:#e74c3c;" onclick="retournerTerritoireLocal('${key}')">Rentrer</button>`;
                     }
 
@@ -369,7 +441,6 @@
         }
 
         function saveToSupabase(poleName) {
-            console.log("Sauvegarde demandée pour le pôle :", poleName);
             alert("Données en cours de synchronisation pour le pôle " + poleName);
         }
     </script>
