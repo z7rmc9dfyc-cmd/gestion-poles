@@ -119,13 +119,13 @@
 </header>
 
 <div class="nav-tabs">
-    <button class="tab-button active" onclick="switchTab('discours')">🎙️ Discours</button>
-    <button class="tab-button" onclick="switchTab('cahier')">📖 Vie & Ministère</button>
-    <button class="tab-button" onclick="switchTab('sorties')">🚗 Sorties Semaine</button>
-    <button class="tab-button" onclick="switchTab('presentoir')">🛒 Présentoir</button>
-    <button class="tab-button" onclick="switchTab('sono')">🔊 Sono / Vidéo</button>
-    <button class="tab-button" onclick="switchTab('nettoyage')">🧹 Nettoyage</button>
-    <button class="tab-button" onclick="switchTab('territoires')">🗺️ Territoires (120)</button>
+    <button class="tab-button active" onclick="switchTab('discours', event)">🎙️ Discours</button>
+    <button class="tab-button" onclick="switchTab('cahier', event)">📖 Vie & Ministère</button>
+    <button class="tab-button" onclick="switchTab('sorties', event)">🚗 Sorties Semaine</button>
+    <button class="tab-button" onclick="switchTab('presentoir', event)">🛒 Présentoir</button>
+    <button class="tab-button" onclick="switchTab('sono', event)">🔊 Sono / Vidéo</button>
+    <button class="tab-button" onclick="switchTab('nettoyage', event)">🧹 Nettoyage</button>
+    <button class="tab-button" onclick="switchTab('territoires', event)">🗺️ Territoires (120)</button>
 </div>
 
 <div class="container">
@@ -147,6 +147,7 @@
     <div id="cahier" class="panel">
         <h2>📖 Pôle Cahier Vie et Ministère</h2>
         <div class="file-upload-box">
+            <p>Glissez-déposez le planning Vie et Ministère</p>
             <input type="file" id="file-cahier" accept=".pdf,.docx">
         </div>
         <button class="btn" onclick="saveToSupabase('planning_cahier')">Enregistrer les données</button>
@@ -161,6 +162,7 @@
     <div id="sorties" class="panel">
         <h2>🚗 Pôle Sorties en Semaine</h2>
         <div class="file-upload-box">
+            <p>Glissez-déposez le planning des Sorties</p>
             <input type="file" id="file-sorties" accept=".pdf,.docx">
         </div>
         <button class="btn" onclick="saveToSupabase('planning_sorties')">Enregistrer les données</button>
@@ -169,6 +171,7 @@
     <div id="presentoir" class="panel">
         <h2>🛒 Pôle Témoignage Public (Présentoir)</h2>
         <div class="file-upload-box">
+            <p>Glissez-déposez le planning du Présentoir</p>
             <input type="file" id="file-presentoir" accept=".pdf,.docx">
         </div>
         <button class="btn" onclick="saveToSupabase('planning_presentoir')">Enregistrer les données</button>
@@ -177,6 +180,7 @@
     <div id="sono" class="panel">
         <h2>🔊 Pôle Sono - Vidéo - Estrade</h2>
         <div class="file-upload-box">
+            <p>Glissez-déposez le planning Sono-Vidéo</p>
             <input type="file" id="file-sono" accept=".pdf,.docx">
         </div>
         <button class="btn" onclick="saveToSupabase('planning_sono')">Enregistrer les données</button>
@@ -185,6 +189,7 @@
     <div id="nettoyage" class="panel">
         <h2>🧹 Pôle Nettoyage de la Salle</h2>
         <div class="file-upload-box">
+            <p>Glissez-déposez le planning de Nettoyage</p>
             <input type="file" id="file-nettoyage" accept=".pdf,.docx">
         </div>
         <button class="btn" onclick="saveToSupabase('planning_nettoyage')">Enregistrer les données</button>
@@ -208,24 +213,37 @@
 </div>
 
 <script>
-    // CONFIGURATION DE LA LIAISON DIRECTE AVEC TON SUPABASE
     const SUPABASE_URL = "https://rilsoxeyraysvysfqcuo.supabase.co";
-    const SUPABASE_KEY = "COLLE_TA_CLE_SUPABASE_ICI"; 
-    
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_KEY = "sb_publishable_jXFE9t4pf1D-1V62eXCJ5A_YM8Kn"; 
 
-    // Changement d'onglet visuel
-    function switchTab(tabId) {
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
+    // Fonction de changement d'onglet robuste
+    function switchTab(tabId, event) {
+        // Masquer tous les panneaux
+        document.querySelectorAll('.panel').forEach(p => {
+            p.style.display = 'none';
+            p.classList.remove('active');
+        });
+        
+        // Désactiver tous les boutons
+        document.querySelectorAll('.tab-button').forEach(b => {
+            b.classList.remove('active');
+        });
+        
+        // Afficher le bon panneau
+        const targetPanel = document.getElementById(tabId);
+        if (targetPanel) {
+            targetPanel.style.display = 'block';
+            targetPanel.classList.add('active');
+        }
+        
+        // Activer le bon bouton
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        }
     }
 
-    // Exemple de fonction d'envoi générique pour la mémoire cloud
-    async function saveToSupabase(tableName, data) {
-        alert("Sauvegarde en cours vers le serveur sécurisé...");
-        // Logique d'insertion Supabase
+    async function saveToSupabase(tableName) {
+        alert("Sauvegarde initiée pour la table : " + tableName);
     }
 </script>
 </body>
