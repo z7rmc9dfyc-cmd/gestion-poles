@@ -184,6 +184,7 @@
     </div>
 
     <div class="container">
+        <!-- 1. PÔLE DISCOURS PUBLICS -->
         <div id="discours" class="panel active">
             <h2>Pôle Discours Publics</h2>
             <div class="file-upload-box">
@@ -192,6 +193,7 @@
             </div>
             <button class="btn" onclick="saveToSupabase('discours_publics')">Enregistrer les données</button>
             
+            <!-- Bouton bleu pour ouvrir et lire le PDF -->
             <button class="btn-view" onclick="ouvrirPlanning('discours_publics')">📄 Ouvrir le planning des Discours</button>
             
             <table id="table-discours">
@@ -213,6 +215,7 @@
             </table>
         </div>
 
+        <!-- 2. PÔLE CAHIER VIE ET MINISTÈRE -->
         <div id="cahier" class="panel">
             <h2>Pôle Cahier Vie et Ministère</h2>
             <div class="file-upload-box">
@@ -223,26 +226,31 @@
             <button class="btn-view" onclick="ouvrirPlanning('cahier_vie')">📄 Ouvrir le planning Vie et Ministère</button>
         </div>
 
+        <!-- 3. PÔLE SORTIES SEMAINE -->
         <div id="sorties" class="panel">
             <h2>Pôle Sorties en semaine</h2>
             <p>Gestion des rendez-vous et des groupes pour les sorties de la semaine.</p>
         </div>
 
+        <!-- 4. PÔLE PRÉSENTOIR -->
         <div id="presentoir" class="panel">
             <h2>Pôle Présentoir</h2>
             <p>Planning d'attribution et de présence pour les présentoirs mobiles.</p>
         </div>
 
+        <!-- 5. PÔLE SONS VIDÉO ESTRADE -->
         <div id="sono" class="panel">
             <h2>Pôle Sono Video Estrade</h2>
             <p>Gestion de la régie audio, vidéo et des attributions à l'estrade.</p>
         </div>
 
+        <!-- 6. PÔLE NETTOYAGE -->
         <div id="nettoyage" class="panel">
             <h2>Pôle Nettoyage</h2>
             <p>Calendrier et répartition des équipes pour le nettoyage et la maintenance.</p>
         </div>
 
+        <!-- 7. PÔLE TERRITOIRES -->
         <div id="territoires" class="panel">
             <h2>Pôle Territoires (Assistant Localisation & Durée)</h2>
             
@@ -269,14 +277,18 @@
                     </tr>
                 </thead>
                 <tbody id="tbody-territoires">
-                    </tbody>
+                    <!-- Géré localement -->
+                </tbody>
             </table>
         </div>
     </div>
 
     <script>
         const SUPABASE_URL = "https://rilsoxeyraysvysfqcuo.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_jXFE9t4pf1D-1V62eXCJ5A_YM8Kn"; 
+        
+        // Colle ta clé copiée juste ici entre les guillemets :
+        const SUPABASE_KEY = "COUPER_ET_COLLER_TA_CLE_ICI"; 
+
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -346,14 +358,11 @@
                 fileNameOnCloud = 'planning_cahier.pdf';
             }
 
-            // URL publique directe du fichier dans le bucket Supabase
             const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/plannings/${fileNameOnCloud}?t=${new Date().getTime()}`;
-            
-            // Ouvre le fichier dans un nouvel onglet de l'iPad / de la Surface
             window.open(publicUrl, '_blank');
         }
 
-        // GESTION DES TERRITOIRES LOCALES
+        // GESTION DES TERRITOIRES LOCAUX
         let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
 
         function attribuerTerritoireLocal() {
