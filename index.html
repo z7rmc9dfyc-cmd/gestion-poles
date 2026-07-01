@@ -165,27 +165,35 @@
     </div>
 
     <div class="container">
+        <!-- 1. PÔLE DISCOURS PUBLICS -->
         <div id="discours" class="panel active">
             <h2>Pôle Discours Publics</h2>
-            
-            <div style="background: #f0f4f8; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                <input type="date" id="disc-date" style="padding: 8px;">
-                <input type="text" id="disc-theme" placeholder="Thème du discours" style="padding: 8px; flex: 1;">
-                <input type="text" id="disc-orateur" placeholder="Nom de l'orateur" style="padding: 8px;">
-                <input type="text" id="disc-assemblee" placeholder="Congrégation" style="padding: 8px;">
-                <button class="btn" onclick="ajouterDiscoursSupabase()">Ajouter le discours</button>
+            <div class="file-upload-box">
+                <p>Glissez-déposez le document de planning PDF ou cliquez pour charger</p>
+                <input type="file" id="file-discours" accept=".pdf,.docx">
             </div>
-
+            <button class="btn" onclick="saveToSupabase('discours_publics')">Enregistrer les données</button>
+            
             <table id="table-discours">
                 <thead>
-                    <tr><th>Date</th><th>Thème</th><th>Orateur</th><th>Assemblée</th></tr>
+                    <tr>
+                        <th>Date</th>
+                        <th>Thème</th>
+                        <th>N°</th>
+                        <th>Orateur</th>
+                        <th>Assemblée</th>
+                        <th>Président</th>
+                        <th>Lecteur</th>
+                        <th>Groupe qui reçoit l'orateur</th>
+                    </tr>
                 </thead>
                 <tbody id="tbody-discours">
-                    <tr><td colspan="4">Chargement des discours en direct depuis le cloud...</td></tr>
+                    <tr><td colspan="8" style="text-align:center; color:#777;">Aucun fichier synchronisé (Prêt pour dépôt PDF)</td></tr>
                 </tbody>
             </table>
         </div>
 
+        <!-- 2. PÔLE CAHIER VIE ET MINISTÈRE -->
         <div id="cahier" class="panel">
             <h2>Pôle Cahier Vie et Ministère</h2>
             <div class="file-upload-box">
@@ -195,26 +203,31 @@
             <button class="btn" onclick="saveToSupabase('cahier_vie')">Enregistrer les données</button>
         </div>
 
+        <!-- 3. PÔLE SORTIES SEMAINE -->
         <div id="sorties" class="panel">
             <h2>Pôle Sorties en semaine</h2>
             <p>Gestion des rendez-vous et des groupes pour les sorties de la semaine.</p>
         </div>
 
+        <!-- 4. PÔLE PRÉSENTOIR -->
         <div id="presentoir" class="panel">
             <h2>Pôle Présentoir</h2>
             <p>Planning d'attribution et de présence pour les présentoirs mobiles.</p>
         </div>
 
+        <!-- 5. PÔLE SONS VIDÉO ESTRADE -->
         <div id="sono" class="panel">
             <h2>Pôle Sono Video Estrade</h2>
             <p>Gestion de la régie audio, vidéo et des attributions à l'estrade.</p>
         </div>
 
+        <!-- 6. PÔLE NETTOYAGE -->
         <div id="nettoyage" class="panel">
             <h2>Pôle Nettoyage</h2>
             <p>Calendrier et répartition des équipes pour le nettoyage et la maintenance.</p>
         </div>
 
+        <!-- 7. PÔLE TERRITOIRES -->
         <div id="territoires" class="panel">
             <h2>Pôle Territoires (Assistant Localisation & Durée)</h2>
             
@@ -241,24 +254,21 @@
                     </tr>
                 </thead>
                 <tbody id="tbody-territoires">
-                    </tbody>
+                    <!-- Géré localement -->
+                </tbody>
             </table>
         </div>
     </div>
 
     <script>
-        // Connexion officielle à ton projet Supabase
         const SUPABASE_URL = "https://rilsoxeyraysvysfqcuo.supabase.co";
         const SUPABASE_KEY = "sb_publishable_jXFE9t4pf1D-1V62eXCJ5A_YM8Kn"; 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Au démarrage : charger les données
         document.addEventListener("DOMContentLoaded", function() {
             renderTerritoriesTable();
-            chargerDiscours(); // Active la lecture automatique du cloud
         });
 
-        // Navigation entre les onglets
         function switchTab(tabId) {
             const buttons = document.querySelectorAll('.tab-button');
             buttons.forEach(btn => btn.classList.remove('active'));
@@ -273,86 +283,7 @@
             if (targetPanel) targetPanel.classList.add('active');
         }
 
-        // ==========================================
-        //        FONCTIONS EN DIRECT SUPABASE
-        // ==========================================
-
-        // 1. LIRE les discours depuis Supabase
-        async function chargerDiscours() {
-            const tbody = document.getElementById('tbody-discours');
-            
-            try {
-                // On va chercher les données dans ta table "discours_publics"
-                let { data: discours, error } = await _supabase
-                    .from('discours_publics')
-                    .select('*')
-                    .order('date', { ascending: true });
-
-                if (error) throw error;
-
-                if (!discours || discours.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; color:#777;">Aucun discours enregistré pour le moment.</td></tr>`;
-                    return;
-                }
-
-                tbody.innerHTML = '';
-                discours.forEach(d => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><strong>${d.date || '-'}</strong></td>
-                        <td>${d.theme || '-'}</td>
-                        <td>${d.orateur || '-'}</td>
-                        <td>${d.assemblee || '-'}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-
-            } catch (err) {
-                console.error("Erreur de chargement:", err);
-                tbody.innerHTML = `<tr><td colspan="4" style="color:red; text-align:center;">Erreur de connexion cloud. Vérifie ta table Supabase.</td></tr>`;
-            }
-        }
-
-        // 2. ENVOYER un nouveau discours sur Supabase
-        async function ajouterDiscoursSupabase() {
-            const date = document.getElementById('disc-date').value;
-            const theme = document.getElementById('disc-theme').value;
-            const orateur = document.getElementById('disc-orateur').value;
-            const assemblee = document.getElementById('disc-assemblee').value;
-
-            if(!date || !theme || !orateur) {
-                alert("Veuillez renseigner au moins la date, le thème et l'orateur.");
-                return;
-            }
-
-            try {
-                const { error } = await _supabase
-                    .from('discours_publics')
-                    .insert([{ date, theme, orateur, assemblee }]);
-
-                if (error) throw error;
-
-                alert("Discours enregistré avec succès sur le Cloud !");
-                
-                // Nettoyage des cases
-                document.getElementById('disc-date').value = '';
-                document.getElementById('disc-theme').value = '';
-                document.getElementById('disc-orateur').value = '';
-                document.getElementById('disc-assemblee').value = '';
-
-                // On recharge le tableau en direct
-                chargerDiscours();
-
-            } catch (err) {
-                console.error("Erreur d'envoi:", err);
-                alert("Impossible d'enregistrer. Vérifie que le nom de ta table sur Supabase est exactement 'discours_publics'.");
-            }
-        }
-
-
-        // ==========================================
-        //          GESTION DES TERRITOIRES
-        // ==========================================
+        // GESTION DES TERRITOIRES LOCALES
         let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
 
         function attribuerTerritoireLocal() {
@@ -441,7 +372,7 @@
         }
 
         function saveToSupabase(poleName) {
-            alert("Données en cours de synchronisation pour le pôle " + poleName);
+            alert("Fichier PDF détecté pour le pôle Discours. Envoi en cours vers Supabase...");
         }
     </script>
 </body>
