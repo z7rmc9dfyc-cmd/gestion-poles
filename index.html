@@ -1,4 +1,243 @@
-<script>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de la Congrégation - 7 Pôles</title>
+    <!-- Intégration du SDK Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #27ae60;
+            --bg-color: #f4f6f7;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        header h1 { margin: 0; font-size: 24px; }
+        header p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; }
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 15px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #7f8c8d;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-button:hover { color: var(--secondary-color); }
+        .tab-button.active {
+            color: var(--secondary-color);
+            border-bottom: 3px solid var(--secondary-color);
+        }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .panel { display: none; }
+        .panel.active { display: block; }
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+        }
+        h2 { color: var(--primary-color); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .upload-zone {
+            border: 2px dashed #bdc3c7;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            background: #fafafa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-zone:hover { border-color: var(--secondary-color); background: #f0f9f4; }
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        .btn:hover { background-color: #219653; }
+        .btn-view { background-color: #34495e; margin-left: 10px; }
+        .btn-view:hover { background-color: #2c3e50; }
+        .preview-box { margin-top: 20px; display: none; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; }
+        iframe { width: 100%; height: 500px; border: none; }
+        
+        /* Styles pour les Territoires */
+        .form-inline { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 6px; }
+        .form-inline input, .form-inline select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+        .form-inline input[type="number"] { width: 100px; }
+        .table-responsive { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e0e0e0; font-size: 14px; }
+        th { background-color: var(--primary-color); color: white; }
+        tr:hover { background-color: #fcfcfc; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+        .badge-dispo { background-color: #2ecc71; color: white; }
+        .badge-sorti { background-color: #f1c40f; color: #333; }
+        .badge-retard { background-color: #e74c3c; color: white; }
+        .btn-action { padding: 5px 10px; font-size: 12px; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Système de Coordination Général</h1>
+        <p>Gestion unifiée des 7 pôles d'activité — Assemblée de Monplaisir</p>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="tab-button active" onclick="switchTab('discours')">🎤 Discours</button>
+        <button class="tab-button" onclick="switchTab('cahier')">📖 Cahier Vie et Ministère</button>
+        <button class="tab-button" onclick="switchTab('sorties')">🚗 Sorties en semaine</button>
+        <button class="tab-button" onclick="switchTab('presentoir')">🗂️ Présentoir</button>
+        <button class="tab-button" onclick="switchTab('sono')">📢 Sono Vidéo Estrade</button>
+        <button class="tab-button" onclick="switchTab('nettoyage')">🧹 Nettoyage</button>
+        <button class="tab-button" onclick="switchTab('territoires')">🗺️ Territoires</button>
+    </div>
+
+    <div class="container">
+        <!-- PÔLES 1 À 6 (DOCUMENTS PDF) -->
+        <div id="discours" class="panel active">
+            <div class="card">
+                <h2>🎤 Pôle Discours Publics</h2>
+                <div class="upload-zone">
+                    <input type="file" id="file-discours" accept="application/pdf" onchange="visualiserPDF('discours')"><br><br>
+                    <button class="btn" onclick="saveToLocalStorage('discours')">Enregistrer le Planning</button>
+                    <button class="btn btn-view" onclick="ouvrirPlanning('discours')">Ouvrir en plein écran</button>
+                </div>
+                <div id="preview-discours" class="preview-box"><iframe id="iframe-discours"></iframe></div>
+            </div>
+        </div>
+
+        <div id="cahier" class="panel">
+            <div class="card">
+                <h2>📖 Pôle Cahier Vie et Ministère</h2>
+                <div class="upload-zone">
+                    <input type="file" id="file-cahier" accept="application/pdf" onchange="visualiserPDF('cahier')"><br><br>
+                    <button class="btn" onclick="saveToLocalStorage('cahier')">Enregistrer le Planning</button>
+                    <button class="btn btn-view" onclick="ouvrirPlanning('cahier')">Ouvrir en plein écran</button>
+                </div>
+                <div id="preview-cahier" class="preview-box"><iframe id="iframe-cahier"></iframe></div>
+            </div>
+        </div>
+
+        <div id="sorties" class="panel">
+            <div class="card">
+                <h2>🚗 Pôle Sorties en semaine</h2>
+                <div class="upload-zone">
+                    <input type="file" id="file-sorties" accept="application/pdf" onchange="visualiserPDF('sorties')"><br><br>
+                    <button class="btn" onclick="saveToLocalStorage('sorties')">Enregistrer le Planning</button>
+                    <button class="btn btn-view" onclick="ouvrirPlanning('sorties')">Ouvrir en plein écran</button>
+                </div>
+                <div id="preview-sorties" class="preview-box"><iframe id="iframe-sorties"></iframe></div>
+            </div>
+        </div>
+
+        <div id="presentoir" class="panel">
+            <div class="card">
+                <h2>🗂️ Pôle Présentoir Mobile</h2>
+                <div class="upload-zone">
+                    <input type="file" id="file-presentoir" accept="application/pdf" onchange="visualiserPDF('presentoir')"><br><br>
+                    <button class="btn" onclick="saveToLocalStorage('presentoir')">Enregistrer le Planning</button>
+                    <button class="btn btn-view" onclick="ouvrirPlanning('presentoir')">Ouvrir en plein écran</button>
+                </div>
+                <div id="preview-presentoir" class="preview-box"><iframe id="iframe-presentoir"></iframe></div>
+            </div>
+        </div>
+
+        <div id="sono" class="panel">
+            <div class="card">
+                <h2>📢 Pôle Sono Vidéo Estrade</h2>
+                <div class="upload-zone">
+                    <input type="file" id="file-sono" accept="application/pdf" onchange="visualiserPDF('sono')"><br><br>
+                    <button class="btn" onclick="saveToLocalStorage('sono')">Enregistrer le Planning</button>
+                    <button class="btn btn-view" onclick="ouvrirPlanning('sono')">Ouvrir en plein écran</button>
+                </div>
+                <div id="preview-sono" class="preview-box"><iframe id="iframe-sono"></iframe></div>
+            </div>
+        </div>
+
+        <div id="nettoyage" class="panel">
+            <div class="card">
+                <h2>🧹 Pôle Nettoyage Salle du Royaume</h2>
+                <div class="upload-zone">
+                    <input type="file" id="file-nettoyage" accept="application/pdf" onchange="visualiserPDF('nettoyage')"><br><br>
+                    <button class="btn" onclick="saveToLocalStorage('nettoyage')">Enregistrer le Planning</button>
+                    <button class="btn btn-view" onclick="ouvrirPlanning('nettoyage')">Ouvrir en plein écran</button>
+                </div>
+                <div id="preview-nettoyage" class="preview-box"><iframe id="iframe-nettoyage"></iframe></div>
+            </div>
+        </div>
+
+        <!-- PÔLE 7 : TERRITOIRES SYNCHRONISÉ SUPABASE -->
+        <div id="territoires" class="panel">
+            <div class="card">
+                <h2>🗺️ Pôle Territoires (Synchronisé Supabase)</h2>
+                
+                <div class="form-inline">
+                    <input type="number" id="terr-num" placeholder="N° Carte (1-120)" min="1" max="120">
+                    <select id="terr-face">
+                        <option value="Recto">Recto</option>
+                        <option value="Verso">Verso</option>
+                    </select>
+                    <input type="text" id="terr-nom" placeholder="Nom">
+                    <input type="text" id="terr-prenom" placeholder="Prénom">
+                    <button class="btn" style="margin-top:0;" onclick="attribuerTerritoireSupabase()">Attribuer la carte</button>
+                </div>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>N° Carte & Face</th>
+                                <th>Nom & Prénom</th>
+                                <th>Date Sortie</th>
+                                <th>Limite (3 mois)</th>
+                                <th>Statut Durée</th>
+                                <th>Actions / Localisation</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-territoires">
+                            <!-- Rempli dynamiquement par JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
         // --- INITIALISATION SUPABASE CORRECTIONS ---
         const SUPABASE_URL = "https://rilsoxeyraysvysfqcuo.supabase.co";
         const SUPABASE_KEY = "sb_publishable_key_44ff64058e578c7512da5d4277b077a16ea7738f6b7bd4d2627e7f1e6798f5b8"; 
@@ -201,3 +440,5 @@
             }
         }
     </script>
+</body>
+</html>
