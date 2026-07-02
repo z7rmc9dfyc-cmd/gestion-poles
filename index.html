@@ -217,7 +217,6 @@
     </div>
 
     <div class="container">
-        <!-- 1. PÔLE DISCOURS PUBLICS -->
         <div id="discours" class="panel active">
             <h2>Pôle Discours Publics</h2>
             <div class="file-upload-box">
@@ -233,7 +232,6 @@
             </div>
         </div>
 
-        <!-- 2. PÔLE CAHIER VIE ET MINISTÈRE -->
         <div id="cahier" class="panel">
             <h2>Pôle Cahier Vie et Ministère</h2>
             <div class="file-upload-box">
@@ -249,7 +247,6 @@
             </div>
         </div>
 
-        <!-- 3. PÔLE SORTIES SEMAINE -->
         <div id="sorties" class="panel">
             <h2>Pôle Sorties en Semaine</h2>
             <div class="file-upload-box">
@@ -265,7 +262,6 @@
             </div>
         </div>
 
-        <!-- 4. PÔLE PRÉSENTOIR -->
         <div id="presentoir" class="panel">
             <h2>Pôle Présentoir</h2>
             <div class="file-upload-box">
@@ -281,7 +277,6 @@
             </div>
         </div>
 
-        <!-- 5. PÔLE SONO VIDÉO ESTRADE -->
         <div id="sono" class="panel">
             <h2>Pôle Sono Vidéo Estrade</h2>
             <div class="file-upload-box">
@@ -297,7 +292,6 @@
             </div>
         </div>
 
-        <!-- 6. PÔLE NETTOYAGE -->
         <div id="nettoyage" class="panel">
             <h2>Pôle Nettoyage</h2>
             <div class="file-upload-box">
@@ -313,9 +307,8 @@
             </div>
         </div>
 
-        <!-- 7. PÔLE TERRITOIRES -->
         <div id="territoires" class="panel">
-            <h2>Pôle Territoires (Assistant Localisation & Durée)</h2>
+            <h2>Pôle Territoires (Synchronisé Supabase)</h2>
             <div class="form-group">
                 <input type="number" id="terr-num" placeholder="N° Carte (1-120)" min="1" max="120" style="width: 120px;">
                 <select id="terr-face">
@@ -324,7 +317,7 @@
                 </select>
                 <input type="text" id="terr-nom" placeholder="Nom">
                 <input type="text" id="terr-prenom" placeholder="Prénom">
-                <button class="btn" onclick="attribuerTerritoireLocal()">Attribuer la carte</button>
+                <button class="btn" onclick="attribuerTerritoireSupabase()">Attribuer la carte</button>
             </div>
             <table>
                 <thead>
@@ -343,9 +336,25 @@
     </div>
 
     <script>
+        // --- INITIALISATION SUPABASE CORRECTIONS ---
+        const SUPABASE_URL = "https://rilsoxeyraysvysfqcuo.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_key_44ff64058e578c7512da5d4277b077a16ea7738f6b7bd4d2627e7f1e6798f5b8"; 
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let localTerritoiresMemory = {};
+
         document.addEventListener("DOMContentLoaded", function() {
-            renderTerritoriesTable();
-            // Charger automatiquement les aperçus des plannings précédemment enregistrés
+            fetchTerritoiresFromSupabase();
+            
+            // Écouter les changements en temps réel (Realtime)
+            _supabase
+                .channel('schema-db-changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'territoires_data' }, payload => {
+                    fetchTerritoiresFromSupabase();
+                })
+                .subscribe();
+
+            // Charger les fichiers d'aperçus locaux
             const poles = ['discours', 'cahier', 'sorties', 'presentoir', 'sono', 'nettoyage'];
             poles.forEach(pole => {
                 const savedData = localStorage.getItem('last_file_' + pole);
@@ -406,52 +415,123 @@
             }
         }
 
-        // --- GESTION DU PÔLE TERRITOIRES ---
-        let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
-        function attribuerTerritoireLocal() {
-            const num = document.getElementById('terr-num').value;
+        // --- SYNCHRONISATION DU PÔLE TERRITOIRES ---
+        async function fetchTerritoiresFromSupabase() {
+            const { data, error } = await _supabase
+                .from('territoires_data')
+                .select('*');
+            
+            if (error) {
+                console.error("Erreur de récupération :", error);
+                return;
+            }
+
+            localTerritoiresMemory = {};
+            data.forEach(item => {
+                const key = item.numero + "_" + item.face;
+                localTerritoiresMemory[key] = item;
+            });
+            renderTerritoriesTable();
+        }
+
+        async function attribuerTerritoireSupabase() {
+            const num = parseInt(document.getElementById('terr-num').value);
             const face = document.getElementById('terr-face').value;
             const nom = document.getElementById('terr-nom').value.toUpperCase();
             const prenom = document.getElementById('terr-prenom').value;
-            if(!num || num < 1 || num > 120 || !nom || !prenom) return alert("Données incomplètes.");
-            const key = num + "_" + face;
+            
+            if(!num || num < 1 || num > 120 || !nom || !prenom) {
+                return alert("Veuillez remplir toutes les cases correctement.");
+            }
+
+            const customId = num + "_" + face;
             const dateSortie = new Date().toISOString().split('T')[0];
-            databaseTerritoires[key] = { numero: num, face, proclamateur: nom + " " + prenom, dateSortie, statut: 'Sorti' };
-            localStorage.setItem('territoires_data', JSON.stringify(databaseTerritoires));
-            renderTerritoriesTable();
-            document.getElementById('terr-num').value = ''; document.getElementById('terr-nom').value = ''; document.getElementById('terr-prenom').value = '';
-        }
-        function retournerTerritoireLocal(key) {
-            if(databaseTerritoires[key]) {
-                databaseTerritoires[key].statut = 'Disponible'; databaseTerritoires[key].proclamateur = '-'; databaseTerritoires[key].dateSortie = '-';
-                localStorage.setItem('territoires_data', JSON.stringify(databaseTerritoires));
-                renderTerritoriesTable();
+            
+            const dSortie = new Date();
+            const dLimite = new Date(dSortie);
+            dLimite.setMonth(dLimite.getMonth() + 3);
+            const dateLimite = dLimite.toISOString().split('T')[0];
+
+            // Envoyer ou mettre à jour sur Supabase
+            const { error } = await _supabase
+                .from('territoires_data')
+                .upsert({ 
+                    id: customId,
+                    numero: num, 
+                    face: face, 
+                    proclamateur: nom + " " + prenom, 
+                    date_sortie: dateSortie, 
+                    date_limite: dateLimite,
+                    statut: 'Sorti' 
+                });
+
+            if (error) {
+                alert("Erreur lors de l'attribution : " + error.message);
+            } else {
+                document.getElementById('terr-num').value = ''; 
+                document.getElementById('terr-nom').value = ''; 
+                document.getElementById('terr-prenom').value = '';
+                fetchTerritoiresFromSupabase();
             }
         }
-        function localiserCarte(numero) {
-            window.open(`https://maps.google.com/?q=Goyave+Carte+${numero}`, '_blank');
+
+        async function retournerTerritoireSupabase(key) {
+            const dateEntree = new Date().toISOString().split('T')[0];
+            
+            const { error } = await _supabase
+                .from('territoires_data')
+                .upsert({ 
+                    id: key,
+                    statut: 'Disponible', 
+                    proclamateur: '-', 
+                    date_sortie: '-',
+                    date_limite: '-',
+                    date_entree: dateEntree
+                });
+
+            if (error) {
+                alert("Erreur lors du retour : " + error.message);
+            } else {
+                fetchTerritoiresFromSupabase();
+            }
         }
+
+        function localiserCarte(numero) {
+            window.open(`https://maps.google.com/?q=Goyave+Carte+$${numero}`, '_blank');
+        }
+
         function renderTerritoriesTable() {
             const tbody = document.getElementById('tbody-territoires');
-            if(!tbody) return; tbody.innerHTML = '';
+            if(!tbody) return; 
+            tbody.innerHTML = '';
+
             for(let i = 1; i <= 120; i++) {
                 ['Recto', 'Verso'].forEach(face => {
                     const key = i + "_" + face;
-                    const item = databaseTerritoires[key] || { numero: i, face: face, proclamateur: '-', dateSortie: '-', statut: 'Disponible' };
-                    let dateLimiteStr = '-';
+                    const item = localTerritoiresMemory[key] || { numero: i, face: face, proclamateur: '-', date_sortie: '-', date_limite: '-', statut: 'Disponible' };
+                    
+                    let dateLimiteStr = item.date_limite || '-';
                     let statutBadge = `<span class="badge badge-dispo">Disponible</span>`;
                     let actionBtn = `<span style="color:#aaa; font-size:12px;">Aucune</span>`;
-                    if(item.statut === 'Sorti' && item.dateSortie !== '-') {
-                        const dSortie = new Date(item.dateSortie);
-                        const dLimite = new Date(dSortie);
-                        dLimite.setMonth(dLimite.getMonth() + 3);
-                        dateLimiteStr = dLimite.toISOString().split('T')[0];
+                    
+                    if(item.statut === 'Sorti' && item.date_sortie !== '-') {
+                        const dLimite = new Date(item.date_limite);
                         statutBadge = (new Date() > dLimite) ? `<span class="badge badge-retard">Retard (+3 mois)</span>` : `<span class="badge badge-sorti">Sorti</span>`;
-                        actionBtn = `<button class="btn-action" style="background:#e74c3c;" onclick="retournerTerritoireLocal('${key}')">Rentrer</button>`;
+                        actionBtn = `<button class="btn-action" style="background:#e74c3c;" onclick="retournerTerritoireSupabase('${key}')">Rentrer</button>`;
                     }
+                    
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td><strong>Carte ${item.numero}</strong> (${item.face})</td><td>${item.proclamateur}</td><td>${item.dateSortie}</td><td>${dateLimiteStr}</td><td>${statutBadge}</td>
-                    <td>${actionBtn}<button class="btn-action" style="background:#3498db;" onclick="localiserCarte(${item.numero})">📍 Localiser</button></td>`;
+                    tr.innerHTML = `
+                        <td><strong>Carte ${item.numero}</strong> (${item.face})</td>
+                        <td>${item.proclamateur}</td>
+                        <td>${item.date_sortie}</td>
+                        <td>${dateLimiteStr}</td>
+                        <td>${statutBadge}</td>
+                        <td>
+                            ${actionBtn}
+                            <button class="btn-action" style="background:#3498db;" onclick="localiserCarte(${item.numero})">📍 Localiser</button>
+                        </td>
+                    `;
                     tbody.appendChild(tr);
                 });
             }
