@@ -7,12 +7,14 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #27ae60;
-            --bg-color: #f4f6f7;
+            --primary-color: #2b3e50;
+            --secondary-color: #4caf50;
+            --accent-color: #e74c3c;
+            --bg-color: #f4f7f6;
             --card-bg: #ffffff;
             --text-color: #333333;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-color);
@@ -20,348 +22,414 @@
             margin: 0;
             padding: 0;
         }
+
         header {
-            background-color: var(--secondary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
             padding: 20px;
             text-align: center;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
-        header h1 { margin: 0; font-size: 24px; }
-        header p { margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; }
+
         .nav-tabs {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            overflow-x: auto;
-            white-space: nowrap;
+            background: #ffffff;
+            border-bottom: 2px solid #ddd;
+            padding: 10px 0;
         }
+
         .tab-button {
             background: none;
             border: none;
-            padding: 15px 20px;
-            font-size: 15px;
-            font-weight: 600;
-            color: #7f8c8d;
+            padding: 12px 20px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
             border-bottom: 3px solid transparent;
+            transition: all 0.3s;
         }
-        .tab-button:hover { color: var(--secondary-color); }
-        .tab-button.active {
-            color: var(--secondary-color);
+
+        .tab-button:hover, .tab-button.active {
+            color: var(--primary-color);
             border-bottom: 3px solid var(--secondary-color);
         }
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-        .panel { display: none; }
-        .panel.active { display: block; }
-        .card {
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .panel {
             background: var(--card-bg);
             border-radius: 8px;
             padding: 25px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
+            display: none;
         }
-        h2 { color: var(--primary-color); margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .upload-zone {
-            border: 2px dashed #bdc3c7;
-            padding: 30px;
-            text-align: center;
-            border-radius: 8px;
-            background: #fafafa;
-            cursor: pointer;
-            transition: all 0.3s;
+
+        .panel.active {
+            display: block;
         }
-        .upload-zone:hover { border-color: var(--secondary-color); background: #f0f9f4; }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
         .btn {
             background-color: var(--secondary-color);
             color: white;
             border: none;
             padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background 0.2s;
-            margin-top: 10px;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-right: 10px;
         }
-        .btn:hover { background-color: #219653; }
-        .btn-view { background-color: #34495e; margin-left: 10px; }
-        .btn-view:hover { background-color: #2c3e50; }
-        .preview-box { margin-top: 20px; display: none; border: 1px solid #ddd; border-radius: 4px; overflow: hidden; }
-        iframe { width: 100%; height: 500px; border: none; }
-        
-        /* Styles pour les Territoires */
-        .form-inline { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; background: #f8f9fa; padding: 15px; border-radius: 6px; }
-        .form-inline input, .form-inline select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
-        .form-inline input[type="number"] { width: 100px; }
-        .table-responsive { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #e0e0e0; font-size: 14px; }
-        th { background-color: var(--primary-color); color: white; }
-        tr:hover { background-color: #fcfcfc; }
-        .badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+
+        .btn:hover {
+            background-color: #439a46;
+        }
+
+        .btn-view {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-top: 15px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-view:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            font-size: 13px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .file-upload-box {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            background: #fafafa;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
         .badge-dispo { background-color: #2ecc71; color: white; }
-        .badge-sorti { background-color: #f1c40f; color: #333; }
+        .badge-sorti { background-color: #e67e22; color: white; }
         .badge-retard { background-color: #e74c3c; color: white; }
-        .btn-action { padding: 5px 10px; font-size: 12px; color: white; border: none; border-radius: 4px; cursor: pointer; margin-right: 5px; }
     </style>
 </head>
 <body>
 
     <header>
         <h1>Système de Coordination Général</h1>
-        <p>Gestion unifiée des 7 pôles d'activité — Assemblée de Monplaisir</p>
+        <p>Gestion unifiée des 7 pôles d'activité</p>
     </header>
 
     <div class="nav-tabs">
-        <button class="tab-button active" onclick="switchTab('discours')">🎤 Discours</button>
+        <button class="tab-button active" onclick="switchTab('discours')">🎙️ Discours</button>
         <button class="tab-button" onclick="switchTab('cahier')">📖 Cahier Vie et Ministère</button>
         <button class="tab-button" onclick="switchTab('sorties')">🚗 Sorties en semaine</button>
-        <button class="tab-button" onclick="switchTab('presentoir')">🗂️ Présentoir</button>
-        <button class="tab-button" onclick="switchTab('sono')">📢 Sono Vidéo Estrade</button>
+        <button class="tab-button" onclick="switchTab('presentoir')">🛒 Présentoir</button>
+        <button class="tab-button" onclick="switchTab('sono')">🔊 Sono Video Estrade</button>
         <button class="tab-button" onclick="switchTab('nettoyage')">🧹 Nettoyage</button>
         <button class="tab-button" onclick="switchTab('territoires')">🗺️ Territoires</button>
     </div>
 
     <div class="container">
         <div id="discours" class="panel active">
-            <div class="card">
-                <h2>🎤 Pôle Discours Publics</h2>
-                <div class="upload-zone">
-                    <input type="file" id="file-discours" accept="application/pdf" onchange="visualiserPDF('discours')"><br><br>
-                    <button class="btn" onclick="saveToLocalStorage('discours')">Enregistrer le Planning</button>
-                    <button class="btn btn-view" onclick="ouvrirPlanning('discours')">Ouvrir en plein écran</button>
-                </div>
-                <div id="preview-discours" class="preview-box"><iframe id="iframe-discours"></iframe></div>
+            <h2>Pôle Discours Publics</h2>
+            <div class="file-upload-box">
+                <p>Glissez-déposez le document de planning PDF ou cliquez pour charger</p>
+                <input type="file" id="file-discours" accept=".pdf,.docx">
             </div>
+            <button class="btn" onclick="saveToSupabase('discours_publics')">Enregistrer les données</button>
+            
+            <button class="btn-view" onclick="ouvrirPlanning('discours_publics')">📄 Ouvrir le planning des Discours</button>
+            
+            <table id="table-discours">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Thème</th>
+                        <th>N°</th>
+                        <th>Orateur</th>
+                        <th>Assemblée</th>
+                        <th>Président</th>
+                        <th>Lecteur</th>
+                        <th>Groupe qui reçoit l'orateur</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-discours">
+                    <tr><td colspan="8" style="text-align:center; color:#777;">Utilisez le bouton bleu ci-dessus pour consulter le planning officiel.</td></tr>
+                </tbody>
+            </table>
         </div>
 
         <div id="cahier" class="panel">
-            <div class="card">
-                <h2>📖 Pôle Cahier Vie et Ministère</h2>
-                <div class="upload-zone">
-                    <input type="file" id="file-cahier" accept="application/pdf" onchange="visualiserPDF('cahier')"><br><br>
-                    <button class="btn" onclick="saveToLocalStorage('cahier')">Enregistrer le Planning</button>
-                    <button class="btn btn-view" onclick="ouvrirPlanning('cahier')">Ouvrir en plein écran</button>
-                </div>
-                <div id="preview-cahier" class="preview-box"><iframe id="iframe-cahier"></iframe></div>
+            <h2>Pôle Cahier Vie et Ministère</h2>
+            <div class="file-upload-box">
+                <p>Glissez-déposez le planning Vie et Ministère ou cliquez pour charger</p>
+                <input type="file" id="file-cahier" accept=".pdf,.docx">
             </div>
+            <button class="btn" onclick="saveToSupabase('cahier_vie')">Enregistrer les données</button>
+            <button class="btn-view" onclick="ouvrirPlanning('cahier_vie')">📄 Ouvrir le planning Vie et Ministère</button>
         </div>
 
         <div id="sorties" class="panel">
-            <div class="card">
-                <h2>🚗 Pôle Sorties en semaine</h2>
-                <div class="upload-zone">
-                    <input type="file" id="file-sorties" accept="application/pdf" onchange="visualiserPDF('sorties')"><br><br>
-                    <button class="btn" onclick="saveToLocalStorage('sorties')">Enregistrer le Planning</button>
-                    <button class="btn btn-view" onclick="ouvrirPlanning('sorties')">Ouvrir en plein écran</button>
-                </div>
-                <div id="preview-sorties" class="preview-box"><iframe id="iframe-sorties"></iframe></div>
-            </div>
+            <h2>Pôle Sorties en semaine</h2>
+            <p>Gestion des rendez-vous et des groupes pour les sorties de la semaine.</p>
         </div>
 
         <div id="presentoir" class="panel">
-            <div class="card">
-                <h2>🗂️ Pôle Présentoir Mobile</h2>
-                <div class="upload-zone">
-                    <input type="file" id="file-presentoir" accept="application/pdf" onchange="visualiserPDF('presentoir')"><br><br>
-                    <button class="btn" onclick="saveToLocalStorage('presentoir')">Enregistrer le Planning</button>
-                    <button class="btn btn-view" onclick="ouvrirPlanning('presentoir')">Ouvrir en plein écran</button>
-                </div>
-                <div id="preview-presentoir" class="preview-box"><iframe id="iframe-presentoir"></iframe></div>
-            </div>
+            <h2>Pôle Présentoir</h2>
+            <p>Planning d'attribution et de présence pour les présentoirs mobiles.</p>
         </div>
 
         <div id="sono" class="panel">
-            <div class="card">
-                <h2>📢 Pôle Sono Vidéo Estrade</h2>
-                <div class="upload-zone">
-                    <input type="file" id="file-sono" accept="application/pdf" onchange="visualiserPDF('sono')"><br><br>
-                    <button class="btn" onclick="saveToLocalStorage('sono')">Enregistrer le Planning</button>
-                    <button class="btn btn-view" onclick="ouvrirPlanning('sono')">Ouvrir en plein écran</button>
-                </div>
-                <div id="preview-sono" class="preview-box"><iframe id="iframe-sono"></iframe></div>
-            </div>
+            <h2>Pôle Sono Video Estrade</h2>
+            <p>Gestion de la régie audio, vidéo et des attributions à l'estrade.</p>
         </div>
 
         <div id="nettoyage" class="panel">
-            <div class="card">
-                <h2>🧹 Pôle Nettoyage Salle du Royaume</h2>
-                <div class="upload-zone">
-                    <input type="file" id="file-nettoyage" accept="application/pdf" onchange="visualiserPDF('nettoyage')"><br><br>
-                    <button class="btn" onclick="saveToLocalStorage('nettoyage')">Enregistrer le Planning</button>
-                    <button class="btn btn-view" onclick="ouvrirPlanning('nettoyage')">Ouvrir en plein écran</button>
-                </div>
-                <div id="preview-nettoyage" class="preview-box"><iframe id="iframe-nettoyage"></iframe></div>
-            </div>
+            <h2>Pôle Nettoyage</h2>
+            <p>Calendrier et répartition des équipes pour le nettoyage et la maintenance.</p>
         </div>
 
         <div id="territoires" class="panel">
-            <div class="card">
-                <h2>🗺️ Pôle Territoires (120 Cartes Recto/Verso)</h2>
-                
-                <div class="form-inline">
-                    <input type="number" id="terr-num" placeholder="N° Carte (1-120)" min="1" max="120">
-                    <select id="terr-face">
-                        <option value="Recto">Recto</option>
-                        <option value="Verso">Verso</option>
-                    </select>
-                    <input type="text" id="terr-nom" placeholder="Nom">
-                    <input type="text" id="terr-prenom" placeholder="Prénom">
-                    <button class="btn" style="margin-top:0;" onclick="attribuerTerritoireSupabase()">Attribuer la carte</button>
-                </div>
-
-                <div class="table-responsive">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>N° Carte & Face</th>
-                                <th>Nom & Prénom</th>
-                                <th>Date Sortie</th>
-                                <th>Limite (3 mois)</th>
-                                <th>Date Entrée</th>
-                                <th>Statut</th>
-                                <th>Actions / Localisation</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-territoires">
-                            </tbody>
-                    </table>
-                </div>
+            <h2>Pôle Territoires (Assistant Localisation & Durée)</h2>
+            
+            <div style="background: #f0f4f8; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                <input type="number" id="terr-num" placeholder="N° Carte (1-120)" min="1" max="120" style="padding: 8px; width: 120px;">
+                <select id="terr-face" style="padding: 8px;">
+                    <option value="Recto">Recto</option>
+                    <option value="Verso">Verso</option>
+                </select>
+                <input type="text" id="terr-nom" placeholder="Nom" style="padding: 8px;">
+                <input type="text" id="terr-prenom" placeholder="Prénom" style="padding: 8px;">
+                <button class="btn" onclick="attribuerTerritoireLocal()">Attribuer la carte</button>
             </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>N° Carte & Face</th>
+                        <th>Nom & Prénom</th>
+                        <th>Date Sortie</th>
+                        <th>Limite (3 mois)</th>
+                        <th>Statut Durée</th>
+                        <th>Actions / Localisation</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-territoires">
+                    </tbody>
+            </table>
         </div>
     </div>
 
     <script>
         const SUPABASE_URL = "https://rilsoxeyraysvysfqcuo.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_key_44ff64058e578c7512da5d4277b077a16ea7738f6b7bd4d2627e7f1e6798f5b8"; 
+        
+        // METTEZ VOTRE VÉRITABLE CLÉ ENTRE LES DEUX GUILLEMETS CI-DESSOUS :
+        const SUPABASE_KEY = ""; 
+
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let localTerritoiresMemory = {};
-
         document.addEventListener("DOMContentLoaded", function() {
-            fetchTerritoiresFromSupabase();
-            
-            _supabase
-                .channel('schema-db-changes')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'territoire_data' }, payload => {
-                    fetchTerritoiresFromSupabase();
-                })
-                .subscribe();
-
-            // Restauration sécurisée des plannings précédents
-            const poles = ['discours', 'cahier', 'sorties', 'presentoir', 'sono', 'nettoyage'];
-            poles.forEach(pole => {
-                const savedData = localStorage.getItem('last_file_' + pole);
-                if (savedData) {
-                    const previewContainer = document.getElementById(`preview-${pole}`);
-                    const iframe = document.getElementById(`iframe-${pole}`);
-                    if (iframe && previewContainer) {
-                        iframe.src = savedData;
-                        previewContainer.style.display = "block";
-                    }
-                }
-            });
+            renderTerritoriesTable();
         });
 
         function switchTab(tabId) {
-            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
-            const clickedButton = Array.from(document.querySelectorAll('.tab-button')).find(btn => btn.getAttribute('onclick').includes(`'${tabId}'`));
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            const panels = document.querySelectorAll('.panel');
+            panels.forEach(panel => panel.classList.remove('active'));
+
+            const clickedButton = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes(`'${tabId}'`));
             if (clickedButton) clickedButton.classList.add('active');
-            if (document.getElementById(tabId)) document.getElementById(tabId).classList.add('active');
+
+            const targetPanel = document.getElementById(tabId);
+            if (targetPanel) targetPanel.classList.add('active');
         }
 
-        function visualiserPDF(pole) {
-            const fileInput = document.getElementById(`file-${pole}`);
-            const previewContainer = document.getElementById(`preview-${pole}`);
-            const iframe = document.getElementById(`iframe-${pole}`);
-            if (fileInput.files && fileInput.files[0]) {
-                const blobUrl = URL.createObjectURL(fileInput.files[0]);
-                iframe.src = blobUrl;
-                previewContainer.style.display = "block";
+        // ENVOI DE PDF VERS LE STORAGE SUPABASE
+        async function saveToSupabase(poleName) {
+            let fileInput;
+            let fileNameOnCloud;
+
+            if (poleName === 'discours_publics') {
+                fileInput = document.getElementById('file-discours');
+                fileNameOnCloud = 'planning_discours.pdf';
+            } else if (poleName === 'cahier_vie') {
+                fileInput = document.getElementById('file-cahier');
+                fileNameOnCloud = 'planning_cahier.pdf';
             }
-        }
 
-        function saveToLocalStorage(pole) {
-            const fileInput = document.getElementById(`file-${pole}`);
-            const storageKey = 'last_file_' + pole;
             if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-                alert("Veuillez d'abord choisir un fichier PDF.");
+                alert("Veuillez d'abord sélectionner un fichier PDF à charger.");
                 return;
             }
+
             const file = fileInput.files[0];
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                localStorage.setItem(storageKey, e.target.result);
-                alert("Planning enregistré avec succès.");
+
+            try {
+                alert("Envoi du document en cours vers ton serveur Supabase... Patiente quelques secondes.");
+
+                const { data, error } = await _supabase.storage
+                    .from('plannings')
+                    .upload(fileNameOnCloud, file, {
+                        cacheControl: '3600',
+                        upsert: true
+                    });
+
+                if (error) throw error;
+
+                alert("Félicitations Fredy ! Le planning a été enregistré avec succès sur Supabase.");
+                
+            } catch (err) {
+                console.error("Erreur d'envoi détectée :", err);
+                alert("Erreur lors de l'enregistrement.");
             }
-            reader.readAsDataURL(file);
         }
 
-        function ouvrirPlanning(pole) {
-            const storageKey = 'last_file_' + pole;
-            const localData = localStorage.getItem(storageKey);
-            if (localData) {
-                const newWindow = window.open();
-                newWindow.document.write(`<iframe src="${localData}" style="width:100%; height:100%; border:none;"></iframe>`);
-            } else {
-                alert("Aucun fichier enregistré pour ce pôle.");
+        // FONCTION POUR LIRE ET OUVRIR LE PDF DEPUIS LE STORAGE
+        function ouvrirPlanning(poleName) {
+            let fileNameOnCloud = '';
+            if (poleName === 'discours_publics') {
+                fileNameOnCloud = 'planning_discours.pdf';
+            } else if (poleName === 'cahier_vie') {
+                fileNameOnCloud = 'planning_cahier.pdf';
             }
+
+            const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/plannings/${fileNameOnCloud}?t=${new Date().getTime()}`;
+            window.open(publicUrl, '_blank');
         }
 
-        // --- SECTION LOGIQUE DES 120 TERRITOIRES ---
-        async function fetchTerritoiresFromSupabase() {
-            const { data, error } = await _supabase.from('territoire_data').select('*');
-            if (error) return console.error(error);
+        // GESTION DES TERRITOIRES LOCAUX
+        let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
 
-            localTerritoiresMemory = {};
-            if (data) {
-                data.forEach(item => {
-                    const key = item.numero + "_" + item.face;
-                    localTerritoiresMemory[key] = item;
-                });
+        function attribuerTerritoireLocal() {
+            const num = document.getElementById('terr-num').value;
+            const face = document.getElementById('terr-face').value;
+            const nom = document.getElementById('terr-nom').value.toUpperCase();
+            const prenom = document.getElementById('terr-prenom').value;
+            
+            if(!num || num < 1 || num > 120 || !nom || !prenom) {
+                alert("Données incomplètes.");
+                return;
             }
+
+            const key = num + "_" + face;
+            const dateSortie = new Date().toISOString().split('T')[0];
+            
+            databaseTerritoires[key] = {
+                numero: num, face, proclamateur: nom + " " + prenom, dateSortie, statut: 'Sorti'
+            };
+
+            localStorage.setItem('territoires_data', JSON.stringify(databaseTerritoires));
             renderTerritoriesTable();
+
+            document.getElementById('terr-num').value = '';
+            document.getElementById('terr-nom').value = '';
+            document.getElementById('terr-prenom').value = '';
+        }
+
+        function retournerTerritoireLocal(key) {
+            if(databaseTerritoires[key]) {
+                databaseTerritoires[key].statut = 'Disponible';
+                databaseTerritoires[key].proclamateur = '-';
+                databaseTerritoires[key].dateSortie = '-';
+                localStorage.setItem('territoires_data', JSON.stringify(databaseTerritoires));
+                renderTerritoriesTable();
+            }
+        }
+
+        function localiserCarte(numero) {
+            window.open(`https://www.google.com/maps?q=Carte+Territoire+${numero}`, '_blank');
         }
 
         function renderTerritoriesTable() {
             const tbody = document.getElementById('tbody-territoires');
-            if(!tbody) return; 
+            if(!tbody) return;
             tbody.innerHTML = '';
 
-            // Boucle stricte pour afficher les 120 cartes Recto et Verso
             for(let i = 1; i <= 120; i++) {
                 ['Recto', 'Verso'].forEach(face => {
                     const key = i + "_" + face;
-                    const item = localTerritoiresMemory[key] || { 
-                        numero: i, 
-                        face: face, 
-                        proclamateur: '-', 
-                        date_sortie: '-', 
-                        date_limite: '-', 
-                        date_entree: '-',
-                        statut: 'Disponible' 
-                    };
+                    const item = databaseTerritoires[key] || { numero: i, face: face, proclamateur: '-', dateSortie: '-', statut: 'Disponible' };
                     
+                    let dateLimiteStr = '-';
                     let statutBadge = `<span class="badge badge-dispo">Disponible</span>`;
-                    let actionBtn = `<span style="color:#aaa; font-size:12px;">Aucune</span>`;
+                    let actionBtn = `<span style="color:#aaa; font-size:12px;">En attente</span>`;
                     
-                    if(item.statut === 'Sorti' && item.date_sortie !== '-') {
-                        const dLimite = new Date(item.date_limite);
-                        statutBadge = (new Date() > dLimite) ? `<span class="badge badge-retard">Retard (+3 mois)</span>` : `<span class="badge badge-sorti">Sorti</span>`;
-                        actionBtn = `<button class="btn-action" style="background:#e74c3c;" onclick="retournerTerritoireSupabase('${key}')">Rentrer</button>`;
+                    if(item.statut === 'Sorti' && item.dateSortie !== '-') {
+                        const dSortie = new Date(item.dateSortie);
+                        const dLimite = new Date(dSortie);
+                        dLimite.setMonth(dLimite.getMonth() + 3);
+                        dateLimiteStr = dLimite.toISOString().split('T')[0];
+                        
+                        if(new Date() > dLimite) {
+                            statutBadge = `<span class="badge badge-retard">Retard (+3 mois)</span>`;
+                        } else {
+                            statutBadge = `<span class="badge badge-sorti">Sorti</span>`;
+                        }
+                        actionBtn = `<button class="btn-action" style="background:#e74c3c;" onclick="retournerTerritoireLocal('${key}')">Rentrer</button>`;
                     }
-                    
+
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td><strong>Carte ${item.numero}</strong> (${item.face})</td>
                         <td>${item.proclamateur}</td>
-                        <td>${item.date_sortie}</td>
-                        <td>${item.date_limite || '-'}</td>
-                        <td>${item.date_entree || '-'}</td>
+                        <td>${item.dateSortie}</td>
+                        <td>${dateLimiteStr}</td>
                         <td>${statutBadge}</td>
                         <td>
                             ${actionBtn}
@@ -371,69 +439,6 @@
                     tbody.appendChild(tr);
                 });
             }
-        }
-
-        async function attribuerTerritoireSupabase() {
-            const num = parseInt(document.getElementById('terr-num').value);
-            const face = document.getElementById('terr-face').value;
-            const nom = document.getElementById('terr-nom').value.toUpperCase();
-            const prenom = document.getElementById('terr-prenom').value;
-            
-            if(!num || num < 1 || num > 120 || !nom || !prenom) {
-                return alert("Veuillez remplir toutes les cases correctement.");
-            }
-
-            const customId = num + "_" + face;
-            const dateSortie = new Date().toISOString().split('T')[0];
-            
-            const dSortie = new Date();
-            const dLimite = new Date(dSortie);
-            dLimite.setMonth(dLimite.getMonth() + 3); // Calcul automatique de la durée de 3 mois
-            const dateLimite = dLimite.toISOString().split('T')[0];
-
-            await _supabase
-                .from('territoire_data')
-                .upsert({ 
-                    id: customId,
-                    numero: num, 
-                    face: face, 
-                    proclamateur: nom + " " + prenom, 
-                    date_sortie: dateSortie, 
-                    date_limite: dateLimite,
-                    date_entree: '-',
-                    statut: 'Sorti' 
-                });
-
-            document.getElementById('terr-num').value = ''; 
-            document.getElementById('terr-nom').value = ''; 
-            document.getElementById('terr-prenom').value = '';
-            fetchTerritoiresFromSupabase();
-        }
-
-        async function retournerTerritoireSupabase(key) {
-            const dateEntree = new Date().toISOString().split('T')[0];
-            
-            // On conserve l'historique de la carte en la remettant disponible avec sa date d'entrée
-            if(localTerritoiresMemory[key]) {
-                await _supabase
-                    .from('territoire_data')
-                    .upsert({ 
-                        id: key,
-                        numero: localTerritoiresMemory[key].numero,
-                        face: localTerritoiresMemory[key].face,
-                        statut: 'Disponible', 
-                        proclamateur: '-', 
-                        date_sortie: '-',
-                        date_limite: '-',
-                        date_entree: dateEntree
-                    });
-            }
-            fetchTerritoiresFromSupabase();
-        }
-
-        // Fonction de localisation Maps dynamique pour Goyave
-        function localiserCarte(numero) {
-            window.open(`https://www.google.com/maps/search/?api=1&query=Carte+${numero}+Goyave+Guadeloupe`, '_blank');
         }
     </script>
 </body>
