@@ -200,7 +200,7 @@
 
         <div id="territoires" class="panel">
             <div class="card">
-                <h2>🗺️ Pôle Territoires (Synchronisé Supabase)</h2>
+                <h2>🗺️ Pôle Territoires (120 Cartes Recto/Verso)</h2>
                 
                 <div class="form-inline">
                     <input type="number" id="terr-num" placeholder="N° Carte (1-120)" min="1" max="120">
@@ -221,7 +221,8 @@
                                 <th>Nom & Prénom</th>
                                 <th>Date Sortie</th>
                                 <th>Limite (3 mois)</th>
-                                <th>Statut Durée</th>
+                                <th>Date Entrée</th>
+                                <th>Statut</th>
                                 <th>Actions / Localisation</th>
                             </tr>
                         </thead>
@@ -234,7 +235,6 @@
     </div>
 
     <script>
-        // --- INITIALISATION SUPABASE ---
         const SUPABASE_URL = "https://rilsoxeyraysvysfqcuo.supabase.co";
         const SUPABASE_KEY = "sb_publishable_key_44ff64058e578c7512da5d4277b077a16ea7738f6b7bd4d2627e7f1e6798f5b8"; 
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -251,7 +251,7 @@
                 })
                 .subscribe();
 
-            // RESTAURER TES ANCIENS PLANNINGS (SÉCURISÉ)
+            // Restauration sécurisée des plannings précédents
             const poles = ['discours', 'cahier', 'sorties', 'presentoir', 'sono', 'nettoyage'];
             poles.forEach(pole => {
                 const savedData = localStorage.getItem('last_file_' + pole);
@@ -289,14 +289,14 @@
             const fileInput = document.getElementById(`file-${pole}`);
             const storageKey = 'last_file_' + pole;
             if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-                alert("Veuillez d'abord choisir un fichier PDF pour ce pôle.");
+                alert("Veuillez d'abord choisir un fichier PDF.");
                 return;
             }
             const file = fileInput.files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
                 localStorage.setItem(storageKey, e.target.result);
-                alert("Félicitations Fredy ! Le planning de ce pôle a bien été enregistré avec succès.");
+                alert("Planning enregistré avec succès.");
             }
             reader.readAsDataURL(file);
         }
@@ -308,20 +308,14 @@
                 const newWindow = window.open();
                 newWindow.document.write(`<iframe src="${localData}" style="width:100%; height:100%; border:none;"></iframe>`);
             } else {
-                alert("Aucun fichier enregistré pour ce pôle pour le moment.");
+                alert("Aucun fichier enregistré pour ce pôle.");
             }
         }
 
-        // --- ENTRAINEMENT ET RENDU DU PÔLE TERRITOIRES ---
+        // --- SECTION LOGIQUE DES 120 TERRITOIRES ---
         async function fetchTerritoiresFromSupabase() {
-            const { data, error } = await _supabase
-                .from('territoire_data')
-                .select('*');
-            
-            if (error) {
-                console.error("Erreur Supabase :", error);
-                return;
-            }
+            const { data, error } = await _supabase.from('territoire_data').select('*');
+            if (error) return console.error(error);
 
             localTerritoiresMemory = {};
             if (data) {
@@ -338,13 +332,20 @@
             if(!tbody) return; 
             tbody.innerHTML = '';
 
-            // Génération dynamique stricte de 1 à 120 (Recto & Verso)
+            // Boucle stricte pour afficher les 120 cartes Recto et Verso
             for(let i = 1; i <= 120; i++) {
                 ['Recto', 'Verso'].forEach(face => {
                     const key = i + "_" + face;
-                    const item = localTerritoiresMemory[key] || { numero: i, face: face, proclamateur: '-', date_sortie: '-', date_limite: '-', statut: 'Disponible' };
+                    const item = localTerritoiresMemory[key] || { 
+                        numero: i, 
+                        face: face, 
+                        proclamateur: '-', 
+                        date_sortie: '-', 
+                        date_limite: '-', 
+                        date_entree: '-',
+                        statut: 'Disponible' 
+                    };
                     
-                    let dateLimiteStr = item.date_limite || '-';
                     let statutBadge = `<span class="badge badge-dispo">Disponible</span>`;
                     let actionBtn = `<span style="color:#aaa; font-size:12px;">Aucune</span>`;
                     
@@ -359,7 +360,8 @@
                         <td><strong>Carte ${item.numero}</strong> (${item.face})</td>
                         <td>${item.proclamateur}</td>
                         <td>${item.date_sortie}</td>
-                        <td>${dateLimiteStr}</td>
+                        <td>${item.date_limite || '-'}</td>
+                        <td>${item.date_entree || '-'}</td>
                         <td>${statutBadge}</td>
                         <td>
                             ${actionBtn}
@@ -386,7 +388,7 @@
             
             const dSortie = new Date();
             const dLimite = new Date(dSortie);
-            dLimite.setMonth(dLimite.getMonth() + 3); // Ajoute la durée limite de 3 mois
+            dLimite.setMonth(dLimite.getMonth() + 3); // Calcul automatique de la durée de 3 mois
             const dateLimite = dLimite.toISOString().split('T')[0];
 
             await _supabase
@@ -398,6 +400,7 @@
                     proclamateur: nom + " " + prenom, 
                     date_sortie: dateSortie, 
                     date_limite: dateLimite,
+                    date_entree: '-',
                     statut: 'Sorti' 
                 });
 
@@ -409,21 +412,28 @@
 
         async function retournerTerritoireSupabase(key) {
             const dateEntree = new Date().toISOString().split('T')[0];
-            await _supabase
-                .from('territoire_data')
-                .upsert({ 
-                    id: key,
-                    statut: 'Disponible', 
-                    proclamateur: '-', 
-                    date_sortie: '-',
-                    date_limite: '-',
-                    date_entree: dateEntree
-                });
+            
+            // On conserve l'historique de la carte en la remettant disponible avec sa date d'entrée
+            if(localTerritoiresMemory[key]) {
+                await _supabase
+                    .from('territoire_data')
+                    .upsert({ 
+                        id: key,
+                        numero: localTerritoiresMemory[key].numero,
+                        face: localTerritoiresMemory[key].face,
+                        statut: 'Disponible', 
+                        proclamateur: '-', 
+                        date_sortie: '-',
+                        date_limite: '-',
+                        date_entree: dateEntree
+                    });
+            }
             fetchTerritoiresFromSupabase();
         }
 
+        // Fonction de localisation Maps dynamique pour Goyave
         function localiserCarte(numero) {
-            window.open(`https://maps.google.com/?q=Carte+${numero}+Goyave`, '_blank');
+            window.open(`https://www.google.com/maps/search/?api=1&query=Carte+${numero}+Goyave+Guadeloupe`, '_blank');
         }
     </script>
 </body>
