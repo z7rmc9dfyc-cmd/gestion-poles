@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion de la Congrégation - 7 Pôles</title>
+    <!-- Intégration du SDK Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -126,7 +127,7 @@
     </div>
 
     <div class="container">
-        <!-- PÔLES PLANNINGS -->
+        <!-- PÔLES 1 À 6 -->
         <div id="discours" class="panel active">
             <div class="card">
                 <h2>🎤 Pôle Discours Publics</h2>
@@ -199,7 +200,7 @@
             </div>
         </div>
 
-        <!-- PÔLE TERRITOIRES -->
+        <!-- PÔLE 7 : TERRITOIRES -->
         <div id="territoires" class="panel">
             <div class="card">
                 <h2>🗺️ Pôle Territoires (Synchronisé Supabase)</h2>
@@ -254,7 +255,7 @@
                 })
                 .subscribe();
 
-            // Restaurer absolument TOUS tes anciens fichiers enregistrés automatiquement !
+            // SÉCURITÉ POUR TES PLANNINGS ENREGISTRÉS
             const poles = ['discours', 'cahier', 'sorties', 'presentoir', 'sono', 'nettoyage'];
             poles.forEach(pole => {
                 const savedData = localStorage.getItem('last_file_' + pole);
@@ -272,7 +273,6 @@
         function switchTab(tabId) {
             document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
-            
             const clickedButton = Array.from(document.querySelectorAll('.tab-button')).find(btn => btn.getAttribute('onclick').includes(`'${tabId}'`));
             if (clickedButton) clickedButton.classList.add('active');
             if (document.getElementById(tabId)) document.getElementById(tabId).classList.add('active');
@@ -316,14 +316,14 @@
             }
         }
 
-        // --- TERRITOIRES LOGIQUE ---
+        // --- TRAITEMENT DU PÔLE TERRITOIRES ---
         async function fetchTerritoiresFromSupabase() {
             const { data, error } = await _supabase
                 .from('territoire_data')
                 .select('*');
             
             if (error) {
-                console.error(error);
+                console.error("Erreur Supabase :", error);
                 return;
             }
 
@@ -342,6 +342,7 @@
             if(!tbody) return; 
             tbody.innerHTML = '';
 
+            // Génération dynamique des 120 cartes recto verso
             for(let i = 1; i <= 120; i++) {
                 ['Recto', 'Verso'].forEach(face => {
                     const key = i + "_" + face;
@@ -389,7 +390,7 @@
             
             const dSortie = new Date();
             const dLimite = new Date(dSortie);
-            dLimite.setMonth(dLimite.getMonth() + 3);
+            dLimite.setMonth(dLimite.getMonth() + 3); // Durée stricte de 3 mois
             const dateLimite = dLimite.toISOString().split('T')[0];
 
             await _supabase
@@ -425,6 +426,7 @@
             fetchTerritoiresFromSupabase();
         }
 
+        // Ligne géographique corrigée et fonctionnelle
         function localiserCarte(numero) {
             window.open(`https://maps.google.com/?q=${numero}+Goyave`, '_blank');
         }
