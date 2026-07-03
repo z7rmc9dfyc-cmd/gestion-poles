@@ -96,6 +96,24 @@
             background-color: #439a46;
         }
 
+        .btn-view {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-top: 15px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-view:hover {
+            background-color: #2980b9;
+        }
+
         .btn-action {
             padding: 6px 12px;
             font-size: 13px;
@@ -127,6 +145,15 @@
             background-color: #f2f2f2;
         }
 
+        .file-upload-box {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            background: #fafafa;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
         .badge {
             padding: 5px 10px;
             border-radius: 20px;
@@ -136,6 +163,12 @@
         .badge-dispo { background-color: #2ecc71; color: white; }
         .badge-sorti { background-color: #e67e22; color: white; }
         .badge-retard { background-color: #e74c3c; color: white; }
+        
+        .status-msg {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #27ae60;
+        }
     </style>
 </head>
 <body>
@@ -156,36 +189,79 @@
     </div>
 
     <div class="container">
+        <!-- 1. PÔLE DISCOURS PUBLICS -->
         <div id="discours" class="panel active">
             <h2>Pôle Discours Publics</h2>
-            <p>Gestion locale du planning des Discours Publics.</p>
+            <div class="file-upload-box">
+                <p>Glissez-déposez le document de planning ou cliquez pour charger</p>
+                <input type="file" id="file-discours" accept=".pdf,.docx,.jpg,.png">
+                <div id="status-discours" class="status-msg"></div>
+            </div>
+            <button class="btn" onclick="sauvegarderFichierLocal('discours')">Enregistrer le fichier</button>
+            <button class="btn-view" onclick="ouvrirFichierLocal('discours')">📄 Ouvrir le planning des Discours</button>
         </div>
 
+        <!-- 2. PÔLE CAHIER VIE ET MINISTÈRE -->
         <div id="cahier" class="panel">
             <h2>Pôle Cahier Vie et Ministère</h2>
-            <p>Gestion locale du planning de la réunion Vie et Ministère.</p>
+            <div class="file-upload-box">
+                <p>Glissez-déposez le planning Vie et Ministère ou cliquez pour charger</p>
+                <input type="file" id="file-cahier" accept=".pdf,.docx,.jpg,.png">
+                <div id="status-cahier" class="status-msg"></div>
+            </div>
+            <button class="btn" onclick="sauvegarderFichierLocal('cahier')">Enregistrer le fichier</button>
+            <button class="btn-view" onclick="ouvrirFichierLocal('cahier')">📄 Ouvrir le planning Vie et Ministère</button>
         </div>
 
+        <!-- 3. PÔLE SORTIES SEMAINE -->
         <div id="sorties" class="panel">
             <h2>Pôle Sorties en semaine</h2>
-            <p>Gestion des rendez-vous et des groupes pour les sorties de la semaine.</p>
+            <div class="file-upload-box">
+                <p>Glissez-déposez le planning des Sorties en semaine ou cliquez pour charger</p>
+                <input type="file" id="file-sorties" accept=".pdf,.docx,.jpg,.png">
+                <div id="status-sorties" class="status-msg"></div>
+            </div>
+            <button class="btn" onclick="sauvegarderFichierLocal('sorties')">Enregistrer le fichier</button>
+            <button class="btn-view" onclick="ouvrirFichierLocal('sorties')">🚗 Ouvrir le planning des Sorties</button>
         </div>
 
+        <!-- 4. PÔLE PRÉSENTOIR -->
         <div id="presentoir" class="panel">
             <h2>Pôle Présentoir</h2>
-            <p>Planning d'attribution et de présence pour les présentoirs mobiles.</p>
+            <div class="file-upload-box">
+                <p>Glissez-déposez le planning du Présentoir ou cliquez pour charger</p>
+                <input type="file" id="file-presentoir" accept=".pdf,.docx,.jpg,.png">
+                <div id="status-presentoir" class="status-msg"></div>
+            </div>
+            <button class="btn" onclick="sauvegarderFichierLocal('presentoir')">Enregistrer le fichier</button>
+            <button class="btn-view" onclick="ouvrirFichierLocal('presentoir')">🛒 Ouvrir le planning Présentoir</button>
         </div>
 
+        <!-- 5. PÔLE SONS VIDÉO ESTRADE -->
         <div id="sono" class="panel">
             <h2>Pôle Sono Video Estrade</h2>
-            <p>Gestion de la régie audio, vidéo et des attributions à l'estrade.</p>
+            <div class="file-upload-box">
+                <p>Glissez-déposez le planning Sono / Vidéo ou cliquez pour charger</p>
+                <input type="file" id="file-sono" accept=".pdf,.docx,.jpg,.png">
+                <div id="status-sono" class="status-msg"></div>
+            </div>
+            <button class="btn" onclick="sauvegarderFichierLocal('sono')">Enregistrer le fichier</button>
+            <button class="btn-view" onclick="ouvrirFichierLocal('sono')">🔊 Ouvrir le planning Sono / Vidéo</button>
         </div>
 
+        <!-- 6. PÔLE NETTOYAGE -->
         <div id="nettoyage" class="panel">
             <h2>Pôle Nettoyage</h2>
-            <p>Calendrier et répartition des équipes pour le nettoyage et la maintenance.</p>
+            <div class="file-upload-box">
+                <p>Glissez-déposez le calendrier du Nettoyage ou cliquez pour charger</p>
+                <input type="file" id="file-nettoyage" accept=".pdf,.docx,.jpg,.png">
+                <div id="status-nettoyage" class="status-msg"></div>
+            </div>
+            <button class="btn" onclick="sauvegarderFichierLocal('nettoyage')">Enregistrer le fichier</button>
+            <button class="btn-view" onclick="ouvrirFichierLocal('nettoyage')">🧹 Ouvrir le planning Nettoyage</button>
         </div>
 
+        <!-- 7. PÔLE TERRITOIRES -->
         <div id="territoires" class="panel">
             <h2>Pôle Territoires (Assistant Localisation & Durée)</h2>
             
@@ -212,7 +288,8 @@
                     </tr>
                 </thead>
                 <tbody id="tbody-territoires">
-                    </tbody>
+                    <!-- Rempli automatiquement -->
+                </tbody>
             </table>
         </div>
     </div>
@@ -220,6 +297,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             renderTerritoriesTable();
+            verifierFichiersExistants();
         });
 
         function switchTab(tabId) {
@@ -236,7 +314,82 @@
             if (targetPanel) targetPanel.classList.add('active');
         }
 
-        // GESTION DES TERRITOIRES LOCAUX (Sauvegardé sur le navigateur)
+        // ENREGISTREMENT LOCAL DES FICHIERS (SANS SUPABASE)
+        function sauvegarderFichierLocal(poleName) {
+            const fileInput = document.getElementById(`file-${poleName}`);
+            const statusDiv = document.getElementById(`status-${poleName}`);
+            
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                alert("Veuillez d'abord sélectionner un fichier.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const fileData = {
+                        name: file.name,
+                        type: file.type,
+                        content: e.target.result
+                    };
+                    
+                    // Sauvegarde dans la mémoire du navigateur
+                    localStorage.setItem(`file_data_${poleName}`, JSON.stringify(fileData));
+                    
+                    if(statusDiv) statusDiv.innerText = `✅ Fichier "${file.name}" enregistré avec succès !`;
+                    alert(`Félicitations Fredy ! Le document pour le pôle ${poleName} a été mémorisé.`);
+                } catch (error) {
+                    console.error(error);
+                    alert("Le fichier est trop volumineux pour être stocké de cette façon. Essaye avec un fichier plus léger ou au format PDF/Image.");
+                }
+            };
+
+            // Lit le fichier sous forme de texte encodé lisible localement
+            reader.readAsDataURL(file);
+        }
+
+        // OUVERTURE DU FICHIER ENREGISTRÉ
+        function ouvrirFichierLocal(poleName) {
+            const storedData = localStorage.getItem(`file_data_${poleName}`);
+            
+            if (!storedData) {
+                alert("Aucun planning n'a encore été enregistré pour ce pôle. Charge un document d'abord !");
+                return;
+            }
+
+            const fileData = JSON.parse(storedData);
+            
+            // Ouvre le document dans un nouvel onglet
+            const newWindow = window.open();
+            if (newWindow) {
+                newWindow.document.write(`<title>${fileData.name}</title>`);
+                if (fileData.type.startsWith('image/')) {
+                    newWindow.document.write(`<body style="margin:0; display:flex; justify-content:center; align-items:center; background:#525659;"><img src="${fileData.content}" style="max-width:100%; max-height:100vh;"></body>`);
+                } else {
+                    newWindow.document.write(`<iframe src="${fileData.content}" width="100%" height="100%" style="border:none; margin:0; padding:0;"></iframe>`);
+                }
+                newWindow.document.close();
+            } else {
+                alert("L'affichage a été bloqué par ton navigateur. Autorise les fenêtres pop-up pour cette page.");
+            }
+        }
+
+        // Affiche un message si un fichier existe déjà au chargement de la page
+        function verifierFichiersExistants() {
+            const poles = ['discours', 'cahier', 'sorties', 'presentoir', 'sono', 'nettoyage'];
+            poles.forEach(pole => {
+                const storedData = localStorage.getItem(`file_data_${pole}`);
+                if (storedData) {
+                    const fileData = JSON.parse(storedData);
+                    const statusDiv = document.getElementById(`status-${pole}`);
+                    if (statusDiv) statusDiv.innerText = `📄 Un planning est actuellement enregistré : "${fileData.name}"`;
+                }
+            });
+        }
+
+        // GESTION DES TERRITOIRES LOCAUX
         let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
 
         function attribuerTerritoireLocal() {
