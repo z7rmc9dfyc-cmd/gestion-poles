@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion de la Congrégation - 7 Pôles</title>
-    <!-- Intégration du SDK Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -127,7 +126,6 @@
     </div>
 
     <div class="container">
-        <!-- PÔLES 1 À 6 -->
         <div id="discours" class="panel active">
             <div class="card">
                 <h2>🎤 Pôle Discours Publics</h2>
@@ -200,7 +198,6 @@
             </div>
         </div>
 
-        <!-- PÔLE 7 : TERRITOIRES -->
         <div id="territoires" class="panel">
             <div class="card">
                 <h2>🗺️ Pôle Territoires (Synchronisé Supabase)</h2>
@@ -229,8 +226,7 @@
                             </tr>
                         </thead>
                         <tbody id="tbody-territoires">
-                            <!-- Rempli automatiquement -->
-                        </tbody>
+                            </tbody>
                     </table>
                 </div>
             </div>
@@ -255,7 +251,7 @@
                 })
                 .subscribe();
 
-            // SÉCURITÉ POUR TES PLANNINGS ENREGISTRÉS
+            // RESTAURER TES ANCIENS PLANNINGS (SÉCURISÉ)
             const poles = ['discours', 'cahier', 'sorties', 'presentoir', 'sono', 'nettoyage'];
             poles.forEach(pole => {
                 const savedData = localStorage.getItem('last_file_' + pole);
@@ -316,7 +312,7 @@
             }
         }
 
-        // --- TRAITEMENT DU PÔLE TERRITOIRES ---
+        // --- ENTRAINEMENT ET RENDU DU PÔLE TERRITOIRES ---
         async function fetchTerritoiresFromSupabase() {
             const { data, error } = await _supabase
                 .from('territoire_data')
@@ -342,7 +338,7 @@
             if(!tbody) return; 
             tbody.innerHTML = '';
 
-            // Génération dynamique des 120 cartes recto verso
+            // Génération dynamique stricte de 1 à 120 (Recto & Verso)
             for(let i = 1; i <= 120; i++) {
                 ['Recto', 'Verso'].forEach(face => {
                     const key = i + "_" + face;
@@ -390,7 +386,7 @@
             
             const dSortie = new Date();
             const dLimite = new Date(dSortie);
-            dLimite.setMonth(dLimite.getMonth() + 3); // Durée stricte de 3 mois
+            dLimite.setMonth(dLimite.getMonth() + 3); // Ajoute la durée limite de 3 mois
             const dateLimite = dLimite.toISOString().split('T')[0];
 
             await _supabase
@@ -426,9 +422,8 @@
             fetchTerritoiresFromSupabase();
         }
 
-        // Ligne géographique corrigée et fonctionnelle
         function localiserCarte(numero) {
-            window.open(`https://maps.google.com/?q=${numero}+Goyave`, '_blank');
+            window.open(`https://maps.google.com/?q=Carte+${numero}+Goyave`, '_blank');
         }
     </script>
 </body>
