@@ -57,7 +57,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1250px;
             margin: 30px auto;
             padding: 0 20px;
         }
@@ -90,10 +90,19 @@
             font-weight: bold;
             transition: background 0.3s;
             margin-right: 10px;
+            margin-top: 8px;
         }
 
         .btn:hover {
             background-color: #439a46;
+        }
+
+        .btn-secondary {
+            background-color: #34495e;
+        }
+
+        .btn-secondary:hover {
+            background-color: #2c3e50;
         }
 
         .btn-view {
@@ -121,24 +130,33 @@
             border-radius: 4px;
             color: white;
             cursor: pointer;
-            margin-right: 5px;
+            margin: 3px;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
+            min-width: 900px;
             border-collapse: collapse;
             margin-top: 20px;
         }
 
         th, td {
             border: 1px solid #ddd;
-            padding: 12px;
+            padding: 10px;
             text-align: left;
+            vertical-align: middle;
         }
 
         th {
             background-color: var(--primary-color);
             color: white;
+            position: sticky;
+            top: 0;
         }
 
         tr:nth-child(even) {
@@ -159,15 +177,86 @@
             border-radius: 20px;
             font-size: 12px;
             font-weight: bold;
+            display: inline-block;
         }
+
         .badge-dispo { background-color: #2ecc71; color: white; }
         .badge-sorti { background-color: #e67e22; color: white; }
         .badge-retard { background-color: #e74c3c; color: white; }
-        
+        .badge-carte { background-color: #3498db; color: white; }
+        .badge-no-carte { background-color: #95a5a6; color: white; }
+
         .status-msg {
             margin-top: 10px;
             font-weight: bold;
             color: #27ae60;
+        }
+
+        .territoire-form {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .territoire-form input,
+        .territoire-form select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search-box {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box input {
+            padding: 10px;
+            width: 280px;
+            max-width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .small-note {
+            color: #666;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 700px) {
+            .tab-button {
+                font-size: 14px;
+                padding: 10px 12px;
+            }
+
+            .container {
+                padding: 0 10px;
+                margin: 20px auto;
+            }
+
+            .panel {
+                padding: 15px;
+            }
+
+            .btn, .btn-view {
+                width: 100%;
+                margin-right: 0;
+            }
+
+            .territoire-form input,
+            .territoire-form select,
+            .territoire-form button {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -189,112 +278,134 @@
     </div>
 
     <div class="container">
-        <!-- 1. PÔLE DISCOURS PUBLICS -->
+
         <div id="discours" class="panel active">
             <h2>Pôle Discours Publics</h2>
             <div class="file-upload-box">
                 <p>Glissez-déposez le document de planning ou cliquez pour charger</p>
-                <input type="file" id="file-discours" accept=".pdf,.docx,.jpg,.png">
+                <input type="file" id="file-discours" accept=".pdf,.docx,.jpg,.jpeg,.png">
                 <div id="status-discours" class="status-msg"></div>
             </div>
             <button class="btn" onclick="sauvegarderFichierLocal('discours')">Enregistrer le fichier</button>
             <button class="btn-view" onclick="ouvrirFichierLocal('discours')">📄 Ouvrir le planning des Discours</button>
         </div>
 
-        <!-- 2. PÔLE CAHIER VIE ET MINISTÈRE -->
         <div id="cahier" class="panel">
             <h2>Pôle Cahier Vie et Ministère</h2>
             <div class="file-upload-box">
                 <p>Glissez-déposez le planning Vie et Ministère ou cliquez pour charger</p>
-                <input type="file" id="file-cahier" accept=".pdf,.docx,.jpg,.png">
+                <input type="file" id="file-cahier" accept=".pdf,.docx,.jpg,.jpeg,.png">
                 <div id="status-cahier" class="status-msg"></div>
             </div>
             <button class="btn" onclick="sauvegarderFichierLocal('cahier')">Enregistrer le fichier</button>
             <button class="btn-view" onclick="ouvrirFichierLocal('cahier')">📄 Ouvrir le planning Vie et Ministère</button>
         </div>
 
-        <!-- 3. PÔLE SORTIES SEMAINE -->
         <div id="sorties" class="panel">
             <h2>Pôle Sorties en semaine</h2>
             <div class="file-upload-box">
                 <p>Glissez-déposez le planning des Sorties en semaine ou cliquez pour charger</p>
-                <input type="file" id="file-sorties" accept=".pdf,.docx,.jpg,.png">
+                <input type="file" id="file-sorties" accept=".pdf,.docx,.jpg,.jpeg,.png">
                 <div id="status-sorties" class="status-msg"></div>
             </div>
             <button class="btn" onclick="sauvegarderFichierLocal('sorties')">Enregistrer le fichier</button>
             <button class="btn-view" onclick="ouvrirFichierLocal('sorties')">🚗 Ouvrir le planning des Sorties</button>
         </div>
 
-        <!-- 4. PÔLE PRÉSENTOIR -->
         <div id="presentoir" class="panel">
             <h2>Pôle Présentoir</h2>
             <div class="file-upload-box">
                 <p>Glissez-déposez le planning du Présentoir ou cliquez pour charger</p>
-                <input type="file" id="file-presentoir" accept=".pdf,.docx,.jpg,.png">
+                <input type="file" id="file-presentoir" accept=".pdf,.docx,.jpg,.jpeg,.png">
                 <div id="status-presentoir" class="status-msg"></div>
             </div>
             <button class="btn" onclick="sauvegarderFichierLocal('presentoir')">Enregistrer le fichier</button>
             <button class="btn-view" onclick="ouvrirFichierLocal('presentoir')">🛒 Ouvrir le planning Présentoir</button>
         </div>
 
-        <!-- 5. PÔLE SONS VIDÉO ESTRADE -->
         <div id="sono" class="panel">
             <h2>Pôle Sono Video Estrade</h2>
             <div class="file-upload-box">
                 <p>Glissez-déposez le planning Sono / Vidéo ou cliquez pour charger</p>
-                <input type="file" id="file-sono" accept=".pdf,.docx,.jpg,.png">
+                <input type="file" id="file-sono" accept=".pdf,.docx,.jpg,.jpeg,.png">
                 <div id="status-sono" class="status-msg"></div>
             </div>
             <button class="btn" onclick="sauvegarderFichierLocal('sono')">Enregistrer le fichier</button>
             <button class="btn-view" onclick="ouvrirFichierLocal('sono')">🔊 Ouvrir le planning Sono / Vidéo</button>
         </div>
 
-        <!-- 6. PÔLE NETTOYAGE -->
         <div id="nettoyage" class="panel">
             <h2>Pôle Nettoyage</h2>
             <div class="file-upload-box">
                 <p>Glissez-déposez le calendrier du Nettoyage ou cliquez pour charger</p>
-                <input type="file" id="file-nettoyage" accept=".pdf,.docx,.jpg,.png">
+                <input type="file" id="file-nettoyage" accept=".pdf,.docx,.jpg,.jpeg,.png">
                 <div id="status-nettoyage" class="status-msg"></div>
             </div>
             <button class="btn" onclick="sauvegarderFichierLocal('nettoyage')">Enregistrer le fichier</button>
             <button class="btn-view" onclick="ouvrirFichierLocal('nettoyage')">🧹 Ouvrir le planning Nettoyage</button>
         </div>
 
-        <!-- 7. PÔLE TERRITOIRES -->
         <div id="territoires" class="panel">
-            <h2>Pôle Territoires (Assistant Localisation & Durée)</h2>
-            
-            <div style="background: #f0f4f8; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                <input type="number" id="terr-num" placeholder="N° Carte (1-120)" min="1" max="120" style="padding: 8px; width: 120px;">
-                <select id="terr-face" style="padding: 8px;">
+            <h2>Pôle Territoires</h2>
+
+            <div class="territoire-form">
+                <input type="number" id="terr-num" placeholder="N° Carte (1-120)" min="1" max="120" style="width: 130px;">
+
+                <select id="terr-face">
                     <option value="Recto">Recto</option>
                     <option value="Verso">Verso</option>
                 </select>
-                <input type="text" id="terr-nom" placeholder="Nom" style="padding: 8px;">
-                <input type="text" id="terr-prenom" placeholder="Prénom" style="padding: 8px;">
+
+                <input type="text" id="terr-nom" placeholder="Nom">
+                <input type="text" id="terr-prenom" placeholder="Prénom">
+
                 <button class="btn" onclick="attribuerTerritoireLocal()">Attribuer la carte</button>
             </div>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>N° Carte & Face</th>
-                        <th>Nom & Prénom</th>
-                        <th>Date Sortie</th>
-                        <th>Limite (3 mois)</th>
-                        <th>Statut Durée</th>
-                        <th>Actions / Localisation</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-territoires">
-                    <!-- Rempli automatiquement -->
-                </tbody>
-            </table>
+            <div class="file-upload-box">
+                <p><strong>Ajouter la carte réelle du territoire</strong></p>
+                <p>Sélectionne d'abord le numéro et la face ci-dessus, puis charge l'image ou le PDF de la carte.</p>
+                <input type="file" id="terr-file" accept=".pdf,.jpg,.jpeg,.png">
+                <br>
+                <button class="btn" onclick="enregistrerCarteTerritoire()">🗺️ Enregistrer la carte du territoire</button>
+                <div id="status-territoire-carte" class="status-msg"></div>
+                <div class="small-note">
+                    Exemple : Carte 12 Recto peut avoir son fichier, et Carte 12 Verso peut avoir un autre fichier.
+                </div>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="search-territoire" placeholder="Rechercher : nom, prénom, numéro, statut..." oninput="renderTerritoriesTable()">
+                <button class="btn btn-secondary" onclick="afficherSeulementSortis()">Voir seulement les cartes sorties</button>
+                <button class="btn btn-secondary" onclick="afficherToutesCartes()">Voir toutes les cartes</button>
+                <button class="btn" onclick="exporterSauvegarde()">Exporter sauvegarde</button>
+                <input type="file" id="import-save" accept=".json" onchange="importerSauvegarde(event)" style="display:none;">
+                <button class="btn btn-secondary" onclick="document.getElementById('import-save').click()">Importer sauvegarde</button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N° Carte & Face</th>
+                            <th>Carte réelle</th>
+                            <th>Nom & Prénom</th>
+                            <th>Date Sortie</th>
+                            <th>Limite (3 mois)</th>
+                            <th>Statut Durée</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-territoires"></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script>
+        let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
+        let filtreSortisSeulement = false;
+
         document.addEventListener("DOMContentLoaded", function() {
             renderTerritoriesTable();
             verifierFichiersExistants();
@@ -307,18 +418,17 @@
             const panels = document.querySelectorAll('.panel');
             panels.forEach(panel => panel.classList.remove('active'));
 
-            const clickedButton = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes(`'${tabId}'`));
+            const clickedButton = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes("'" + tabId + "'"));
             if (clickedButton) clickedButton.classList.add('active');
 
             const targetPanel = document.getElementById(tabId);
             if (targetPanel) targetPanel.classList.add('active');
         }
 
-        // ENREGISTREMENT LOCAL DES FICHIERS (SANS SUPABASE)
         function sauvegarderFichierLocal(poleName) {
-            const fileInput = document.getElementById(`file-${poleName}`);
-            const statusDiv = document.getElementById(`status-${poleName}`);
-            
+            const fileInput = document.getElementById("file-" + poleName);
+            const statusDiv = document.getElementById("status-" + poleName);
+
             if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
                 alert("Veuillez d'abord sélectionner un fichier.");
                 return;
@@ -334,70 +444,50 @@
                         type: file.type,
                         content: e.target.result
                     };
-                    
-                    // Sauvegarde dans la mémoire du navigateur
-                    localStorage.setItem(`file_data_${poleName}`, JSON.stringify(fileData));
-                    
-                    if(statusDiv) statusDiv.innerText = `✅ Fichier "${file.name}" enregistré avec succès !`;
-                    alert(`Félicitations Fredy ! Le document pour le pôle ${poleName} a été mémorisé.`);
+
+                    localStorage.setItem("file_data_" + poleName, JSON.stringify(fileData));
+
+                    if(statusDiv) statusDiv.innerText = "✅ Fichier \"" + file.name + "\" enregistré avec succès !";
+                    alert("Félicitations Fredy ! Le document pour le pôle " + poleName + " a été mémorisé.");
                 } catch (error) {
                     console.error(error);
                     alert("Le fichier est trop volumineux pour être stocké de cette façon. Essaye avec un fichier plus léger ou au format PDF/Image.");
                 }
             };
 
-            // Lit le fichier sous forme de texte encodé lisible localement
             reader.readAsDataURL(file);
         }
 
-        // OUVERTURE DU FICHIER ENREGISTRÉ
         function ouvrirFichierLocal(poleName) {
-            const storedData = localStorage.getItem(`file_data_${poleName}`);
-            
+            const storedData = localStorage.getItem("file_data_" + poleName);
+
             if (!storedData) {
                 alert("Aucun planning n'a encore été enregistré pour ce pôle. Charge un document d'abord !");
                 return;
             }
 
             const fileData = JSON.parse(storedData);
-            
-            // Ouvre le document dans un nouvel onglet
-            const newWindow = window.open();
-            if (newWindow) {
-                newWindow.document.write(`<title>${fileData.name}</title>`);
-                if (fileData.type.startsWith('image/')) {
-                    newWindow.document.write(`<body style="margin:0; display:flex; justify-content:center; align-items:center; background:#525659;"><img src="${fileData.content}" style="max-width:100%; max-height:100vh;"></body>`);
-                } else {
-                    newWindow.document.write(`<iframe src="${fileData.content}" width="100%" height="100%" style="border:none; margin:0; padding:0;"></iframe>`);
-                }
-                newWindow.document.close();
-            } else {
-                alert("L'affichage a été bloqué par ton navigateur. Autorise les fenêtres pop-up pour cette page.");
-            }
+            ouvrirDocumentDansNouvelleFenetre(fileData);
         }
 
-        // Affiche un message si un fichier existe déjà au chargement de la page
         function verifierFichiersExistants() {
             const poles = ['discours', 'cahier', 'sorties', 'presentoir', 'sono', 'nettoyage'];
-            poles.forEach(pole => {
-                const storedData = localStorage.getItem(`file_data_${pole}`);
+            poles.forEach(function(pole) {
+                const storedData = localStorage.getItem("file_data_" + pole);
                 if (storedData) {
                     const fileData = JSON.parse(storedData);
-                    const statusDiv = document.getElementById(`status-${pole}`);
-                    if (statusDiv) statusDiv.innerText = `📄 Un planning est actuellement enregistré : "${fileData.name}"`;
+                    const statusDiv = document.getElementById("status-" + pole);
+                    if (statusDiv) statusDiv.innerText = "📄 Un planning est actuellement enregistré : \"" + fileData.name + "\"";
                 }
             });
         }
 
-        // GESTION DES TERRITOIRES LOCAUX
-        let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
-
         function attribuerTerritoireLocal() {
             const num = document.getElementById('terr-num').value;
             const face = document.getElementById('terr-face').value;
-            const nom = document.getElementById('terr-nom').value.toUpperCase();
-            const prenom = document.getElementById('terr-prenom').value;
-            
+            const nom = document.getElementById('terr-nom').value.trim().toUpperCase();
+            const prenom = document.getElementById('terr-prenom').value.trim();
+
             if(!num || num < 1 || num > 120 || !nom || !prenom) {
                 alert("Veuillez remplir correctement tous les champs.");
                 return;
@@ -405,9 +495,13 @@
 
             const key = num + "_" + face;
             const dateSortie = new Date().toISOString().split('T')[0];
-            
+
             databaseTerritoires[key] = {
-                numero: num, face, proclamateur: nom + " " + prenom, dateSortie, statut: 'Sorti'
+                numero: num,
+                face: face,
+                proclamateur: nom + " " + prenom,
+                dateSortie: dateSortie,
+                statut: 'Sorti'
             };
 
             localStorage.setItem('territoires_data', JSON.stringify(databaseTerritoires));
@@ -428,8 +522,93 @@
             }
         }
 
-        function localiserCarte(numero) {
-            window.open(`https://www.google.com/maps?q=Carte+Territoire+${numero}`, '_blank');
+        function enregistrerCarteTerritoire() {
+            const num = document.getElementById('terr-num').value;
+            const face = document.getElementById('terr-face').value;
+            const fileInput = document.getElementById('terr-file');
+            const statusDiv = document.getElementById('status-territoire-carte');
+
+            if (!num || num < 1 || num > 120) {
+                alert("Indique d'abord le numéro de la carte entre 1 et 120.");
+                return;
+            }
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert("Choisis d'abord une image ou un PDF de la carte.");
+                return;
+            }
+
+            const key = num + "_" + face;
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const carteData = {
+                        name: file.name,
+                        type: file.type,
+                        content: e.target.result,
+                        dateAjout: new Date().toISOString()
+                    };
+
+                    localStorage.setItem("carte_territoire_" + key, JSON.stringify(carteData));
+
+                    if (statusDiv) {
+                        statusDiv.innerText = "✅ Carte " + num + " " + face + " enregistrée : \"" + file.name + "\"";
+                    }
+
+                    fileInput.value = "";
+                    renderTerritoriesTable();
+                } catch (error) {
+                    console.error(error);
+                    alert("Cette carte est trop volumineuse pour être stockée localement. Essaie de réduire la photo ou d'utiliser un PDF plus léger.");
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function ouvrirCarteTerritoire(key) {
+            const storedData = localStorage.getItem("carte_territoire_" + key);
+
+            if (!storedData) {
+                alert("Aucune carte n'a encore été enregistrée pour ce territoire.");
+                return;
+            }
+
+            const carteData = JSON.parse(storedData);
+            ouvrirDocumentDansNouvelleFenetre(carteData);
+        }
+
+        function supprimerCarteTerritoire(key) {
+            if(confirm("Supprimer le fichier de cette carte ? L'attribution du territoire ne sera pas supprimée.")) {
+                localStorage.removeItem("carte_territoire_" + key);
+                renderTerritoriesTable();
+            }
+        }
+
+        function ouvrirDocumentDansNouvelleFenetre(fileData) {
+            const newWindow = window.open();
+
+            if (newWindow) {
+                newWindow.document.write("<title>" + fileData.name + "</title>");
+
+                if (fileData.type && fileData.type.startsWith('image/')) {
+                    newWindow.document.write(
+                        '<body style="margin:0; display:flex; justify-content:center; align-items:center; background:#525659;">' +
+                        '<img src="' + fileData.content + '" style="max-width:100%; max-height:100vh;">' +
+                        '</body>'
+                    );
+                } else {
+                    newWindow.document.write(
+                        '<iframe src="' + fileData.content + '" width="100%" height="100%" style="border:none; margin:0; padding:0; position:fixed; inset:0;"></iframe>'
+                    );
+                }
+
+                newWindow.document.close();
+            } else {
+                alert("L'affichage a été bloqué par ton navigateur. Autorise les fenêtres pop-up pour cette page.");
+            }
         }
 
         function renderTerritoriesTable() {
@@ -437,44 +616,178 @@
             if(!tbody) return;
             tbody.innerHTML = '';
 
+            const searchInput = document.getElementById('search-territoire');
+            const recherche = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
             for(let i = 1; i <= 120; i++) {
-                ['Recto', 'Verso'].forEach(face => {
+                ['Recto', 'Verso'].forEach(function(face) {
                     const key = i + "_" + face;
-                    const item = databaseTerritoires[key] || { numero: i, face: face, proclamateur: '-', dateSortie: '-', statut: 'Disponible' };
-                    
+                    const item = databaseTerritoires[key] || {
+                        numero: i,
+                        face: face,
+                        proclamateur: '-',
+                        dateSortie: '-',
+                        statut: 'Disponible'
+                    };
+
+                    if (filtreSortisSeulement && item.statut !== 'Sorti') {
+                        return;
+                    }
+
+                    const texteRecherche = (
+                        "carte " + item.numero + " " +
+                        item.face + " " +
+                        item.proclamateur + " " +
+                        item.dateSortie + " " +
+                        item.statut
+                    ).toLowerCase();
+
+                    if (recherche && !texteRecherche.includes(recherche)) {
+                        return;
+                    }
+
                     let dateLimiteStr = '-';
-                    let statutBadge = `<span class="badge badge-dispo">Disponible</span>`;
-                    let actionBtn = `<span style="color:#aaa; font-size:12px;">En attente</span>`;
-                    
+                    let statutBadge = '<span class="badge badge-dispo">Disponible</span>';
+                    let actionBtn = '<span style="color:#aaa; font-size:12px;">En attente</span>';
+
                     if(item.statut === 'Sorti' && item.dateSortie !== '-') {
                         const dSortie = new Date(item.dateSortie);
                         const dLimite = new Date(dSortie);
                         dLimite.setMonth(dLimite.getMonth() + 3);
                         dateLimiteStr = dLimite.toISOString().split('T')[0];
-                        
+
                         if(new Date() > dLimite) {
-                            statutBadge = `<span class="badge badge-retard">Retard (+3 mois)</span>`;
+                            statutBadge = '<span class="badge badge-retard">Retard (+3 mois)</span>';
                         } else {
-                            statutBadge = `<span class="badge badge-sorti">Sorti</span>`;
+                            statutBadge = '<span class="badge badge-sorti">Sorti</span>';
                         }
-                        actionBtn = `<button class="btn-action" style="background:#e74c3c;" onclick="retournerTerritoireLocal('${key}')">Rentrer</button>`;
+
+                        actionBtn = '<button class="btn-action" style="background:#e74c3c;" onclick="retournerTerritoireLocal(\'' + key + '\')">Rentrer</button>';
+                    }
+
+                    const carteExiste = localStorage.getItem("carte_territoire_" + key);
+                    const carteBadge = carteExiste
+                        ? '<span class="badge badge-carte">Carte enregistrée</span>'
+                        : '<span class="badge badge-no-carte">Pas de fichier</span>';
+
+                    let carteActions = '';
+                    if (carteExiste) {
+                        carteActions =
+                            '<button class="btn-action" style="background:#3498db;" onclick="ouvrirCarteTerritoire(\'' + key + '\')">🗺️ Voir carte</button>' +
+                            '<button class="btn-action" style="background:#7f8c8d;" onclick="supprimerCarteTerritoire(\'' + key + '\')">Supprimer fichier</button>';
+                    } else {
+                        carteActions =
+                            '<button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(' + item.numero + ', \'' + item.face + '\')">Ajouter fichier</button>';
                     }
 
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><strong>Carte ${item.numero}</strong> (${item.face})</td>
-                        <td>${item.proclamateur}</td>
-                        <td>${item.dateSortie}</td>
-                        <td>${dateLimiteStr}</td>
-                        <td>${statutBadge}</td>
-                        <td>
-                            ${actionBtn}
-                            <button class="btn-action" style="background:#3498db;" onclick="localiserCarte(${item.numero})">📍 Localiser</button>
-                        </td>
-                    `;
+                    tr.innerHTML =
+                        '<td><strong>Carte ' + item.numero + '</strong> (' + item.face + ')</td>' +
+                        '<td>' + carteBadge + '</td>' +
+                        '<td>' + item.proclamateur + '</td>' +
+                        '<td>' + item.dateSortie + '</td>' +
+                        '<td>' + dateLimiteStr + '</td>' +
+                        '<td>' + statutBadge + '</td>' +
+                        '<td>' +
+                            actionBtn +
+                            carteActions +
+                        '</td>';
+
                     tbody.appendChild(tr);
                 });
             }
+        }
+
+        function preparerAjoutCarte(numero, face) {
+            document.getElementById('terr-num').value = numero;
+            document.getElementById('terr-face').value = face;
+            document.getElementById('terr-file').click();
+        }
+
+        function afficherSeulementSortis() {
+            filtreSortisSeulement = true;
+            renderTerritoriesTable();
+        }
+
+        function afficherToutesCartes() {
+            filtreSortisSeulement = false;
+            const searchInput = document.getElementById('search-territoire');
+            if (searchInput) searchInput.value = '';
+            renderTerritoriesTable();
+        }
+
+        function exporterSauvegarde() {
+            const sauvegarde = {
+                dateExport: new Date().toISOString(),
+                territoires: databaseTerritoires,
+                cartes: {},
+                fichiersPoles: {}
+            };
+
+            for (let i = 1; i <= 120; i++) {
+                ['Recto', 'Verso'].forEach(function(face) {
+                    const key = i + "_" + face;
+                    const carte = localStorage.getItem("carte_territoire_" + key);
+                    if (carte) {
+                        sauvegarde.cartes[key] = JSON.parse(carte);
+                    }
+                });
+            }
+
+            ['discours', 'cahier', 'sorties', 'presentoir', 'sono', 'nettoyage'].forEach(function(pole) {
+                const fichier = localStorage.getItem("file_data_" + pole);
+                if (fichier) {
+                    sauvegarde.fichiersPoles[pole] = JSON.parse(fichier);
+                }
+            });
+
+            const blob = new Blob([JSON.stringify(sauvegarde, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "sauvegarde-congregation.json";
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importerSauvegarde(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const sauvegarde = JSON.parse(e.target.result);
+
+                    if (sauvegarde.territoires) {
+                        databaseTerritoires = sauvegarde.territoires;
+                        localStorage.setItem('territoires_data', JSON.stringify(databaseTerritoires));
+                    }
+
+                    if (sauvegarde.cartes) {
+                        Object.keys(sauvegarde.cartes).forEach(function(key) {
+                            localStorage.setItem("carte_territoire_" + key, JSON.stringify(sauvegarde.cartes[key]));
+                        });
+                    }
+
+                    if (sauvegarde.fichiersPoles) {
+                        Object.keys(sauvegarde.fichiersPoles).forEach(function(pole) {
+                            localStorage.setItem("file_data_" + pole, JSON.stringify(sauvegarde.fichiersPoles[pole]));
+                        });
+                    }
+
+                    verifierFichiersExistants();
+                    renderTerritoriesTable();
+                    alert("Sauvegarde importée avec succès.");
+                } catch (error) {
+                    console.error(error);
+                    alert("Impossible d'importer cette sauvegarde. Le fichier n'est peut-être pas valide.");
+                }
+            };
+
+            reader.readAsText(file);
+            event.target.value = "";
         }
     </script>
 </body>
