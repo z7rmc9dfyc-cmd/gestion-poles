@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de la Congrégation - 7 Pôles</title>
+    <style>
+        :root {
+            --primary-color: #2b3e50;
+            --secondary-color: #4caf50;
+            --accent-color: #e74c3c;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            background: #ffffff;
+            border-bottom: 2px solid #ddd;
+            padding: 10px 0;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 12px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-button:hover, .tab-button.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--secondary-color);
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .panel {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: none;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-right: 10px;
+            margin-top: 8px;
+        }
+
+        .btn:hover {
+            background-color: #439a46;
+        }
+
+        .btn-secondary {
+            background-color: #34495e;
+        }
+
+        .btn-secondary:hover {
+            background-color: #2c3e50;
+        }
+
+        .btn-view {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-top: 15px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-view:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-action {
+            padding: 6px 12px;
+            font-size: 13px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            margin: 3px;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .file-upload-box {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            background: #fafafa;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .badge-dispo { background-color: #2ecc71; color: white; }
+        .badge-sorti { background-color: #e67e22; color: white; }
+        .badge-retard { background-color: #e74c3c; color: white; }
+        .badge-carte { background-color: #3498db; color: white; }
+        .badge-no-carte { background-color: #95a5a6; color: white; }
+
+        .status-msg {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #27ae60;
+        }
+
+        .territoire-form {
+            background: #f0f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .territoire-form input,
+        .territoire-form select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .search-box {
+            margin: 15px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box input {
+            padding: 10px;
+            width: 280px;
+            max-width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .small-note {
+            color: #666;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        /* ===== PROGRAMMES EN PLUSIEURS PAGES ===== */
+        .pages-programme {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin: 18px 0;
+        }
+        .page-programme {
+            background: #f8fafb;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        .page-programme strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+        .page-programme-name {
+            font-size: 12px;
+            color: #666;
+            word-break: break-word;
+            margin: 6px 0 10px;
+        }
+        .page-programme-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .page-programme-actions button { margin: 0; }
+        .page-thumb {
+            width: 100%;
+            height: 110px;
+            object-fit: contain;
+            background: #525659;
+            border-radius: 5px;
+        }
+
+        /* ===== AFFICHAGE RESPONSIVE PC / TABLETTE / TELEPHONE ===== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        img, iframe, object, embed {
+            max-width: 100%;
+        }
+
+        .nav-tabs {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+
+        .tab-button {
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1250px;
+        }
+
+        .panel {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .file-upload-box {
+            width: 100%;
+        }
+
+        .file-upload-box input[type="file"] {
+            max-width: 100%;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            min-width: 900px;
+        }
+
+        /* ===== TABLETTE ===== */
+        @media (max-width: 900px) {
+            header {
+                padding: 18px 14px;
+            }
+
+            header h1 {
+                font-size: clamp(22px, 4vw, 30px);
+                margin: 0 0 8px;
+            }
+
+            header p {
+                margin: 0;
+                font-size: 14px;
+            }
+
+            .nav-tabs {
+                padding: 8px 6px;
+            }
+
+            .tab-button {
+                font-size: 14px;
+                padding: 10px 14px;
+            }
+
+            .container {
+                width: 100%;
+                padding: 0 12px;
+                margin: 16px auto;
+            }
+
+            .panel {
+                padding: 18px;
+                border-radius: 8px;
+            }
+
+            h2 {
+                font-size: 21px;
+            }
+
+            .territoire-form {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .territoire-form input,
+            .territoire-form select,
+            .territoire-form button {
+                width: 100% !important;
+                min-width: 0;
+            }
+
+            .search-box {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .search-box input {
+                width: 100%;
+                grid-column: 1 / -1;
+            }
+
+            .search-box button {
+                width: 100%;
+                margin-right: 0;
+            }
+        }
+
+        /* ===== TELEPHONE ===== */
+        @media (max-width: 600px) {
+            body {
+                font-size: 15px;
+            }
+
+            header {
+                padding: 14px 10px;
+            }
+
+            header h1 {
+                font-size: 22px;
+                line-height: 1.2;
+            }
+
+            header p {
+                font-size: 13px;
+                line-height: 1.35;
+            }
+
+            .nav-tabs {
+                padding: 6px 4px;
+                border-bottom-width: 1px;
+            }
+
+            .tab-button {
+                font-size: 13px;
+                padding: 10px 11px;
+            }
+
+            .container {
+                padding: 0 8px;
+                margin: 10px auto;
+            }
+
+            .panel {
+                padding: 12px;
+                border-radius: 7px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            }
+
+            h2 {
+                font-size: 19px;
+                line-height: 1.25;
+                margin-top: 4px;
+            }
+
+            .file-upload-box {
+                padding: 14px 10px;
+                margin-bottom: 14px;
+            }
+
+            .file-upload-box p {
+                line-height: 1.4;
+                margin: 7px 0;
+            }
+
+            .file-upload-box input[type="file"] {
+                width: 100%;
+                font-size: 13px;
+            }
+
+            .btn,
+            .btn-view {
+                display: block;
+                width: 100%;
+                margin: 8px 0 0 0;
+                padding: 11px 12px;
+                font-size: 14px;
+                text-align: center;
+            }
+
+            .territoire-form {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                padding: 12px;
+            }
+
+            .territoire-form input,
+            .territoire-form select,
+            .territoire-form button {
+                width: 100% !important;
+                min-width: 0;
+                font-size: 15px;
+                padding: 10px;
+            }
+
+            .search-box {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .search-box input,
+            .search-box button {
+                width: 100%;
+                margin: 0;
+            }
+
+            .table-wrapper {
+                margin-left: -2px;
+                width: calc(100% + 4px);
+                border-radius: 5px;
+            }
+
+            table {
+                min-width: 760px;
+                font-size: 13px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            .btn-action {
+                padding: 7px 9px;
+                font-size: 12px;
+            }
+
+            .small-note {
+                font-size: 12px;
+                line-height: 1.35;
+            }
+        }
+
+        /* ===== PETITS TELEPHONES ===== */
+        @media (max-width: 380px) {
+            .tab-button {
+                font-size: 12px;
+                padding: 9px 10px;
+            }
+
+            .panel {
+                padding: 10px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            .btn,
+            .btn-view {
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Système de Coordination Général</h1>
+        <p>Gestion unifiée des 7 pôles d'activité</p>
+    </header>
+
+    <div class="container" style="margin-top:16px;margin-bottom:0;">
+        <div class="panel" style="display:block;padding:14px;">
+            <details>
+                <summary style="cursor:pointer;font-weight:700;color:var(--primary-color);">⚙️ Configuration de la synchronisation</summary>
+                <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                    <input id="supabase-key-input" type="password" placeholder="Coller ici la Publishable key Supabase" style="flex:1;min-width:240px;padding:10px;border:1px solid #ccc;border-radius:5px;">
+                    <button class="btn" onclick="enregistrerCleSupabase()">💾 Enregistrer la clé</button>
+                    <button class="btn btn-secondary" onclick="effacerCleSupabase()">Effacer la clé</button>
+                </div>
+                <div id="supabase-config-status" class="small-note">La clé reste enregistrée uniquement dans ce navigateur.</div>
+            </details>
+        </div>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="tab-button active" onclick="switchTab('discours')">🎙️ Discours</button>
+        <button class="tab-button" onclick="switchTab('cahier')">📖 Cahier Vie et Ministère</button>
+        <button class="tab-button" onclick="switchTab('sorties')">🚗 Sorties en semaine</button>
+        <button class="tab-button" onclick="switchTab('presentoir')">🛒 Présentoir</button>
+        <button class="tab-button" onclick="switchTab('sono')">🔊 Sono Video Estrade</button>
+        <button class="tab-button" onclick="switchTab('nettoyage')">🧹 Nettoyage</button>
+        <button class="tab-button" onclick="switchTab('territoires')">🗺️ Territoires</button>
+    </div>
+
+    <div class="container">
+
+        <div id="discours" class="panel active">
+            <h2>Pôle Discours Publics</h2>
+
+            <div class="file-upload-box">
+                <p><strong>Ajouter une page au programme</strong></p>
+                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
+                <input type="file" id="file-discours" accept=".pdf,.docx,.jpg,.jpeg,.png">
+                <div id="status-discours" class="status-msg"></div>
+            </div>
+
+            <button class="btn" onclick="ajouterPageProgramme('discours')">➕ Ajouter cette page</button>
+            <button class="btn btn-secondary" onclick="effacerPagesProgramme('discours')">Effacer les pages</button>
+
+            <div id="pages-discours" class="pages-programme"></div>
+
+            <button class="btn-view" onclick="ouvrirProgrammePages('discours')">📄 Ouvrir le programme des Discours</button>
+        </div>
+
+        <div id="cahier" class="panel">
+            <h2>Pôle Cahier Vie et Ministère</h2>
+
+            <div class="file-upload-box">
+                <p><strong>Ajouter une page au programme</strong></p>
+                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
+                <input type="file" id="file-cahier" accept=".pdf,.docx,.jpg,.jpeg,.png">
+                <div id="status-cahier" class="status-msg"></div>
+            </div>
+
+            <button class="btn" onclick="ajouterPageProgramme('cahier')">➕ Ajouter cette page</button>
+            <button class="btn btn-secondary" onclick="effacerPagesProgramme('cahier')">Effacer les pages</button>
+
+            <div id="pages-cahier" class="pages-programme"></div>
+
+            <button class="btn-view" onclick="ouvrirProgrammePages('cahier')">📄 Ouvrir le programme Vie et Ministère</button>
+        </div>
+
+        <div id="sorties" class="panel">
+            <h2>Pôle Sorties en semaine</h2>
+
+            <div class="file-upload-box">
+                <p><strong>Ajouter une page au programme</strong></p>
+                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
+                <input type="file" id="file-sorties" accept=".pdf,.docx,.jpg,.jpeg,.png">
+                <div id="status-sorties" class="status-msg"></div>
+            </div>
+
+            <button class="btn" onclick="ajouterPageProgramme('sorties')">➕ Ajouter cette page</button>
+            <button class="btn btn-secondary" onclick="effacerPagesProgramme('sorties')">Effacer les pages</button>
+
+            <div id="pages-sorties" class="pages-programme"></div>
+
+            <button class="btn-view" onclick="ouvrirProgrammePages('sorties')">🚗 Ouvrir le programme des Sorties</button>
+        </div>
+
+        <div id="presentoir" class="panel">
+            <h2>Pôle Présentoir</h2>
+
+            <div class="file-upload-box">
+                <p><strong>Ajouter une page au programme</strong></p>
+                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
+                <input type="file" id="file-presentoir" accept=".pdf,.docx,.jpg,.jpeg,.png">
+                <div id="status-presentoir" class="status-msg"></div>
+            </div>
+
+            <button class="btn" onclick="ajouterPageProgramme('presentoir')">➕ Ajouter cette page</button>
+            <button class="btn btn-secondary" onclick="effacerPagesProgramme('presentoir')">Effacer les pages</button>
+
+            <div id="pages-presentoir" class="pages-programme"></div>
+
+            <button class="btn-view" onclick="ouvrirProgrammePages('presentoir')">🛒 Ouvrir le programme Présentoir</button>
+        </div>
+
+        <div id="sono" class="panel">
+            <h2>Pôle Sono Video Estrade</h2>
+
+            <div class="file-upload-box">
+                <p><strong>Ajouter une page au programme</strong></p>
+                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
+                <input type="file" id="file-sono" accept=".pdf,.docx,.jpg,.jpeg,.png">
+                <div id="status-sono" class="status-msg"></div>
+            </div>
+
+            <button class="btn" onclick="ajouterPageProgramme('sono')">➕ Ajouter cette page</button>
+            <button class="btn btn-secondary" onclick="effacerPagesProgramme('sono')">Effacer les pages</button>
+
+            <div id="pages-sono" class="pages-programme"></div>
+
+            <button class="btn-view" onclick="ouvrirProgrammePages('sono')">🔊 Ouvrir le programme Sono / Vidéo</button>
+        </div>
+
+        <div id="nettoyage" class="panel">
+            <h2>Pôle Nettoyage</h2>
+
+            <div class="file-upload-box">
+                <p><strong>Ajouter une page au programme</strong></p>
+                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
+                <input type="file" id="file-nettoyage" accept=".pdf,.docx,.jpg,.jpeg,.png">
+                <div id="status-nettoyage" class="status-msg"></div>
+            </div>
+
+            <button class="btn" onclick="ajouterPageProgramme('nettoyage')">➕ Ajouter cette page</button>
+            <button class="btn btn-secondary" onclick="effacerPagesProgramme('nettoyage')">Effacer les pages</button>
+
+            <div id="pages-nettoyage" class="pages-programme"></div>
+
+            <button class="btn-view" onclick="ouvrirProgrammePages('nettoyage')">🧹 Ouvrir le programme Nettoyage</button>
+        </div>
+
+        <div id="territoires" class="panel">
+            <h2>Pôle Territoires</h2>
+
+            <div class="territoire-form">
+                <input type="number" id="terr-num" placeholder="N° Carte (1-120)" min="1" max="120" style="width: 130px;">
+
+                <select id="terr-face">
+                    <option value="Recto">Recto</option>
+                    <option value="Verso">Verso</option>
+                </select>
+
+                <input type="text" id="terr-nom" placeholder="Nom">
+                <input type="text" id="terr-prenom" placeholder="Prénom">
+
+                <button class="btn" onclick="attribuerTerritoireLocal()">Attribuer la carte</button>
+            </div>
+
+            <div class="file-upload-box">
+                <p><strong>Ajouter la carte réelle du territoire</strong></p>
+                <p>Sélectionne d'abord le numéro et la face ci-dessus, puis charge l'image ou le PDF de la carte.</p>
+                <input type="file" id="terr-file" accept=".pdf,.jpg,.jpeg,.png">
+                <br>
+                <button class="btn" onclick="enregistrerCarteTerritoire()">🗺️ Enregistrer la carte du territoire</button>
+                <div id="status-territoire-carte" class="status-msg"></div>
+                <div class="small-note">
+                    Exemple : Carte 12 Recto peut avoir son fichier, et Carte 12 Verso peut avoir un autre fichier.
+                </div>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="search-territoire" placeholder="Rechercher : nom, prénom, numéro, statut..." oninput="renderTerritoriesTable()">
+                <button class="btn btn-secondary" onclick="afficherSeulementSortis()">Voir seulement les cartes sorties</button>
+                <button class="btn btn-secondary" onclick="afficherToutesCartes()">Voir toutes les cartes</button>
+                <button class="btn" onclick="exporterSauvegarde()">Exporter sauvegarde</button>
+                <input type="file" id="import-save" accept=".json" onchange="importerSauvegarde(event)" style="display:none;">
+                <button class="btn btn-secondary" onclick="document.getElementById('import-save').click()">Importer sauvegarde</button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>N° Carte & Face</th>
+                            <th>Carte réelle</th>
+                            <th>Nom & Prénom</th>
+                            <th>Date Sortie</th>
+                            <th>Limite (3 mois)</th>
+                            <th>Statut Durée</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-territoires"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        /* ===== SUPABASE : SYNCHRONISATION DES PROGRAMMES =====
+           Colle ta Publishable key complète dans SUPABASE_KEY.
+           Ne mets JAMAIS une Secret key ici.
+        */
+        const SUPABASE_URL = "https://qvrtpwuqmsmbqiparlff.supabase.co";
+        let SUPABASE_KEY = localStorage.getItem("supabase_publishable_key") || "";
+
+        function mettreAJourEtatCleSupabase() {
+            const input = document.getElementById("supabase-key-input");
+            const status = document.getElementById("supabase-config-status");
+            if (input && SUPABASE_KEY) input.value = SUPABASE_KEY;
+            if (status) status.innerText = SUPABASE_KEY
+                ? "✅ Clé enregistrée dans ce navigateur. La synchronisation cloud est prête."
+                : "⚠️ Colle la Publishable key Supabase puis clique sur « Enregistrer la clé ».";
+        }
+
+        async function enregistrerCleSupabase() {
+            const input = document.getElementById("supabase-key-input");
+            const key = input ? input.value.trim() : "";
+            if (!key) {
+                alert("Colle d'abord la Publishable key Supabase.");
+                return;
+            }
+            SUPABASE_KEY = key;
+            localStorage.setItem("supabase_publishable_key", key);
+            mettreAJourEtatCleSupabase();
+            await chargerProgrammesDepuisSupabase();
+        }
+
+        function effacerCleSupabase() {
+            SUPABASE_KEY = "";
+            localStorage.removeItem("supabase_publishable_key");
+            const input = document.getElementById("supabase-key-input");
+            if (input) input.value = "";
+            mettreAJourEtatCleSupabase();
+        }
+
+        async function supabaseRequest(path, options = {}) {
+            const headers = {
+                "apikey": SUPABASE_KEY,
+                "Authorization": "Bearer " + SUPABASE_KEY,
+                "Content-Type": "application/json",
+                ...(options.headers || {})
+            };
+            const response = await fetch(SUPABASE_URL + "/rest/v1/" + path, { ...options, headers });
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error("Supabase " + response.status + " : " + text);
+            }
+            return response.status === 204 ? null : response.json();
+        }
+
+        async function chargerProgrammesDepuisSupabase() {
+            if (!SUPABASE_KEY) return;
+            try {
+                const rows = await supabaseRequest("programmes_pages?select=id,pole,page_number,file_name,file_type,file_path&order=pole.asc,page_number.asc");
+                const parPole = {};
+                rows.forEach(row => {
+                    if (!parPole[row.pole]) parPole[row.pole] = [];
+                    parPole[row.pole].push({ id: String(row.id), name: row.file_name, type: row.file_type, content: row.file_path, supabaseId: row.id });
+                });
+                polesProgrammes.forEach(pole => {
+                    if (parPole[pole] && parPole[pole].length > 0) localStorage.setItem("programme_pages_" + pole, JSON.stringify(parPole[pole]));
+                    afficherPagesProgramme(pole);
+                    const statusDiv = document.getElementById("status-" + pole);
+                    const pages = getPagesProgramme(pole);
+                    if (statusDiv && pages.length > 0) statusDiv.innerText = "☁️ " + pages.length + " page(s) synchronisée(s).";
+                });
+            } catch (error) { console.error("Erreur de chargement Supabase :", error); }
+        }
+
+        async function synchroniserPoleAvecSupabase(poleName) {
+            if (!SUPABASE_KEY) return;
+            const pages = getPagesProgramme(poleName);
+            try {
+                await supabaseRequest("programmes_pages?pole=eq." + encodeURIComponent(poleName), { method: "DELETE" });
+                if (pages.length > 0) {
+                    const rows = pages.map((page, index) => ({ pole: poleName, page_number: index + 1, file_name: page.name || "page-" + (index + 1), file_type: page.type || "application/octet-stream", file_path: page.content }));
+                    await supabaseRequest("programmes_pages", { method: "POST", headers: { "Prefer": "return=minimal" }, body: JSON.stringify(rows) });
+                }
+                const statusDiv = document.getElementById("status-" + poleName);
+                if (statusDiv) statusDiv.innerText = "☁️ " + pages.length + " page(s) enregistrée(s) pour tous les appareils.";
+            } catch (error) {
+                console.error("Erreur de synchronisation Supabase :", error);
+                const statusDiv = document.getElementById("status-" + poleName);
+                if (statusDiv) statusDiv.innerText = "⚠️ Sauvegardé ici, mais synchronisation cloud impossible.";
+                alert("Le programme est conservé sur cet appareil, mais Supabase n'a pas accepté la synchronisation. Vérifie la Publishable key et les règles RLS.");
+            }
+        }
+        let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
+        let filtreSortisSeulement = false;
+
+        document.addEventListener("DOMContentLoaded", async function() {
+            mettreAJourEtatCleSupabase();
+            renderTerritoriesTable();
+            verifierFichiersExistants();
+            await chargerProgrammesDepuisSupabase();
+        });
+
+        function switchTab(tabId) {
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            const panels = document.querySelectorAll('.panel');
+            panels.forEach(panel => panel.classList.remove('active'));
+
+            const clickedButton = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes("'" + tabId + "'"));
+            if (clickedButton) clickedButton.classList.add('active');
+
+            const targetPanel = document.getElementById(tabId);
+            if (targetPanel) targetPanel.classList.add('active');
+        }
+
+        /* ===== GESTION DES PROGRAMMES EN PLUSIEURS PAGES ===== */
+
+        const polesProgrammes = ['discours', 'cahier', 'sorties', 'presentoir', 'sono', 'nettoyage'];
+
+        function getPagesProgramme(poleName) {
+            try {
+                return JSON.parse(localStorage.getItem("programme_pages_" + poleName)) || [];
+            } catch (error) {
+                console.error(error);
+                return [];
+            }
+        }
+
+        function setPagesProgramme(poleName, pages) {
+            localStorage.setItem("programme_pages_" + poleName, JSON.stringify(pages));
+        }
+
+        function ajouterPageProgramme(poleName) {
+            const fileInput = document.getElementById("file-" + poleName);
+            const statusDiv = document.getElementById("status-" + poleName);
+
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                alert("Veuillez d'abord sélectionner la page à ajouter.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const pages = getPagesProgramme(poleName);
+
+                    pages.push({
+                        id: Date.now().toString() + "_" + Math.random().toString(36).slice(2),
+                        name: file.name,
+                        type: file.type,
+                        content: e.target.result
+                    });
+
+                    setPagesProgramme(poleName, pages);
+
+                    if (statusDiv) {
+                        statusDiv.innerText = "✅ Page " + pages.length + " ajoutée : \"" + file.name + "\"";
+                    }
+
+                    fileInput.value = "";
+                    afficherPagesProgramme(poleName);
+                    synchroniserPoleAvecSupabase(poleName);
+                } catch (error) {
+                    console.error(error);
+                    alert("Impossible d'ajouter cette page. Le fichier est peut-être trop volumineux.");
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function afficherPagesProgramme(poleName) {
+            const container = document.getElementById("pages-" + poleName);
+            if (!container) return;
+
+            const pages = getPagesProgramme(poleName);
+            container.innerHTML = "";
+
+            if (pages.length === 0) {
+                container.innerHTML = '<p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p>';
+                return;
+            }
+
+            pages.forEach(function(page, index) {
+                const card = document.createElement("div");
+                card.className = "page-programme";
+
+                const apercu = (page.type && page.type.startsWith("image/"))
+                    ? '<img class="page-thumb" src="' + page.content + '" alt="Page ' + (index + 1) + '">'
+                    : '<div class="page-thumb" style="display:flex;align-items:center;justify-content:center;color:white;font-size:28px;">📄</div>';
+
+                card.innerHTML =
+                    "<strong>Page " + (index + 1) + "</strong>" +
+                    apercu +
+                    '<div class="page-programme-name">' + page.name + "</div>" +
+                    '<div class="page-programme-actions">' +
+                    '<button class="btn-action" style="background:#3498db;" onclick="voirUnePageProgramme(\'' + poleName + "', " + index + ')">Voir</button>' +
+                    '<button class="btn-action" style="background:#e74c3c;" onclick="supprimerPageProgramme(\'' + poleName + "', " + index + ')">Supprimer</button>' +
+                    "</div>";
+
+                container.appendChild(card);
+            });
+        }
+
+        function supprimerPageProgramme(poleName, index) {
+            const pages = getPagesProgramme(poleName);
+            if (!pages[index]) return;
+
+            if (confirm("Supprimer la page " + (index + 1) + " du programme ?")) {
+                pages.splice(index, 1);
+                setPagesProgramme(poleName, pages);
+                afficherPagesProgramme(poleName);
+                synchroniserPoleAvecSupabase(poleName);
+            }
+        }
+
+        function effacerPagesProgramme(poleName) {
+            const pages = getPagesProgramme(poleName);
+
+            if (pages.length === 0) {
+                alert("Il n'y a aucune page à effacer.");
+                return;
+            }
+
+            if (confirm("Supprimer toutes les pages de ce programme ?")) {
+                localStorage.removeItem("programme_pages_" + poleName);
+                const statusDiv = document.getElementById("status-" + poleName);
+                if (statusDiv) statusDiv.innerText = "Toutes les pages ont été supprimées.";
+                afficherPagesProgramme(poleName);
+                synchroniserPoleAvecSupabase(poleName);
+            }
+        }
+
+        function voirUnePageProgramme(poleName, index) {
+            ouvrirProgrammePages(poleName, index);
+        }
+
+        function ouvrirProgrammePages(poleName, pageDepart = 0) {
+            const pages = getPagesProgramme(poleName);
+
+            if (pages.length === 0) {
+                alert("Aucune page n'a encore été ajoutée à ce programme.");
+                return;
+            }
+
+            let index = Math.max(0, Math.min(pageDepart, pages.length - 1));
+            const newWindow = window.open("", "_blank");
+
+            if (!newWindow) {
+                alert("L'affichage a été bloqué par ton navigateur. Autorise les fenêtres pop-up pour cette page.");
+                return;
+            }
+
+            newWindow.document.write(`<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programme</title>
+<style>
+html,body{width:100%;height:100%;margin:0;padding:0;overflow:hidden;font-family:Arial,sans-serif;background:#525659}
+.toolbar{height:54px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:8px;background:#2b3e50;color:white;padding:7px}
+button{border:0;border-radius:5px;padding:8px 13px;background:#4caf50;color:white;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.45;cursor:default}
+#content{width:100%;height:calc(100vh - 54px);display:flex;align-items:center;justify-content:center}
+img{width:100%;height:100%;object-fit:contain}
+iframe{width:100%;height:100%;border:0;background:white}
+#counter{min-width:85px;text-align:center}
+</style>
+</head>
+<body>
+<div class="toolbar">
+<button id="prev">◀ Précédente</button>
+<span id="counter"></span>
+<button id="next">Suivante ▶</button>
+</div>
+<div id="content"></div>
+<script>
+const pages = ${JSON.stringify(pages)};
+let current = ${index};
+
+function showPage() {
+    const page = pages[current];
+    document.title = "Page " + (current + 1) + " - " + page.name;
+    document.getElementById("counter").textContent = "Page " + (current + 1) + " / " + pages.length;
+    document.getElementById("prev").disabled = current === 0;
+    document.getElementById("next").disabled = current === pages.length - 1;
+
+    const content = document.getElementById("content");
+    content.innerHTML = "";
+
+    if (page.type && page.type.startsWith("image/")) {
+        const img = document.createElement("img");
+        img.src = page.content;
+        img.alt = "Page " + (current + 1);
+        content.appendChild(img);
+    } else {
+        const iframe = document.createElement("iframe");
+        iframe.src = page.content;
+        content.appendChild(iframe);
+    }
+}
+
+document.getElementById("prev").onclick = function() {
+    if (current > 0) { current--; showPage(); }
+};
+document.getElementById("next").onclick = function() {
+    if (current < pages.length - 1) { current++; showPage(); }
+};
+document.addEventListener("keydown", function(e) {
+    if (e.key === "ArrowLeft" && current > 0) { current--; showPage(); }
+    if (e.key === "ArrowRight" && current < pages.length - 1) { current++; showPage(); }
+});
+showPage();
+<\/script>
+</body>
+</html>`);
+
+            newWindow.document.close();
+        }
+
+        function verifierFichiersExistants() {
+            polesProgrammes.forEach(function(pole) {
+                afficherPagesProgramme(pole);
+                const pages = getPagesProgramme(pole);
+                const statusDiv = document.getElementById("status-" + pole);
+
+                if (statusDiv && pages.length > 0) {
+                    statusDiv.innerText = "📄 " + pages.length + " page(s) actuellement enregistrée(s).";
+                }
+            });
+        }
+
+        function attribuerTerritoireLocal() {
+            const num = document.getElementById('terr-num').value;
+            const face = document.getElementById('terr-face').value;
+            const nom = document.getElementById('terr-nom').value.trim().toUpperCase();
+            const prenom = document.getElementById('terr-prenom').value.trim();
+
+            if(!num || num < 1 || num > 120 || !nom || !prenom) {
+                alert("Veuillez remplir correctement tous les champs.");
+                return;
+            }
+
+            const key = num + "_" + face;
+            const dateSortie = new Date().toISOString().split('T')[0];
+
+            databaseTerritoires[key] = {
+                numero: num,
+                face: face,
+                proclamateur: nom + " " + prenom,
+                dateSortie: dateSortie,
+                statut: 'Sorti'
+            };
+
+            localStorage.setItem('territoires_data', JSON.stringify(databaseTerritoires));
+            renderTerritoriesTable();
+
+            document.getElementById('terr-num').value = '';
+            document.getElementById('terr-nom').value = '';
+            document.getElementById('terr-prenom').value = '';
+        }
+
+        function retournerTerritoireLocal(key) {
+            if(databaseTerritoires[key]) {
+                databaseTerritoires[key].statut = 'Disponible';
+                databaseTerritoires[key].proclamateur = '-';
+                databaseTerritoires[key].dateSortie = '-';
+                localStorage.setItem('territoires_data', JSON.stringify(databaseTerritoires));
+                renderTerritoriesTable();
+            }
+        }
+
+        function enregistrerCarteTerritoire() {
+            const num = document.getElementById('terr-num').value;
+            const face = document.getElementById('terr-face').value;
+            const fileInput = document.getElementById('terr-file');
+            const statusDiv = document.getElementById('status-territoire-carte');
+
+            if (!num || num < 1 || num > 120) {
+                alert("Indique d'abord le numéro de la carte entre 1 et 120.");
+                return;
+            }
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert("Choisis d'abord une image ou un PDF de la carte.");
+                return;
+            }
+
+            const key = num + "_" + face;
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const carteData = {
+                        name: file.name,
+                        type: file.type,
+                        content: e.target.result,
+                        dateAjout: new Date().toISOString()
+                    };
+
+                    localStorage.setItem("carte_territoire_" + key, JSON.stringify(carteData));
+
+                    if (statusDiv) {
+                        statusDiv.innerText = "✅ Carte " + num + " " + face + " enregistrée : \"" + file.name + "\"";
+                    }
+
+                    fileInput.value = "";
+                    renderTerritoriesTable();
+                } catch (error) {
+                    console.error(error);
+                    alert("Cette carte est trop volumineuse pour être stockée localement. Essaie de réduire la photo ou d'utiliser un PDF plus léger.");
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        function ouvrirCarteTerritoire(key) {
+            const storedData = localStorage.getItem("carte_territoire_" + key);
+
+            if (!storedData) {
+                alert("Aucune carte n'a encore été enregistrée pour ce territoire.");
+                return;
+            }
+
+            const carteData = JSON.parse(storedData);
+            ouvrirDocumentDansNouvelleFenetre(carteData);
+        }
+
+        function supprimerCarteTerritoire(key) {
+            if(confirm("Supprimer le fichier de cette carte ? L'attribution du territoire ne sera pas supprimée.")) {
+                localStorage.removeItem("carte_territoire_" + key);
+                renderTerritoriesTable();
+            }
+        }
+
+        function ouvrirDocumentDansNouvelleFenetre(fileData) {
+            const newWindow = window.open('', '_blank');
+
+            if (newWindow) {
+                newWindow.document.open();
+                newWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="fr">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+                        <title>${fileData.name}</title>
+                        <style>
+                            html, body {
+                                width: 100%;
+                                height: 100%;
+                                margin: 0;
+                                padding: 0;
+                                overflow: hidden;
+                                background: #525659;
+                            }
+                            img {
+                                display: block;
+                                width: 100%;
+                                height: 100%;
+                                object-fit: contain;
+                            }
+                            iframe {
+                                display: block;
+                                width: 100vw;
+                                height: 100vh;
+                                border: 0;
+                                margin: 0;
+                                padding: 0;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                `);
+
+                if (fileData.type && fileData.type.startsWith('image/')) {
+                    newWindow.document.write(
+                        '<img src="' + fileData.content + '" alt="Planning">'
+                    );
+                } else {
+                    newWindow.document.write(
+                        '<iframe src="' + fileData.content + '" title="Planning"></iframe>'
+                    );
+                }
+
+                newWindow.document.write('</body></html>');
+                newWindow.document.close();
+            } else {
+                alert("L'affichage a été bloqué par ton navigateur. Autorise les fenêtres pop-up pour cette page.");
+            }
+        }
+
+        function renderTerritoriesTable() {
+            const tbody = document.getElementById('tbody-territoires');
+            if(!tbody) return;
+            tbody.innerHTML = '';
+
+            const searchInput = document.getElementById('search-territoire');
+            const recherche = searchInput ? searchInput.value.trim().toLowerCase() : '';
+
+            for(let i = 1; i <= 120; i++) {
+                ['Recto', 'Verso'].forEach(function(face) {
+                    const key = i + "_" + face;
+                    const item = databaseTerritoires[key] || {
+                        numero: i,
+                        face: face,
+                        proclamateur: '-',
+                        dateSortie: '-',
+                        statut: 'Disponible'
+                    };
+
+                    if (filtreSortisSeulement && item.statut !== 'Sorti') {
+                        return;
+                    }
+
+                    const texteRecherche = (
+                        "carte " + item.numero + " " +
+                        item.face + " " +
+                        item.proclamateur + " " +
+                        item.dateSortie + " " +
+                        item.statut
+                    ).toLowerCase();
+
+                    if (recherche && !texteRecherche.includes(recherche)) {
+                        return;
+                    }
+
+                    let dateLimiteStr = '-';
+                    let statutBadge = '<span class="badge badge-dispo">Disponible</span>';
+                    let actionBtn = '<span style="color:#aaa; font-size:12px;">En attente</span>';
+
+                    if(item.statut === 'Sorti' && item.dateSortie !== '-') {
+                        const dSortie = new Date(item.dateSortie);
+                        const dLimite = new Date(dSortie);
+                        dLimite.setMonth(dLimite.getMonth() + 3);
+                        dateLimiteStr = dLimite.toISOString().split('T')[0];
+
+                        if(new Date() > dLimite) {
+                            statutBadge = '<span class="badge badge-retard">Retard (+3 mois)</span>';
+                        } else {
+                            statutBadge = '<span class="badge badge-sorti">Sorti</span>';
+                        }
+
+                        actionBtn = '<button class="btn-action" style="background:#e74c3c;" onclick="retournerTerritoireLocal(\'' + key + '\')">Rentrer</button>';
+                    }
+
+                    const carteExiste = localStorage.getItem("carte_territoire_" + key);
+                    const carteBadge = carteExiste
+                        ? '<span class="badge badge-carte">Carte enregistrée</span>'
+                        : '<span class="badge badge-no-carte">Pas de fichier</span>';
+
+                    let carteActions = '';
+                    if (carteExiste) {
+                        carteActions =
+                            '<button class="btn-action" style="background:#3498db;" onclick="ouvrirCarteTerritoire(\'' + key + '\')">🗺️ Voir carte</button>' +
+                            '<button class="btn-action" style="background:#7f8c8d;" onclick="supprimerCarteTerritoire(\'' + key + '\')">Supprimer fichier</button>';
+                    } else {
+                        carteActions =
+                            '<button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(' + item.numero + ', \'' + item.face + '\')">Ajouter fichier</button>';
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML =
+                        '<td><strong>Carte ' + item.numero + '</strong> (' + item.face + ')</td>' +
+                        '<td>' + carteBadge + '</td>' +
+                        '<td>' + item.proclamateur + '</td>' +
+                        '<td>' + item.dateSortie + '</td>' +
+                        '<td>' + dateLimiteStr + '</td>' +
+                        '<td>' + statutBadge + '</td>' +
+                        '<td>' +
+                            actionBtn +
+                            carteActions +
+                        '</td>';
+
+                    tbody.appendChild(tr);
+                });
+            }
+        }
+
+        function preparerAjoutCarte(numero, face) {
+            document.getElementById('terr-num').value = numero;
+            document.getElementById('terr-face').value = face;
+            document.getElementById('terr-file').click();
+        }
+
+        function afficherSeulementSortis() {
+            filtreSortisSeulement = true;
+            renderTerritoriesTable();
+        }
+
+        function afficherToutesCartes() {
+            filtreSortisSeulement = false;
+            const searchInput = document.getElementById('search-territoire');
+            if (searchInput) searchInput.value = '';
+            renderTerritoriesTable();
+        }
+
+        function exporterSauvegarde() {
+            const sauvegarde = {
+                dateExport: new Date().toISOString(),
+                territoires: databaseTerritoires,
+                cartes: {},
+                programmesPages: {}
+            };
+
+            for (let i = 1; i <= 120; i++) {
+                ['Recto', 'Verso'].forEach(function(face) {
+                    const key = i + "_" + face;
+                    const carte = localStorage.getItem("carte_territoire_" + key);
+                    if (carte) {
+                        sauvegarde.cartes[key] = JSON.parse(carte);
+                    }
+                });
+            }
+
+            polesProgrammes.forEach(function(pole) {
+                const pages = getPagesProgramme(pole);
+                if (pages.length > 0) {
+                    sauvegarde.programmesPages[pole] = pages;
+                }
+            });
+
+            const blob = new Blob([JSON.stringify(sauvegarde, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "sauvegarde-congregation.json";
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importerSauvegarde(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const sauvegarde = JSON.parse(e.target.result);
+
+                    if (sauvegarde.territoires) {
+                        databaseTerritoires = sauvegarde.territoires;
+                        localStorage.setItem('territoires_data', JSON.stringify(databaseTerritoires));
+                    }
+
+                    if (sauvegarde.cartes) {
+                        Object.keys(sauvegarde.cartes).forEach(function(key) {
+                            localStorage.setItem("carte_territoire_" + key, JSON.stringify(sauvegarde.cartes[key]));
+                        });
+                    }
+
+                    if (sauvegarde.programmesPages) {
+                        Object.keys(sauvegarde.programmesPages).forEach(function(pole) {
+                            localStorage.setItem("programme_pages_" + pole, JSON.stringify(sauvegarde.programmesPages[pole]));
+                        });
+                    }
+
+                    verifierFichiersExistants();
+                    renderTerritoriesTable();
+                    alert("Sauvegarde importée avec succès.");
+                } catch (error) {
+                    console.error(error);
+                    alert("Impossible d'importer cette sauvegarde. Le fichier n'est peut-être pas valide.");
+                }
+            };
+
+            reader.readAsText(file);
+            event.target.value = "";
+        }
+    </script>
+</body>
+</html>
