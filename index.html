@@ -258,7 +258,143 @@
                 width: 100%;
             }
         }
+        /* ===== AFFICHAGE RESPONSIVE ===== */
+
+html {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+header {
+    width: 100%;
+}
+
+.nav-tabs {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+}
+
+.nav-tabs button {
+    flex: 1 1 auto;
+    min-width: 120px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.panel {
+    width: 100%;
+    max-width: 100%;
+}
+
+.territoire-form input,
+.territoire-form select,
+.territoire-form button {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* ===== TABLETTES ===== */
+
+@media (max-width: 900px) {
+
+    .container {
+        padding: 15px;
+    }
+
+    .nav-tabs {
+        gap: 6px;
+    }
+
+    .nav-tabs button {
+        min-width: 100px;
+    }
+}
+
+/* ===== TÉLÉPHONES ===== */
+
+@media (max-width: 600px) {
+
+    body {
+        font-size: 16px;
+    }
+
+    header {
+        padding: 15px 10px;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+        line-height: 1.2;
+    }
+
+    header p {
+        font-size: 1rem;
+    }
+
+    .container {
+        width: 100%;
+        padding: 10px;
+        margin: 0;
+    }
+
+    .panel {
+        width: 100%;
+        padding: 12px;
+        margin: 0 0 12px 0;
+    }
+
+    .nav-tabs {
+        width: 100%;
+        padding: 8px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .nav-tabs button {
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+        padding: 12px 8px;
+        font-size: 14px;
+    }
+
+    .btn,
+    .btn-view {
+        width: 100%;
+        margin: 5px 0;
+    }
+
+    .territoire-form input,
+    .territoire-form select,
+    .territoire-form button {
+        width: 100%;
+        max-width: 100%;
+        margin: 5px 0;
+    }
+}
     </style>
+   
 </head>
 <body>
 
