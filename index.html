@@ -926,5 +926,198 @@ header {
             event.target.value = "";
         }
     </script>
-</body>
+<<style>
+.pages-box{margin:18px 0}
+.pages-actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.pages-actions button{border:0;border-radius:6px;padding:11px 16px;font-weight:700;cursor:pointer}
+.pages-add{background:#4caf50;color:#fff}
+.pages-clear{background:#34495e;color:#fff}
+.pages-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.page-card{border:1px solid #ddd;border-radius:8px;overflow:hidden;background:#fff}
+.page-head{background:#f0f4f8;padding:10px;font-weight:700;color:#2b3e50}
+.page-body{padding:10px}
+.page-body img{display:block;width:100%;height:auto;max-height:65vh;object-fit:contain;background:#525659}
+.page-body iframe{display:block;width:100%;height:65vh;border:0}
+.page-buttons{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.page-buttons button{border:0;border-radius:5px;padding:7px 10px;color:#fff;font-weight:600;cursor:pointer}
+.page-open{background:#3498db}
+.page-delete{background:#e74c3c}
+.pages-empty{padding:20px;text-align:center;color:#777;border:1px dashed #ccc;border-radius:6px}
+
+@media(max-width:600px){
+.pages-actions button{width:100%}
+.pages-grid{grid-template-columns:1fr}
+.page-body iframe{height:70vh}
+}
+</style>
+
+<script>
+(function(){
+const poles={
+discours:'Discours Publics',
+cahier:'Cahier Vie et Ministère',
+sorties:'Sorties en semaine',
+presentoir:'Présentoir',
+sono:'Sono Video Estrade',
+nettoyage:'Nettoyage'
+};
+
+function key(p){return 'pages_data_'+p}
+
+function get(p){
+try{
+let x=JSON.parse(localStorage.getItem(key(p))||'null');
+if(Array.isArray(x))return x;
+
+const old=localStorage.getItem('file_data_'+p);
+
+if(old){
+let f=JSON.parse(old);
+x=[f];
+localStorage.setItem(key(p),JSON.stringify(x));
+return x;
+}
+}catch(e){}
+return [];
+}
+
+function put(p,x){
+localStorage.setItem(key(p),JSON.stringify(x));
+}
+
+function esc(s){
+return String(s||'').replace(/[&<>"']/g,m=>({
+'&':'&amp;',
+'<':'&lt;',
+'>':'&gt;',
+'"':'&quot;',
+"'":'&#39;'
+}[m]));
+}
+
+function render(p){
+const box=document.getElementById('pages-'+p);
+if(!box)return;
+
+const pages=get(p);
+
+if(!pages.length){
+box.innerHTML='<div class="pages-empty">Aucune page ajoutée pour le moment.</div>';
+return;
+}
+
+box.innerHTML=pages.map((f,i)=>
+'<div class="page-card">'+
+'<div class="page-head">Page '+(i+1)+' — '+esc(f.name)+'</div>'+
+'<div class="page-body">'+
+(f.type&&f.type.indexOf('image/')===0
+?'<img src="'+f.content+'">'
+:'<iframe src="'+f.content+'"></iframe>')+
+'<div class="page-buttons">'+
+'<button class="page-open" onclick="ouvrirPagePole(\''+p+'\','+i+')">📄 Ouvrir</button>'+
+'<button class="page-delete" onclick="supprimerPagePole(\''+p+'\','+i+')">Supprimer</button>'+
+'</div>'+
+'</div>'+
+'</div>'
+).join('');
+}
+
+window.ajouterPagePole=function(p){
+const input=document.getElementById('page-file-'+p);
+
+if(!input||!input.files.length){
+alert('Sélectionne d’abord le fichier de la page.');
+return;
+}
+
+const file=input.files[0];
+const r=new FileReader();
+
+r.onload=function(e){
+const pages=get(p);
+
+pages.push({
+name:file.name,
+type:file.type,
+content:e.target.result,
+dateAjout:new Date().toISOString()
+});
+
+put(p,pages);
+input.value='';
+render(p);
+};
+
+r.readAsDataURL(file);
+};
+
+window.supprimerPagePole=function(p,i){
+const pages=get(p);
+
+if(confirm('Supprimer la page '+(i+1)+' ?')){
+pages.splice(i,1);
+put(p,pages);
+render(p);
+}
+};
+
+window.effacerPagesPole=function(p){
+if(confirm('Effacer toutes les pages de ce pôle ?')){
+localStorage.removeItem(key(p));
+render(p);
+}
+};
+
+window.ouvrirPagePole=function(p,i){
+const f=get(p)[i];
+if(!f)return;
+
+const w=window.open();
+
+if(!w){
+alert('Autorise les fenêtres pop-up pour cette page.');
+return;
+}
+
+w.document.write('<title>'+esc(f.name)+'</title>');
+
+w.document.write(
+f.type&&f.type.indexOf('image/')===0
+?'<body style="margin:0;background:#525659;text-align:center"><img src="'+f.content+'" style="max-width:100%;max-height:100vh"></body>'
+:'<iframe src="'+f.content+'" style="position:fixed;inset:0;width:100%;height:100%;border:0"></iframe>'
+);
+
+w.document.close();
+};
+
+Object.keys(poles).forEach(p=>{
+const panel=document.getElementById(p);
+if(!panel)return;
+
+const old=panel.querySelector('.file-upload-box');
+
+const box=document.createElement('div');
+box.className='pages-box';
+
+box.innerHTML=
+'<div class="file-upload-box">'+
+'<p><strong>Ajouter une page au programme</strong></p>'+
+'<p>Choisis une page puis appuie sur « Ajouter cette page ». Tu peux en ajouter plusieurs.</p>'+
+'<input type="file" id="page-file-'+p+'" accept=".pdf,.docx,.jpg,.jpeg,.png">'+
+'</div>'+
+'<div class="pages-actions">'+
+'<button class="pages-add" onclick="ajouterPagePole(\''+p+'\')">＋ Ajouter cette page</button>'+
+'<button class="pages-clear" onclick="effacerPagesPole(\''+p+'\')">Effacer les pages</button>'+
+'</div>'+
+'<div id="pages-'+p+'" class="pages-grid"></div>';
+
+if(old)
+old.parentNode.insertBefore(box,old);
+else
+panel.appendChild(box);
+
+render(p);
+});
+})();
+</script>/body>
 </html>
