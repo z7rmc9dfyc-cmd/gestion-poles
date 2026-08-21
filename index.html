@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
-<head>
+<html lang="fr"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion de la Congrégation - 7 Pôles</title>
+    <title>Assemblée Monplaisir - 8 pôles administration</title>
     <style>
         :root {
             --primary-color: #2b3e50;
@@ -232,175 +232,434 @@
             margin-top: 8px;
         }
 
-        @media (max-width: 700px) {
+        /* ===== PROGRAMMES EN PLUSIEURS PAGES ===== */
+        .pages-programme {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+            margin: 18px 0;
+        }
+        .page-programme {
+            background: #f8fafb;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        .page-programme strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+        }
+        .page-programme-name {
+            font-size: 12px;
+            color: #666;
+            word-break: break-word;
+            margin: 6px 0 10px;
+        }
+        .page-programme-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .page-programme-actions button { margin: 0; }
+        .page-thumb {
+            width: 100%;
+            height: 110px;
+            object-fit: contain;
+            background: #525659;
+            border-radius: 5px;
+        }
+
+        .evenements-form {
+            margin-top: 24px;
+            padding: 18px;
+            background: #f0f4f8;
+            border-radius: 8px;
+        }
+        .evenements-form h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+        .evenements-form label {
+            display: block;
+            margin: 12px 0 6px;
+            font-weight: 600;
+        }
+        .evenements-form textarea,
+        .evenements-form input {
+            width: 100%;
+            max-width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font: inherit;
+        }
+        .evenements-form textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        /* ===== AFFICHAGE RESPONSIVE PC / TABLETTE / TELEPHONE ===== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        img, iframe, object, embed {
+            max-width: 100%;
+        }
+
+        .nav-tabs {
+            width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            justify-content: flex-start;
+            flex-wrap: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+
+        .tab-button {
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1250px;
+        }
+
+        .panel {
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .file-upload-box {
+            width: 100%;
+        }
+
+        .file-upload-box input[type="file"] {
+            max-width: 100%;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            min-width: 900px;
+        }
+
+        /* ===== TABLETTE ===== */
+        @media (max-width: 900px) {
+            header {
+                padding: 18px 14px;
+            }
+
+            header h1 {
+                font-size: clamp(22px, 4vw, 30px);
+                margin: 0 0 8px;
+            }
+
+            header p {
+                margin: 0;
+                font-size: 14px;
+            }
+
+            .nav-tabs {
+                padding: 8px 6px;
+            }
+
             .tab-button {
                 font-size: 14px;
-                padding: 10px 12px;
+                padding: 10px 14px;
             }
 
             .container {
-                padding: 0 10px;
-                margin: 20px auto;
+                width: 100%;
+                padding: 0 12px;
+                margin: 16px auto;
             }
 
             .panel {
-                padding: 15px;
+                padding: 18px;
+                border-radius: 8px;
             }
 
-            .btn, .btn-view {
-                width: 100%;
-                margin-right: 0;
+            h2 {
+                font-size: 21px;
+            }
+
+            .territoire-form {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
             }
 
             .territoire-form input,
             .territoire-form select,
             .territoire-form button {
+                width: 100% !important;
+                min-width: 0;
+            }
+
+            .search-box {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .search-box input {
                 width: 100%;
+                grid-column: 1 / -1;
+            }
+
+            .search-box button {
+                width: 100%;
+                margin-right: 0;
             }
         }
-        /* ===== AFFICHAGE RESPONSIVE ===== */
 
-html {
-    width: 100%;
-    overflow-x: hidden;
-}
+        /* ===== TELEPHONE ===== */
+        @media (max-width: 600px) {
+            body {
+                font-size: 15px;
+            }
 
-body {
-    width: 100%;
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+            header {
+                padding: 14px 10px;
+            }
 
-*, *::before, *::after {
-    box-sizing: border-box;
-}
+            header h1 {
+                font-size: 22px;
+                line-height: 1.2;
+            }
 
-header {
-    width: 100%;
-}
+            header p {
+                font-size: 13px;
+                line-height: 1.35;
+            }
 
-.nav-tabs {
-    width: 100%;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 10px;
-}
+            .nav-tabs {
+                padding: 6px 4px;
+                border-bottom-width: 1px;
+            }
 
-.nav-tabs button {
-    flex: 1 1 auto;
-    min-width: 120px;
-}
+            .tab-button {
+                font-size: 13px;
+                padding: 10px 11px;
+            }
 
-.container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-}
+            .container {
+                padding: 0 8px;
+                margin: 10px auto;
+            }
 
-.panel {
-    width: 100%;
-    max-width: 100%;
-}
+            .panel {
+                padding: 12px;
+                border-radius: 7px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            }
 
-.territoire-form input,
-.territoire-form select,
-.territoire-form button {
-    width: 100%;
-    max-width: 100%;
-}
+            h2 {
+                font-size: 19px;
+                line-height: 1.25;
+                margin-top: 4px;
+            }
 
-/* ===== TABLETTES ===== */
+            .file-upload-box {
+                padding: 14px 10px;
+                margin-bottom: 14px;
+            }
 
-@media (max-width: 900px) {
+            .file-upload-box p {
+                line-height: 1.4;
+                margin: 7px 0;
+            }
 
-    .container {
-        padding: 15px;
-    }
+            .file-upload-box input[type="file"] {
+                width: 100%;
+                font-size: 13px;
+            }
 
-    .nav-tabs {
-        gap: 6px;
-    }
+            .btn,
+            .btn-view {
+                display: block;
+                width: 100%;
+                margin: 8px 0 0 0;
+                padding: 11px 12px;
+                font-size: 14px;
+                text-align: center;
+            }
 
-    .nav-tabs button {
-        min-width: 100px;
-    }
-}
+            .territoire-form {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                padding: 12px;
+            }
 
-/* ===== TÉLÉPHONES ===== */
+            .territoire-form input,
+            .territoire-form select,
+            .territoire-form button {
+                width: 100% !important;
+                min-width: 0;
+                font-size: 15px;
+                padding: 10px;
+            }
 
-@media (max-width: 600px) {
+            .search-box {
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
 
-    body {
-        font-size: 16px;
-    }
+            .search-box input,
+            .search-box button {
+                width: 100%;
+                margin: 0;
+            }
 
-    header {
-        padding: 15px 10px;
-    }
+            .table-wrapper {
+                margin-left: -2px;
+                width: calc(100% + 4px);
+                border-radius: 5px;
+            }
 
-    header h1 {
-        font-size: 1.5rem;
-        line-height: 1.2;
-    }
+            table {
+                min-width: 760px;
+                font-size: 13px;
+            }
 
-    header p {
-        font-size: 1rem;
-    }
+            th, td {
+                padding: 8px;
+            }
 
-    .container {
-        width: 100%;
-        padding: 10px;
-        margin: 0;
-    }
+            .btn-action {
+                padding: 7px 9px;
+                font-size: 12px;
+            }
 
-    .panel {
-        width: 100%;
-        padding: 12px;
-        margin: 0 0 12px 0;
-    }
+            .small-note {
+                font-size: 12px;
+                line-height: 1.35;
+            }
+        }
 
-    .nav-tabs {
-        width: 100%;
-        padding: 8px;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-    }
+        /* ===== PETITS TELEPHONES ===== */
+        @media (max-width: 380px) {
+            .tab-button {
+                font-size: 12px;
+                padding: 9px 10px;
+            }
 
-    .nav-tabs button {
-        width: 100%;
-        min-width: 0;
-        margin: 0;
-        padding: 12px 8px;
-        font-size: 14px;
-    }
+            .panel {
+                padding: 10px;
+            }
 
-    .btn,
-    .btn-view {
-        width: 100%;
-        margin: 5px 0;
-    }
+            h2 {
+                font-size: 18px;
+            }
 
-    .territoire-form input,
-    .territoire-form select,
-    .territoire-form button {
-        width: 100%;
-        max-width: 100%;
-        margin: 5px 0;
-    }
-}
+            .btn,
+            .btn-view {
+                font-size: 13px;
+            }
+        }
+
+        /* ===== ADMINISTRATION ===== */
+        .admin-card {
+            background: #f0f4f8;
+            border: 1px solid #d7dee5;
+            border-radius: 8px;
+            padding: 18px;
+            margin-bottom: 20px;
+        }
+        .admin-status {
+            font-weight: 700;
+            margin-top: 10px;
+        }
+        .admin-status.ok { color: #27ae60; }
+        .admin-status.locked { color: #c0392b; }
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .admin-grid input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .admin-only-locked {
+            opacity: .55;
+        }
+        @media (max-width: 600px) {
+            .admin-grid { grid-template-columns: 1fr; }
+        }
     </style>
-   
+
+<style id="ipad-pole-menu-css">
+/* Cette version est dédiée à l'iPad : le menu est visible sans détection de largeur. */
+.nav-tabs { display:none !important; }
+
+#ipad-pole-menu {
+  display:block !important;
+  width:100%;
+  padding:10px 12px;
+  box-sizing:border-box;
+}
+
+#ipadPoleSelect {
+  display:block !important;
+  width:100% !important;
+  min-height:54px !important;
+  padding:10px 14px !important;
+  font-size:18px !important;
+  font-weight:600 !important;
+  border:2px solid #4caf50 !important;
+  border-radius:10px !important;
+  background:#fff !important;
+  color:#222 !important;
+  box-sizing:border-box !important;
+}
+</style>
+
+
+<style id="ipad-final-navigation-fix">
+#ipad-pole-menu {
+  display:block !important;
+  position:relative !important;
+  z-index:10000 !important;
+}
+#ipadPoleSelect {
+  display:block !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+}
+</style>
+
 </head>
 <body>
 
     <header>
-        <h1>Système de Coordination Général</h1>
-        <p>Gestion unifiée des 7 pôles d'activité</p>
+        <h1>Assemblée Monplaisir</h1>
+        <p>8 pôles administration</p>
     </header>
 
     <div class="nav-tabs">
@@ -411,99 +670,220 @@ header {
         <button class="tab-button" onclick="switchTab('sono')">🔊 Sono Video Estrade</button>
         <button class="tab-button" onclick="switchTab('nettoyage')">🧹 Nettoyage</button>
         <button class="tab-button" onclick="switchTab('territoires')">🗺️ Territoires</button>
+        <button class="tab-button" onclick="switchTab('administration')">⚙️ Administration</button>
+        <button class="tab-button" onclick="switchTab('evenements')">📅 Évènements</button>
     </div>
+
+<div id="ipad-pole-menu">
+  <select id="ipadPoleSelect" aria-label="Choisir un pôle"
+ onchange="(function(id){document.querySelectorAll('.panel').forEach(function(p){p.classList.remove('active');p.style.setProperty('display','none','important');});var p=document.getElementById(id);if(p){p.classList.add('active');p.style.setProperty('display','block','important');}})(this.value);document.getElementById("ipadPoleState").textContent="Pôle : "+this.options[this.selectedIndex].text.replace(/^\S+\s*/,"");">
+    <option value="discours">🎙️ Discours</option>
+    <option value="cahier">📖 Cahier Vie et Ministère</option>
+    <option value="sorties">🚗 Sorties en semaine</option>
+    <option value="presentoir">🛒 Présentoir</option>
+    <option value="sono">🔊 Sono Video Estrade</option>
+    <option value="nettoyage">🧹 Nettoyage</option>
+    <option value="territoires">🗺️ Territoires</option>
+    <option value="evenements">📅 Évènements</option>
+    <option value="administration">⚙️ Administration</option>
+  </select><span id="ipadPoleState" style="display:block;margin-top:6px;font-size:13px;">Pôle : Discours</span>
+</div>
+
 
     <div class="container">
 
         <div id="discours" class="panel active">
             <h2>Pôle Discours Publics</h2>
+
             <div class="file-upload-box">
-                <p>Glissez-déposez le document de planning ou cliquez pour charger</p>
-                <input type="file" id="file-discours" accept=".pdf,.docx,.jpg,.jpeg,.png">
+                <p><strong>Ajouter une page au programme</strong></p>
+                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
+                <input type="file" id="file-discours" accept=".pdf,.docx,.jpg,.jpeg,.png" onchange="afficherNomFichierDiscours()">
                 <div id="status-discours" class="status-msg"></div>
             </div>
-            <button class="btn" onclick="sauvegarderFichierLocal('discours')">Enregistrer le fichier</button>
-            <button class="btn-view" onclick="ouvrirFichierLocal('discours')">📄 Ouvrir le planning des Discours</button>
+
+            <button class="btn" type="button" onclick="ajouterPageProgramme('discours')">➕ Ajouter cette page</button>
+            <button class="btn btn-secondary" type="button" onclick="effacerPagesProgramme('discours')">Effacer les pages</button>
+
+            <div id="pages-discours" class="pages-programme"><p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p></div>
+
+            <button class="btn-view" onclick="ouvrirProgrammePages('discours')">📄 Ouvrir le programme des Discours</button>
         </div>
 
         <div id="cahier" class="panel">
             <h2>Pôle Cahier Vie et Ministère</h2>
+
             <div class="file-upload-box">
-                <p>Glissez-déposez le planning Vie et Ministère ou cliquez pour charger</p>
-                <input type="file" id="file-cahier" accept=".pdf,.docx,.jpg,.jpeg,.png">
+                <p><strong>Ajouter une page au programme</strong></p>
+                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
+                <input type="file" id="file-cahier" data-admin-only accept=".pdf,.docx,.jpg,.jpeg,.png">
                 <div id="status-cahier" class="status-msg"></div>
             </div>
-            <button class="btn" onclick="sauvegarderFichierLocal('cahier')">Enregistrer le fichier</button>
-            <button class="btn-view" onclick="ouvrirFichierLocal('cahier')">📄 Ouvrir le planning Vie et Ministère</button>
+
+            <button class="btn" onclick="ajouterPageProgramme('cahier')">➕ Ajouter cette page</button>
+            <button class="btn btn-secondary" onclick="effacerPagesProgramme('cahier')">Effacer les pages</button>
+
+            <div id="pages-cahier" class="pages-programme"><p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p></div>
+
+            <button class="btn-view" onclick="ouvrirProgrammePages('cahier')">📄 Ouvrir le programme Vie et Ministère</button>
         </div>
 
         <div id="sorties" class="panel">
             <h2>Pôle Sorties en semaine</h2>
+
             <div class="file-upload-box">
-                <p>Glissez-déposez le planning des Sorties en semaine ou cliquez pour charger</p>
-                <input type="file" id="file-sorties" accept=".pdf,.docx,.jpg,.jpeg,.png">
+                <p><strong>Ajouter une page au programme</strong></p>
+                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
+                <input type="file" id="file-sorties" data-admin-only accept=".pdf,.docx,.jpg,.jpeg,.png">
                 <div id="status-sorties" class="status-msg"></div>
             </div>
-            <button class="btn" onclick="sauvegarderFichierLocal('sorties')">Enregistrer le fichier</button>
-            <button class="btn-view" onclick="ouvrirFichierLocal('sorties')">🚗 Ouvrir le planning des Sorties</button>
+
+            <button class="btn" onclick="ajouterPageProgramme('sorties')">➕ Ajouter cette page</button>
+            <button class="btn btn-secondary" onclick="effacerPagesProgramme('sorties')">Effacer les pages</button>
+
+            <div id="pages-sorties" class="pages-programme"><p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p></div>
+
+            <button class="btn-view" onclick="ouvrirProgrammePages('sorties')">🚗 Ouvrir le programme des Sorties</button>
         </div>
 
         <div id="presentoir" class="panel">
             <h2>Pôle Présentoir</h2>
+
             <div class="file-upload-box">
-                <p>Glissez-déposez le planning du Présentoir ou cliquez pour charger</p>
-                <input type="file" id="file-presentoir" accept=".pdf,.docx,.jpg,.jpeg,.png">
+                <p><strong>Ajouter une page au programme</strong></p>
+                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
+                <input type="file" id="file-presentoir" data-admin-only accept=".pdf,.docx,.jpg,.jpeg,.png">
                 <div id="status-presentoir" class="status-msg"></div>
             </div>
-            <button class="btn" onclick="sauvegarderFichierLocal('presentoir')">Enregistrer le fichier</button>
-            <button class="btn-view" onclick="ouvrirFichierLocal('presentoir')">🛒 Ouvrir le planning Présentoir</button>
+
+            <button class="btn" onclick="ajouterPageProgramme('presentoir')">➕ Ajouter cette page</button>
+            <button class="btn btn-secondary" onclick="effacerPagesProgramme('presentoir')">Effacer les pages</button>
+
+            <div id="pages-presentoir" class="pages-programme"><p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p></div>
+
+            <button class="btn-view" onclick="ouvrirProgrammePages('presentoir')">🛒 Ouvrir le programme Présentoir</button>
         </div>
 
         <div id="sono" class="panel">
             <h2>Pôle Sono Video Estrade</h2>
+
             <div class="file-upload-box">
-                <p>Glissez-déposez le planning Sono / Vidéo ou cliquez pour charger</p>
-                <input type="file" id="file-sono" accept=".pdf,.docx,.jpg,.jpeg,.png">
+                <p><strong>Ajouter une page au programme</strong></p>
+                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
+                <input type="file" id="file-sono" data-admin-only accept=".pdf,.docx,.jpg,.jpeg,.png">
                 <div id="status-sono" class="status-msg"></div>
             </div>
-            <button class="btn" onclick="sauvegarderFichierLocal('sono')">Enregistrer le fichier</button>
-            <button class="btn-view" onclick="ouvrirFichierLocal('sono')">🔊 Ouvrir le planning Sono / Vidéo</button>
+
+            <button class="btn" onclick="ajouterPageProgramme('sono')">➕ Ajouter cette page</button>
+            <button class="btn btn-secondary" onclick="effacerPagesProgramme('sono')">Effacer les pages</button>
+
+            <div id="pages-sono" class="pages-programme"><p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p></div>
+
+            <button class="btn-view" onclick="ouvrirProgrammePages('sono')">🔊 Ouvrir le programme Sono / Vidéo</button>
         </div>
 
         <div id="nettoyage" class="panel">
             <h2>Pôle Nettoyage</h2>
+
             <div class="file-upload-box">
-                <p>Glissez-déposez le calendrier du Nettoyage ou cliquez pour charger</p>
-                <input type="file" id="file-nettoyage" accept=".pdf,.docx,.jpg,.jpeg,.png">
+                <p><strong>Ajouter une page au programme</strong></p>
+                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
+                <input type="file" id="file-nettoyage" data-admin-only accept=".pdf,.docx,.jpg,.jpeg,.png">
                 <div id="status-nettoyage" class="status-msg"></div>
             </div>
-            <button class="btn" onclick="sauvegarderFichierLocal('nettoyage')">Enregistrer le fichier</button>
-            <button class="btn-view" onclick="ouvrirFichierLocal('nettoyage')">🧹 Ouvrir le planning Nettoyage</button>
+
+            <button class="btn" onclick="ajouterPageProgramme('nettoyage')">➕ Ajouter cette page</button>
+            <button class="btn btn-secondary" onclick="effacerPagesProgramme('nettoyage')">Effacer les pages</button>
+
+            <div id="pages-nettoyage" class="pages-programme"><p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p></div>
+
+            <button class="btn-view" onclick="ouvrirProgrammePages('nettoyage')">🧹 Ouvrir le programme Nettoyage</button>
+        </div>
+
+        <div id="evenements" class="panel">
+            <h2>📅 Pôle Évènements</h2>
+
+            <div class="file-upload-box">
+                <p><strong>Ajouter une page au programme</strong></p>
+                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
+                <input type="file" id="file-evenements" data-admin-only accept=".pdf,.docx,.jpg,.jpeg,.png">
+                <div id="status-evenements" class="status-msg"></div>
+            </div>
+
+            <button class="btn" onclick="ajouterPageProgramme('evenements')">➕ Ajouter cette page</button>
+            <button class="btn btn-secondary" onclick="effacerPagesProgramme('evenements')">Effacer les pages</button>
+
+            <div id="pages-evenements" class="pages-programme"><p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p></div>
+
+            <button class="btn-view" onclick="ouvrirProgrammePages('evenements')">📄 Ouvrir le programme des Évènements</button>
+
+            <div class="evenements-form">
+                <h3>📝 Informations de l'évènement</h3>
+                <label for="evenements-texte">Texte</label>
+                <textarea id="evenements-texte" data-admin-only rows="7" placeholder="Entrer ici les informations, consignes ou texte de l'évènement..."></textarea>
+
+                <label for="evenements-chiffres">Chiffres</label>
+                <input id="evenements-chiffres" data-admin-only type="text" inputmode="decimal" placeholder="Entrer ici les chiffres ou quantités nécessaires...">
+
+                <div>
+                    <button class="btn" data-admin-only onclick="enregistrerEvenements()">💾 Enregistrer les informations</button>
+                    <button class="btn btn-secondary" data-admin-only onclick="effacerEvenements()">Effacer les informations</button>
+                </div>
+                <div id="status-evenements-donnees" class="status-msg"></div>
+            </div>
+        </div>
+
+        <div id="administration" class="panel">
+            <h2>⚙️ Administration</h2>
+
+            <div class="admin-card">
+                <h3>🔐 Accès des 4 administrateurs</h3>
+                <p>Entrez ici le code personnel de l’un des 4 administrateurs. Les administrateurs peuvent voir et modifier toute l’application.</p>
+                <div class="admin-grid">
+                    <input id="access-code" type="password" autocomplete="off" placeholder="Entrer le code administrateur">
+                    <button class="btn" onclick="connexionAcces()">🔐 Se connecter</button>
+                </div>
+                <button class="btn btn-secondary" onclick="deconnexionAcces()">Se déconnecter</button>
+                <div id="admin-status" class="admin-status locked">🔒 Aucun accès personnel connecté</div>
+                <div class="small-note">Les 8 responsables ont un accès complet en lecture. Les 120 utilisateurs ont un accès en lecture seule et voient leurs territoires attribués.</div>
+            </div>
+
+            <div class="admin-card">
+                <h3>🗺️ Attribution des territoires aux 120 utilisateurs</h3>
+                <p>En mode administrateur, attribue une carte à un utilisateur avec son code. Cet utilisateur ne verra ensuite que ses cartes.</p>
+                <div class="admin-grid">
+                    <input id="admin-user-code" type="text" placeholder="Code utilisateur (ex. U001)">
+                    <input id="admin-territory-key" type="text" placeholder="Carte (ex. 12_Recto)">
+                    <button class="btn" onclick="attribuerTerritoireUtilisateur()">🗺️ Attribuer</button>
+                </div>
+                <div id="admin-user-status" class="status-msg"></div>
+            </div>
         </div>
 
         <div id="territoires" class="panel">
             <h2>Pôle Territoires</h2>
 
             <div class="territoire-form">
-                <input type="number" id="terr-num" placeholder="N° Carte (1-120)" min="1" max="120" style="width: 130px;">
+                <input type="number" id="terr-num" data-admin-only placeholder="N° Carte (1-120)" min="1" max="120" style="width: 130px;">
 
-                <select id="terr-face">
-                    <option value="Recto">Recto</option>
+                <select id="terr-face" data-admin-only>
+                    <option value="Recto" selected="selected">Recto</option>
                     <option value="Verso">Verso</option>
                 </select>
 
-                <input type="text" id="terr-nom" placeholder="Nom">
-                <input type="text" id="terr-prenom" placeholder="Prénom">
+                <input type="text" id="terr-nom" data-admin-only placeholder="Nom">
+                <input type="text" id="terr-prenom" data-admin-only placeholder="Prénom">
+                <input type="text" id="terr-user-code" data-admin-only placeholder="Code utilisateur (ex. U001)">
 
-                <button class="btn" onclick="attribuerTerritoireLocal()">Attribuer la carte</button>
+                <button class="btn" data-admin-only onclick="attribuerTerritoireLocal()">Attribuer la carte</button>
             </div>
 
             <div class="file-upload-box">
                 <p><strong>Ajouter la carte réelle du territoire</strong></p>
                 <p>Sélectionne d'abord le numéro et la face ci-dessus, puis charge l'image ou le PDF de la carte.</p>
-                <input type="file" id="terr-file" accept=".pdf,.jpg,.jpeg,.png">
+                <input type="file" id="terr-file" data-admin-only accept=".pdf,.jpg,.jpeg,.png">
                 <br>
-                <button class="btn" onclick="enregistrerCarteTerritoire()">🗺️ Enregistrer la carte du territoire</button>
+                <button class="btn" data-admin-only onclick="enregistrerCarteTerritoire()">🗺️ Enregistrer la carte du territoire</button>
                 <div id="status-territoire-carte" class="status-msg"></div>
                 <div class="small-note">
                     Exemple : Carte 12 Recto peut avoir son fichier, et Carte 12 Verso peut avoir un autre fichier.
@@ -514,37 +894,206 @@ header {
                 <input type="text" id="search-territoire" placeholder="Rechercher : nom, prénom, numéro, statut..." oninput="renderTerritoriesTable()">
                 <button class="btn btn-secondary" onclick="afficherSeulementSortis()">Voir seulement les cartes sorties</button>
                 <button class="btn btn-secondary" onclick="afficherToutesCartes()">Voir toutes les cartes</button>
-                <button class="btn" onclick="exporterSauvegarde()">Exporter sauvegarde</button>
-                <input type="file" id="import-save" accept=".json" onchange="importerSauvegarde(event)" style="display:none;">
-                <button class="btn btn-secondary" onclick="document.getElementById('import-save').click()">Importer sauvegarde</button>
+                <button class="btn" data-admin-only onclick="exporterSauvegarde()">Exporter sauvegarde</button>
+                <input type="file" id="import-save" data-admin-only accept=".json" onchange="importerSauvegarde(event)" style="display:none;">
+                <button class="btn btn-secondary" data-admin-only onclick="document.getElementById('import-save').click()">Importer sauvegarde</button>
             </div>
 
             <div class="table-wrapper">
                 <table>
                     <thead>
                         <tr>
-                            <th>N° Carte & Face</th>
+                            <th>N° Carte &amp; Face</th>
                             <th>Carte réelle</th>
-                            <th>Nom & Prénom</th>
+                            <th>Nom &amp; Prénom</th>
                             <th>Date Sortie</th>
                             <th>Limite (3 mois)</th>
                             <th>Statut Durée</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="tbody-territoires"></tbody>
+                    <tbody id="tbody-territoires"><tr><td><strong>Carte 1</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(1, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 1</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(1, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 2</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(2, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 2</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(2, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 3</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(3, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 3</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(3, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 4</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(4, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 4</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(4, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 5</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(5, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 5</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(5, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 6</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(6, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 6</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(6, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 7</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(7, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 7</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(7, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 8</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(8, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 8</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(8, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 9</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(9, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 9</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(9, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 10</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(10, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 10</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(10, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 11</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(11, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 11</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(11, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 12</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(12, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 12</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(12, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 13</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(13, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 13</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(13, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 14</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(14, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 14</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(14, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 15</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(15, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 15</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(15, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 16</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(16, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 16</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(16, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 17</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(17, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 17</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(17, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 18</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(18, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 18</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(18, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 19</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(19, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 19</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(19, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 20</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(20, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 20</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(20, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 21</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(21, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 21</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(21, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 22</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(22, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 22</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(22, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 23</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(23, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 23</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(23, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 24</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(24, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 24</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(24, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 25</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(25, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 25</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(25, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 26</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(26, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 26</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(26, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 27</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(27, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 27</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(27, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 28</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(28, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 28</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(28, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 29</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(29, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 29</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(29, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 30</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(30, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 30</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(30, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 31</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(31, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 31</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(31, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 32</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(32, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 32</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(32, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 33</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(33, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 33</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(33, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 34</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(34, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 34</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(34, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 35</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(35, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 35</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(35, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 36</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(36, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 36</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(36, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 37</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(37, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 37</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(37, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 38</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(38, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 38</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(38, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 39</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(39, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 39</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(39, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 40</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(40, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 40</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(40, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 41</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(41, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 41</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(41, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 42</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(42, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 42</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(42, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 43</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(43, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 43</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(43, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 44</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(44, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 44</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(44, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 45</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(45, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 45</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(45, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 46</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(46, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 46</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(46, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 47</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(47, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 47</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(47, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 48</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(48, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 48</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(48, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 49</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(49, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 49</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(49, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 50</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(50, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 50</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(50, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 51</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(51, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 51</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(51, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 52</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(52, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 52</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(52, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 53</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(53, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 53</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(53, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 54</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(54, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 54</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(54, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 55</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(55, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 55</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(55, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 56</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(56, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 56</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(56, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 57</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(57, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 57</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(57, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 58</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(58, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 58</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(58, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 59</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(59, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 59</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(59, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 60</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(60, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 60</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(60, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 61</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(61, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 61</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(61, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 62</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(62, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 62</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(62, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 63</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(63, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 63</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(63, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 64</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(64, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 64</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(64, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 65</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(65, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 65</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(65, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 66</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(66, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 66</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(66, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 67</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(67, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 67</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(67, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 68</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(68, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 68</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(68, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 69</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(69, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 69</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(69, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 70</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(70, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 70</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(70, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 71</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(71, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 71</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(71, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 72</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(72, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 72</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(72, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 73</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(73, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 73</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(73, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 74</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(74, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 74</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(74, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 75</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(75, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 75</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(75, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 76</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(76, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 76</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(76, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 77</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(77, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 77</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(77, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 78</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(78, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 78</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(78, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 79</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(79, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 79</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(79, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 80</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(80, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 80</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(80, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 81</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(81, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 81</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(81, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 82</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(82, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 82</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(82, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 83</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(83, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 83</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(83, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 84</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(84, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 84</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(84, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 85</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(85, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 85</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(85, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 86</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(86, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 86</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(86, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 87</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(87, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 87</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(87, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 88</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(88, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 88</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(88, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 89</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(89, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 89</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(89, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 90</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(90, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 90</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(90, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 91</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(91, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 91</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(91, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 92</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(92, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 92</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(92, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 93</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(93, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 93</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(93, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 94</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(94, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 94</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(94, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 95</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(95, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 95</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(95, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 96</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(96, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 96</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(96, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 97</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(97, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 97</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(97, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 98</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(98, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 98</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(98, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 99</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(99, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 99</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(99, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 100</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(100, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 100</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(100, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 101</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(101, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 101</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(101, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 102</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(102, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 102</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(102, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 103</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(103, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 103</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(103, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 104</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(104, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 104</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(104, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 105</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(105, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 105</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(105, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 106</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(106, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 106</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(106, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 107</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(107, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 107</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(107, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 108</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(108, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 108</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(108, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 109</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(109, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 109</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(109, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 110</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(110, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 110</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(110, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 111</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(111, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 111</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(111, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 112</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(112, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 112</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(112, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 113</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(113, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 113</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(113, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 114</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(114, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 114</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(114, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 115</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(115, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 115</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(115, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 116</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(116, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 116</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(116, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 117</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(117, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 117</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(117, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 118</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(118, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 118</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(118, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 119</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(119, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 119</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(119, 'Verso')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 120</strong> (Recto)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(120, 'Recto')">Ajouter fichier</button></td></tr><tr><td><strong>Carte 120</strong> (Verso)</td><td><span class="badge badge-no-carte">Pas de fichier</span></td><td>-</td><td>-</td><td>-</td><td><span class="badge badge-dispo">Disponible</span></td><td><span style="color:#aaa; font-size:12px;">En attente</span><button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(120, 'Verso')">Ajouter fichier</button></td></tr></tbody>
                 </table>
             </div>
         </div>
     </div>
 
     <script>
+
+        /* ===== SUPABASE : SYNCHRONISATION DES PROGRAMMES =====
+           Colle ta Publishable key complète dans SUPABASE_KEY.
+           Ne mets JAMAIS une Secret key ici.
+        */
+        const SUPABASE_URL = "https://qvrtpwuqmsmbqiparlff.supabase.co";
+        const SUPABASE_KEY = "COLLE_ICI_TA_PUBLISHABLE_KEY";
+        const ADMINISTRATEURS = {
+            "ADMIN1": "MONP-ADM1-2026",
+            "ADMIN2": "MONP-ADM2-2026",
+            "ADMIN3": "MONP-ADM3-2026",
+            "ADMIN4": "MONP-ADM4-2026"
+        };
+
+        // 8 responsables : lecture complète de toute l'application.
+        // Ces codes sont provisoires et devront être remplacés avant la mise en service.
+        const RESPONSABLES = {
+            "RESP1": "MONP-RESP1-2026", "RESP2": "MONP-RESP2-2026",
+            "RESP3": "MONP-RESP3-2026", "RESP4": "MONP-RESP4-2026",
+            "RESP5": "MONP-RESP5-2026", "RESP6": "MONP-RESP6-2026",
+            "RESP7": "MONP-RESP7-2026", "RESP8": "MONP-RESP8-2026"
+        };
+
+        // 120 utilisateurs en lecture seule. Les codes U001 à U120 seront utilisés
+        // pour associer les territoires à chaque personne.
+        const UTILISATEURS = {};
+        for (let i = 1; i <= 120; i++) {
+            const code = "U" + String(i).padStart(3, "0");
+            UTILISATEURS[code] = "MONP-" + code + "-2026";
+        }
+
+        let accesRole = sessionStorage.getItem("assemblee_role") || "";
+        let accesIdentifiant = sessionStorage.getItem("assemblee_identifiant") || "";
+
+        function estAdministrateur() { return accesRole === "admin" && !!ADMINISTRATEURS[accesIdentifiant]; }
+        function estResponsable() { return accesRole === "responsable" && !!RESPONSABLES[accesIdentifiant]; }
+        function estUtilisateur() { return accesRole === "utilisateur" && !!UTILISATEURS[accesIdentifiant]; }
+        function peutToutVoir() { return estAdministrateur() || estResponsable(); }
+
+        function exigerAdministrateur() {
+            if (estAdministrateur()) return true;
+            alert("🔒 Cette fonction est réservée aux 4 administrateurs.");
+            switchTab("administration");
+            return false;
+        }
+
+        function connexionAcces() {
+            const champ = document.getElementById("access-code");
+            const code = champ ? champ.value.trim() : "";
+            let role = "", identifiant = "";
+            identifiant = Object.keys(ADMINISTRATEURS).find(k => ADMINISTRATEURS[k] === code) || "";
+            if (identifiant) role = "admin";
+            if (!identifiant) { identifiant = Object.keys(RESPONSABLES).find(k => RESPONSABLES[k] === code) || ""; if (identifiant) role = "responsable"; }
+            if (!identifiant) { identifiant = Object.keys(UTILISATEURS).find(k => UTILISATEURS[k] === code) || ""; if (identifiant) role = "utilisateur"; }
+            if (!identifiant) { alert("Code d'accès incorrect."); return; }
+            accesRole = role;
+            accesIdentifiant = identifiant;
+            sessionStorage.setItem("assemblee_role", role);
+            sessionStorage.setItem("assemblee_identifiant", identifiant);
+            if (champ) champ.value = "";
+            actualiserDroitsAcces();
+            renderTerritoriesTable();
+            alert(role === "admin" ? "✅ Administrateur connecté." : role === "responsable" ? "✅ Responsable connecté en lecture complète." : "✅ Utilisateur connecté en lecture seule.");
+        }
+
+        function deconnexionAcces() {
+            accesRole = "";
+            accesIdentifiant = "";
+            sessionStorage.removeItem("assemblee_role");
+            sessionStorage.removeItem("assemblee_identifiant");
+            actualiserDroitsAcces();
+            renderTerritoriesTable();
+        }
+
+        function actualiserDroitsAcces() {
+            const status = document.getElementById("admin-status");
+            if (status) {
+                let texte = "🔒 Aucun accès personnel connecté";
+                if (estAdministrateur()) texte = "🔓 Administrateur : " + accesIdentifiant + " — gestion complète";
+                else if (estResponsable()) texte = "👥 Responsable : " + accesIdentifiant + " — lecture complète";
+                else if (estUtilisateur()) texte = "👤 Utilisateur : " + accesIdentifiant + " — lecture seule";
+                status.textContent = texte;
+                status.className = "admin-status " + (estAdministrateur() ? "ok" : "locked");
+            }
+            document.querySelectorAll("[data-admin-only]").forEach(el => {
+                // Les commandes de programme restent cliquables afin d'afficher
+                // le message de connexion si l'administrateur n'est pas connecté.
+                // La fonction elle-même vérifie toujours le droit administrateur.
+                const programmeControl = el.id === "file-discours" ||
+                    el.id === "file-cahier" ||
+                    el.id === "file-sorties" ||
+                    el.id === "file-presentoir" ||
+                    el.id === "file-sono" ||
+                    el.id === "file-nettoyage" ||
+                    el.id === "file-evenements" ||
+                    (el.getAttribute("onclick") || "").includes("ajouterPageProgramme");
+                if (!programmeControl) el.disabled = !estAdministrateur();
+                el.classList.toggle("admin-only-locked", !estAdministrateur());
+            });
+        }
+
+        function attribuerTerritoireUtilisateur() {
+            if (!exigerAdministrateur()) return;
+            const userCode = document.getElementById("admin-user-code").value.trim().toUpperCase();
+            const key = document.getElementById("admin-territory-key").value.trim();
+            if (!UTILISATEURS[userCode]) { alert("Code utilisateur invalide. Utilise U001 à U120."); return; }
+            if (!/^([1-9]|[1-9][0-9]|1[01][0-9]|120)_(Recto|Verso)$/.test(key)) { alert("Format de carte incorrect. Exemple : 12_Recto"); return; }
+            databaseTerritoires[key] = databaseTerritoires[key] || { numero: key.split("_")[0], face: key.split("_")[1], proclamateur: "-", dateSortie: "-", statut: "Disponible" };
+            databaseTerritoires[key].userCode = userCode;
+            localStorage.setItem("territoires_data", JSON.stringify(databaseTerritoires));
+            document.getElementById("admin-user-status").textContent = "✅ " + key + " attribuée à " + userCode + ".";
+            renderTerritoriesTable();
+        }
+
+        async function supabaseRequest(path, options = {}) {
+            const headers = {
+                "apikey": SUPABASE_KEY,
+                "Authorization": "Bearer " + SUPABASE_KEY,
+                "Content-Type": "application/json",
+                ...(options.headers || {})
+            };
+            const response = await fetch(SUPABASE_URL + "/rest/v1/" + path, { ...options, headers });
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error("Supabase " + response.status + " : " + text);
+            }
+            return response.status === 204 ? null : response.json();
+        }
+
+        async function chargerProgrammesDepuisSupabase() {
+            if (!SUPABASE_KEY || SUPABASE_KEY === "COLLE_ICI_TA_PUBLISHABLE_KEY") return;
+            try {
+                const rows = await supabaseRequest("programmes_pages?select=id,pole,page_number,file_name,file_type,file_path&order=pole.asc,page_number.asc");
+                const parPole = {};
+                rows.forEach(row => {
+                    if (!parPole[row.pole]) parPole[row.pole] = [];
+                    parPole[row.pole].push({ id: String(row.id), name: row.file_name, type: row.file_type, content: row.file_path, supabaseId: row.id });
+                });
+                polesProgrammes.forEach(pole => {
+                    if (parPole[pole] && parPole[pole].length > 0) localStorage.setItem("programme_pages_" + pole, JSON.stringify(parPole[pole]));
+                    afficherPagesProgramme(pole);
+                    const statusDiv = document.getElementById("status-" + pole);
+                    const pages = getPagesProgramme(pole);
+                    if (statusDiv && pages.length > 0) statusDiv.innerText = "☁️ " + pages.length + " page(s) synchronisée(s).";
+                });
+            } catch (error) { console.error("Erreur de chargement Supabase :", error); }
+        }
+
+        async function synchroniserPoleAvecSupabase(poleName) {
+            if (!SUPABASE_KEY || SUPABASE_KEY === "COLLE_ICI_TA_PUBLISHABLE_KEY") return;
+            const pages = getPagesProgramme(poleName);
+            try {
+                await supabaseRequest("programmes_pages?pole=eq." + encodeURIComponent(poleName), { method: "DELETE" });
+                if (pages.length > 0) {
+                    const rows = pages.map((page, index) => ({ pole: poleName, page_number: index + 1, file_name: page.name || "page-" + (index + 1), file_type: page.type || "application/octet-stream", file_path: page.content }));
+                    await supabaseRequest("programmes_pages", { method: "POST", headers: { "Prefer": "return=minimal" }, body: JSON.stringify(rows) });
+                }
+                const statusDiv = document.getElementById("status-" + poleName);
+                if (statusDiv) statusDiv.innerText = "☁️ " + pages.length + " page(s) enregistrée(s) pour tous les appareils.";
+            } catch (error) {
+                console.error("Erreur de synchronisation Supabase :", error);
+                const statusDiv = document.getElementById("status-" + poleName);
+                if (statusDiv) statusDiv.innerText = "⚠️ Sauvegardé ici, mais synchronisation cloud impossible.";
+                alert("Le programme est conservé sur cet appareil, mais Supabase n'a pas accepté la synchronisation. Vérifie la Publishable key et les règles RLS.");
+            }
+        }
         let databaseTerritoires = JSON.parse(localStorage.getItem('territoires_data')) || {};
         let filtreSortisSeulement = false;
 
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", async function() {
             renderTerritoriesTable();
+            chargerEvenements();
             verifierFichiersExistants();
+            await chargerProgrammesDepuisSupabase();
+            actualiserDroitsAcces();
         });
 
         function switchTab(tabId) {
@@ -561,12 +1110,44 @@ header {
             if (targetPanel) targetPanel.classList.add('active');
         }
 
-        function sauvegarderFichierLocal(poleName) {
+        /* ===== GESTION DES PROGRAMMES EN PLUSIEURS PAGES ===== */
+
+        const polesProgrammes = ['discours', 'cahier', 'sorties', 'presentoir', 'sono', 'nettoyage', 'evenements'];
+
+        function getPagesProgramme(poleName) {
+            try {
+                return JSON.parse(localStorage.getItem("programme_pages_" + poleName)) || [];
+            } catch (error) {
+                console.error(error);
+                return [];
+            }
+        }
+
+        function setPagesProgramme(poleName, pages) {
+            localStorage.setItem("programme_pages_" + poleName, JSON.stringify(pages));
+        }
+
+        function afficherNomFichierDiscours() {
+            const input = document.getElementById("file-discours");
+            const status = document.getElementById("status-discours");
+            if (input && status && input.files && input.files.length) {
+                status.innerText = "📄 Fichier sélectionné : " + input.files[0].name + " — clique sur « Ajouter cette page ».";
+            }
+        }
+
+        function ajouterPageProgramme(poleName) {
+            if (!exigerAdministrateur()) return;
+
             const fileInput = document.getElementById("file-" + poleName);
             const statusDiv = document.getElementById("status-" + poleName);
 
-            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-                alert("Veuillez d'abord sélectionner un fichier.");
+            if (!fileInput) {
+                alert("Le champ de fichier du pôle « " + poleName + " » est introuvable.");
+                return;
+            }
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert("Veuillez d'abord sélectionner la page à ajouter.");
                 return;
             }
 
@@ -575,50 +1156,198 @@ header {
 
             reader.onload = function(e) {
                 try {
-                    const fileData = {
+                    const pages = getPagesProgramme(poleName);
+                    pages.push({
+                        id: Date.now().toString() + "_" + Math.random().toString(36).slice(2),
                         name: file.name,
-                        type: file.type,
+                        type: file.type || "application/octet-stream",
                         content: e.target.result
-                    };
+                    });
 
-                    localStorage.setItem("file_data_" + poleName, JSON.stringify(fileData));
+                    setPagesProgramme(poleName, pages);
 
-                    if(statusDiv) statusDiv.innerText = "✅ Fichier \"" + file.name + "\" enregistré avec succès !";
-                    alert("Félicitations Fredy ! Le document pour le pôle " + poleName + " a été mémorisé.");
+                    if (statusDiv) {
+                        statusDiv.innerText = "✅ Page " + pages.length + " ajoutée : \"" + file.name + "\"";
+                    }
+
+                    fileInput.value = "";
+                    afficherPagesProgramme(poleName);
+                    synchroniserPoleAvecSupabase(poleName);
                 } catch (error) {
                     console.error(error);
-                    alert("Le fichier est trop volumineux pour être stocké de cette façon. Essaye avec un fichier plus léger ou au format PDF/Image.");
+                    alert("Impossible d'ajouter cette page. Le fichier est peut-être trop volumineux.");
                 }
+            };
+
+            reader.onerror = function() {
+                alert("Impossible de lire ce fichier. Essaie avec un autre PDF ou une autre image.");
             };
 
             reader.readAsDataURL(file);
         }
 
-        function ouvrirFichierLocal(poleName) {
-            const storedData = localStorage.getItem("file_data_" + poleName);
+        function afficherPagesProgramme(poleName) {
+            const container = document.getElementById("pages-" + poleName);
+            if (!container) return;
 
-            if (!storedData) {
-                alert("Aucun planning n'a encore été enregistré pour ce pôle. Charge un document d'abord !");
+            const pages = getPagesProgramme(poleName);
+            container.innerHTML = "";
+
+            if (pages.length === 0) {
+                container.innerHTML = '<p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p>';
                 return;
             }
 
-            const fileData = JSON.parse(storedData);
-            ouvrirDocumentDansNouvelleFenetre(fileData);
+            pages.forEach(function(page, index) {
+                const card = document.createElement("div");
+                card.className = "page-programme";
+
+                const apercu = (page.type && page.type.startsWith("image/"))
+                    ? '<img class="page-thumb" src="' + page.content + '" alt="Page ' + (index + 1) + '">'
+                    : '<div class="page-thumb" style="display:flex;align-items:center;justify-content:center;color:white;font-size:28px;">📄</div>';
+
+                card.innerHTML =
+                    "<strong>Page " + (index + 1) + "</strong>" +
+                    apercu +
+                    '<div class="page-programme-name">' + page.name + "</div>" +
+                    '<div class="page-programme-actions">' +
+                    '<button class="btn-action" style="background:#3498db;" onclick="voirUnePageProgramme(\'' + poleName + "', " + index + ')">Voir</button>' +
+                    '<button class="btn-action" style="background:#e74c3c;" onclick="supprimerPageProgramme(\'' + poleName + "', " + index + ')">Supprimer</button>' +
+                    "</div>";
+
+                container.appendChild(card);
+            });
+        }
+
+        function supprimerPageProgramme(poleName, index) {
+            const pages = getPagesProgramme(poleName);
+            if (!pages[index]) return;
+
+            if (confirm("Supprimer la page " + (index + 1) + " du programme ?")) {
+                pages.splice(index, 1);
+                setPagesProgramme(poleName, pages);
+                afficherPagesProgramme(poleName);
+                synchroniserPoleAvecSupabase(poleName);
+            }
+        }
+
+        function effacerPagesProgramme(poleName) {
+            if (!exigerAdministrateur()) return;
+            const pages = getPagesProgramme(poleName);
+
+            if (pages.length === 0) {
+                alert("Il n'y a aucune page à effacer.");
+                return;
+            }
+
+            if (confirm("Supprimer toutes les pages de ce programme ?")) {
+                localStorage.removeItem("programme_pages_" + poleName);
+                const statusDiv = document.getElementById("status-" + poleName);
+                if (statusDiv) statusDiv.innerText = "Toutes les pages ont été supprimées.";
+                afficherPagesProgramme(poleName);
+                synchroniserPoleAvecSupabase(poleName);
+            }
+        }
+
+        function voirUnePageProgramme(poleName, index) {
+            ouvrirProgrammePages(poleName, index);
+        }
+
+        function ouvrirProgrammePages(poleName, pageDepart = 0) {
+            const pages = getPagesProgramme(poleName);
+
+            if (pages.length === 0) {
+                alert("Aucune page n'a encore été ajoutée à ce programme.");
+                return;
+            }
+
+            let index = Math.max(0, Math.min(pageDepart, pages.length - 1));
+            const newWindow = window.open("", "_blank");
+
+            if (!newWindow) {
+                alert("L'affichage a été bloqué par ton navigateur. Autorise les fenêtres pop-up pour cette page.");
+                return;
+            }
+
+            newWindow.document.write(`<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>Programme</title>
+<style>
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;padding:0;overflow:hidden;font-family:Arial,sans-serif;background:#525659}
+.toolbar{height:58px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#2b3e50;color:#fff;padding:7px 10px;position:relative;z-index:10}
+.toolbar button{border:0;border-radius:6px;padding:9px 14px;background:#4caf50;color:#fff;font-weight:bold;font-size:14px;cursor:pointer;min-height:40px}
+.toolbar button:disabled{opacity:.45;cursor:default}
+#counter{min-width:95px;text-align:center;font-size:14px;font-weight:bold}
+#content{width:100%;height:calc(100dvh - 58px);display:flex;align-items:center;justify-content:center;overflow:auto;background:#525659;margin:0;padding:0}
+#content img{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;margin:auto}
+#content iframe{display:block;width:100%;height:100%;min-width:0;min-height:0;border:0;margin:0;padding:0;background:#fff}
+@media(max-width:900px){.toolbar{height:56px;padding:7px 8px;gap:8px}.toolbar button{font-size:13px;padding:8px 11px}#counter{min-width:80px;font-size:13px}#content{height:calc(100dvh - 56px)}}
+@media(max-width:600px){.toolbar{height:54px;padding:6px;gap:5px}.toolbar button{font-size:12px;padding:8px 9px;min-height:38px}#counter{min-width:65px;font-size:12px}#content{height:calc(100dvh - 54px);padding:0}#content img{max-width:100%;max-height:100%;width:auto;height:auto}#content iframe{width:100%;height:100%}}
+@media(max-width:380px){.toolbar{height:50px;padding:5px 4px;gap:3px}.toolbar button{font-size:11px;padding:7px;min-height:36px}#counter{min-width:58px;font-size:11px}#content{height:calc(100dvh - 50px)}}
+</style>
+</head>
+<body>
+<div class="toolbar">
+<button id="prev">◀ Précédente</button>
+<span id="counter"></span>
+<button id="next">Suivante ▶</button>
+</div>
+<div id="content"></div>
+<script>
+const pages = ${JSON.stringify(pages)};
+let current = ${index};
+function showPage(){
+    const page=pages[current];
+    if(!page)return;
+    document.title="Page "+(current+1)+" - "+page.name;
+    document.getElementById("counter").textContent="Page "+(current+1)+" / "+pages.length;
+    document.getElementById("prev").disabled=current===0;
+    document.getElementById("next").disabled=current===pages.length-1;
+    const content=document.getElementById("content");
+    content.innerHTML="";
+    if(page.type && page.type.startsWith("image/")){
+        const img=document.createElement("img");
+        img.src=page.content;
+        img.alt="Page "+(current+1);
+        content.appendChild(img);
+    }else{
+        const iframe=document.createElement("iframe");
+        iframe.src=page.content;
+        iframe.title="Page "+(current+1);
+        content.appendChild(iframe);
+    }
+}
+document.getElementById("prev").onclick=function(){if(current>0){current--;showPage()}};
+document.getElementById("next").onclick=function(){if(current<pages.length-1){current++;showPage()}};
+document.addEventListener("keydown",function(e){if(e.key==="ArrowLeft"&&current>0){current--;showPage()}if(e.key==="ArrowRight"&&current<pages.length-1){current++;showPage()}});
+showPage();
+<\/script>
+
+</body>
+</html>`);
+
+            newWindow.document.close();
         }
 
         function verifierFichiersExistants() {
-            const poles = ['discours', 'cahier', 'sorties', 'presentoir', 'sono', 'nettoyage'];
-            poles.forEach(function(pole) {
-                const storedData = localStorage.getItem("file_data_" + pole);
-                if (storedData) {
-                    const fileData = JSON.parse(storedData);
-                    const statusDiv = document.getElementById("status-" + pole);
-                    if (statusDiv) statusDiv.innerText = "📄 Un planning est actuellement enregistré : \"" + fileData.name + "\"";
+            polesProgrammes.forEach(function(pole) {
+                afficherPagesProgramme(pole);
+                const pages = getPagesProgramme(pole);
+                const statusDiv = document.getElementById("status-" + pole);
+
+                if (statusDiv && pages.length > 0) {
+                    statusDiv.innerText = "📄 " + pages.length + " page(s) actuellement enregistrée(s).";
                 }
             });
         }
 
         function attribuerTerritoireLocal() {
+            if (!exigerAdministrateur()) return;
+            if (!exigerAdministrateur()) return;
             const num = document.getElementById('terr-num').value;
             const face = document.getElementById('terr-face').value;
             const nom = document.getElementById('terr-nom').value.trim().toUpperCase();
@@ -636,6 +1365,7 @@ header {
                 numero: num,
                 face: face,
                 proclamateur: nom + " " + prenom,
+                userCode: document.getElementById('terr-user-code').value.trim().toUpperCase() || '',
                 dateSortie: dateSortie,
                 statut: 'Sorti'
             };
@@ -649,6 +1379,8 @@ header {
         }
 
         function retournerTerritoireLocal(key) {
+            if (!exigerAdministrateur()) return;
+            if (!exigerAdministrateur()) return;
             if(databaseTerritoires[key]) {
                 databaseTerritoires[key].statut = 'Disponible';
                 databaseTerritoires[key].proclamateur = '-';
@@ -659,6 +1391,8 @@ header {
         }
 
         function enregistrerCarteTerritoire() {
+            if (!exigerAdministrateur()) return;
+            if (!exigerAdministrateur()) return;
             const num = document.getElementById('terr-num').value;
             const face = document.getElementById('terr-face').value;
             const fileInput = document.getElementById('terr-file');
@@ -717,6 +1451,8 @@ header {
         }
 
         function supprimerCarteTerritoire(key) {
+            if (!exigerAdministrateur()) return;
+            if (!exigerAdministrateur()) return;
             if(confirm("Supprimer le fichier de cette carte ? L'attribution du territoire ne sera pas supprimée.")) {
                 localStorage.removeItem("carte_territoire_" + key);
                 renderTerritoriesTable();
@@ -724,27 +1460,96 @@ header {
         }
 
         function ouvrirDocumentDansNouvelleFenetre(fileData) {
-            const newWindow = window.open();
+            const newWindow = window.open('', '_blank');
 
             if (newWindow) {
-                newWindow.document.write("<title>" + fileData.name + "</title>");
+                newWindow.document.open();
+                newWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="fr">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+                        <title>${fileData.name}</title>
+                        <style>
+                            html, body {
+                                width: 100%;
+                                height: 100%;
+                                margin: 0;
+                                padding: 0;
+                                overflow: hidden;
+                                background: #525659;
+                            }
+                            img {
+                                display: block;
+                                width: 100%;
+                                height: 100%;
+                                object-fit: contain;
+                            }
+                            iframe {
+                                display: block;
+                                width: 100vw;
+                                height: 100vh;
+                                border: 0;
+                                margin: 0;
+                                padding: 0;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                `);
 
                 if (fileData.type && fileData.type.startsWith('image/')) {
                     newWindow.document.write(
-                        '<body style="margin:0; display:flex; justify-content:center; align-items:center; background:#525659;">' +
-                        '<img src="' + fileData.content + '" style="max-width:100%; max-height:100vh;">' +
-                        '</body>'
+                        '<img src="' + fileData.content + '" alt="Planning">'
                     );
                 } else {
                     newWindow.document.write(
-                        '<iframe src="' + fileData.content + '" width="100%" height="100%" style="border:none; margin:0; padding:0; position:fixed; inset:0;"></iframe>'
+                        '<iframe src="' + fileData.content + '" title="Planning"></iframe>'
                     );
                 }
 
+                newWindow.document.write('</body></html>');
                 newWindow.document.close();
             } else {
                 alert("L'affichage a été bloqué par ton navigateur. Autorise les fenêtres pop-up pour cette page.");
             }
+        }
+
+        function chargerEvenements() {
+            try {
+                const data = JSON.parse(localStorage.getItem("evenements_data")) || { texte: "", chiffres: "" };
+                const texte = document.getElementById("evenements-texte");
+                const chiffres = document.getElementById("evenements-chiffres");
+                if (texte) texte.value = data.texte || "";
+                if (chiffres) chiffres.value = data.chiffres || "";
+            } catch (error) {
+                console.error("Erreur de chargement des évènements :", error);
+            }
+        }
+
+        function enregistrerEvenements() {
+            if (!exigerAdministrateur()) return;
+            const data = {
+                texte: document.getElementById("evenements-texte")?.value || "",
+                chiffres: document.getElementById("evenements-chiffres")?.value || "",
+                dateModification: new Date().toISOString()
+            };
+            localStorage.setItem("evenements_data", JSON.stringify(data));
+            const status = document.getElementById("status-evenements-donnees");
+            if (status) status.innerText = "✅ Informations de l'évènement enregistrées sur cet appareil.";
+        }
+
+        function effacerEvenements() {
+            if (!exigerAdministrateur()) return;
+            if (!confirm("Effacer les informations de l'évènement ?")) return;
+            localStorage.removeItem("evenements_data");
+            const texte = document.getElementById("evenements-texte");
+            const chiffres = document.getElementById("evenements-chiffres");
+            if (texte) texte.value = "";
+            if (chiffres) chiffres.value = "";
+            const status = document.getElementById("status-evenements-donnees");
+            if (status) status.innerText = "Les informations ont été effacées.";
         }
 
         function renderTerritoriesTable() {
@@ -763,8 +1568,15 @@ header {
                         face: face,
                         proclamateur: '-',
                         dateSortie: '-',
-                        statut: 'Disponible'
+                        statut: 'Disponible',
+                        userCode: ''
                     };
+
+                    // Les administrateurs et responsables voient toutes les cartes.
+                    // Un utilisateur U001-U120 ne voit que les cartes qui lui sont attribuées.
+                    if (estUtilisateur() && item.userCode !== accesIdentifiant) {
+                        return;
+                    }
 
                     if (filtreSortisSeulement && item.statut !== 'Sorti') {
                         return;
@@ -798,7 +1610,7 @@ header {
                             statutBadge = '<span class="badge badge-sorti">Sorti</span>';
                         }
 
-                        actionBtn = '<button class="btn-action" style="background:#e74c3c;" onclick="retournerTerritoireLocal(\'' + key + '\')">Rentrer</button>';
+                        actionBtn = estAdministrateur() ? '<button class="btn-action" style="background:#e74c3c;" onclick="retournerTerritoireLocal(\'' + key + '\')">Rentrer</button>' : '<span style="color:#aaa; font-size:12px;">Lecture seule</span>';
                     }
 
                     const carteExiste = localStorage.getItem("carte_territoire_" + key);
@@ -808,12 +1620,12 @@ header {
 
                     let carteActions = '';
                     if (carteExiste) {
-                        carteActions =
-                            '<button class="btn-action" style="background:#3498db;" onclick="ouvrirCarteTerritoire(\'' + key + '\')">🗺️ Voir carte</button>' +
-                            '<button class="btn-action" style="background:#7f8c8d;" onclick="supprimerCarteTerritoire(\'' + key + '\')">Supprimer fichier</button>';
-                    } else {
-                        carteActions =
-                            '<button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(' + item.numero + ', \'' + item.face + '\')">Ajouter fichier</button>';
+                        carteActions = '<button class="btn-action" style="background:#3498db;" onclick="ouvrirCarteTerritoire(\'' + key + '\')">🗺️ Voir carte</button>';
+                        if (estAdministrateur()) {
+                            carteActions += '<button class="btn-action" style="background:#7f8c8d;" onclick="supprimerCarteTerritoire(\'' + key + '\')">Supprimer fichier</button>';
+                        }
+                    } else if (estAdministrateur()) {
+                        carteActions = '<button class="btn-action" style="background:#95a5a6;" onclick="preparerAjoutCarte(' + item.numero + ', \'' + item.face + '\')">Ajouter fichier</button>';
                     }
 
                     const tr = document.createElement('tr');
@@ -835,6 +1647,7 @@ header {
         }
 
         function preparerAjoutCarte(numero, face) {
+            if (!exigerAdministrateur()) return;
             document.getElementById('terr-num').value = numero;
             document.getElementById('terr-face').value = face;
             document.getElementById('terr-file').click();
@@ -857,7 +1670,8 @@ header {
                 dateExport: new Date().toISOString(),
                 territoires: databaseTerritoires,
                 cartes: {},
-                fichiersPoles: {}
+                programmesPages: {},
+                evenements: JSON.parse(localStorage.getItem("evenements_data") || "null")
             };
 
             for (let i = 1; i <= 120; i++) {
@@ -870,10 +1684,10 @@ header {
                 });
             }
 
-            ['discours', 'cahier', 'sorties', 'presentoir', 'sono', 'nettoyage'].forEach(function(pole) {
-                const fichier = localStorage.getItem("file_data_" + pole);
-                if (fichier) {
-                    sauvegarde.fichiersPoles[pole] = JSON.parse(fichier);
+            polesProgrammes.forEach(function(pole) {
+                const pages = getPagesProgramme(pole);
+                if (pages.length > 0) {
+                    sauvegarde.programmesPages[pole] = pages;
                 }
             });
 
@@ -887,6 +1701,7 @@ header {
         }
 
         function importerSauvegarde(event) {
+            if (!exigerAdministrateur()) return;
             const file = event.target.files[0];
             if (!file) return;
 
@@ -907,9 +1722,14 @@ header {
                         });
                     }
 
-                    if (sauvegarde.fichiersPoles) {
-                        Object.keys(sauvegarde.fichiersPoles).forEach(function(pole) {
-                            localStorage.setItem("file_data_" + pole, JSON.stringify(sauvegarde.fichiersPoles[pole]));
+                    if (sauvegarde.evenements) {
+                        localStorage.setItem("evenements_data", JSON.stringify(sauvegarde.evenements));
+                        chargerEvenements();
+                    }
+
+                    if (sauvegarde.programmesPages) {
+                        Object.keys(sauvegarde.programmesPages).forEach(function(pole) {
+                            localStorage.setItem("programme_pages_" + pole, JSON.stringify(sauvegarde.programmesPages[pole]));
                         });
                     }
 
@@ -926,199 +1746,5 @@ header {
             event.target.value = "";
         }
     </script>
-<<style>
-.pages-box{margin:18px 0}
-.pages-actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
-.pages-actions button{border:0;border-radius:6px;padding:11px 16px;font-weight:700;cursor:pointer}
-.pages-add{background:#4caf50;color:#fff}
-.pages-clear{background:#34495e;color:#fff}
-.pages-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-.page-card{border:1px solid #ddd;border-radius:8px;overflow:hidden;background:#fff}
-.page-head{background:#f0f4f8;padding:10px;font-weight:700;color:#2b3e50}
-.page-body{padding:10px}
-.page-body img{display:block;width:100%;height:auto;max-height:65vh;object-fit:contain;background:#525659}
-.page-body iframe{display:block;width:100%;height:65vh;border:0}
-.page-buttons{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.page-buttons button{border:0;border-radius:5px;padding:7px 10px;color:#fff;font-weight:600;cursor:pointer}
-.page-open{background:#3498db}
-.page-delete{background:#e74c3c}
-.pages-empty{padding:20px;text-align:center;color:#777;border:1px dashed #ccc;border-radius:6px}
 
-@media(max-width:600px){
-.pages-actions button{width:100%}
-.pages-grid{grid-template-columns:1fr}
-.page-body iframe{height:70vh}
-}
-</style>
-
-<script>
-(function(){
-const poles={
-discours:'Discours Publics',
-cahier:'Cahier Vie et Ministère',
-sorties:'Sorties en semaine',
-presentoir:'Présentoir',
-sono:'Sono Video Estrade',
-nettoyage:'Nettoyage'
-};
-
-function key(p){return 'pages_data_'+p}
-
-function get(p){
-try{
-let x=JSON.parse(localStorage.getItem(key(p))||'null');
-if(Array.isArray(x))return x;
-
-const old=localStorage.getItem('file_data_'+p);
-
-if(old){
-let f=JSON.parse(old);
-x=[f];
-localStorage.setItem(key(p),JSON.stringify(x));
-return x;
-}
-}catch(e){}
-return [];
-}
-
-function put(p,x){
-localStorage.setItem(key(p),JSON.stringify(x));
-}
-
-function esc(s){
-return String(s||'').replace(/[&<>"']/g,m=>({
-'&':'&amp;',
-'<':'&lt;',
-'>':'&gt;',
-'"':'&quot;',
-"'":'&#39;'
-}[m]));
-}
-
-function render(p){
-const box=document.getElementById('pages-'+p);
-if(!box)return;
-
-const pages=get(p);
-
-if(!pages.length){
-box.innerHTML='<div class="pages-empty">Aucune page ajoutée pour le moment.</div>';
-return;
-}
-
-box.innerHTML=pages.map((f,i)=>
-'<div class="page-card">'+
-'<div class="page-head">Page '+(i+1)+' — '+esc(f.name)+'</div>'+
-'<div class="page-body">'+
-(f.type&&f.type.indexOf('image/')===0
-?'<img src="'+f.content+'">'
-:'<iframe src="'+f.content+'"></iframe>')+
-'<div class="page-buttons">'+
-'<button class="page-open" onclick="ouvrirPagePole(\''+p+'\','+i+')">📄 Ouvrir</button>'+
-'<button class="page-delete" onclick="supprimerPagePole(\''+p+'\','+i+')">Supprimer</button>'+
-'</div>'+
-'</div>'+
-'</div>'
-).join('');
-}
-
-window.ajouterPagePole=function(p){
-const input=document.getElementById('page-file-'+p);
-
-if(!input||!input.files.length){
-alert('Sélectionne d’abord le fichier de la page.');
-return;
-}
-
-const file=input.files[0];
-const r=new FileReader();
-
-r.onload=function(e){
-const pages=get(p);
-
-pages.push({
-name:file.name,
-type:file.type,
-content:e.target.result,
-dateAjout:new Date().toISOString()
-});
-
-put(p,pages);
-input.value='';
-render(p);
-};
-
-r.readAsDataURL(file);
-};
-
-window.supprimerPagePole=function(p,i){
-const pages=get(p);
-
-if(confirm('Supprimer la page '+(i+1)+' ?')){
-pages.splice(i,1);
-put(p,pages);
-render(p);
-}
-};
-
-window.effacerPagesPole=function(p){
-if(confirm('Effacer toutes les pages de ce pôle ?')){
-localStorage.removeItem(key(p));
-render(p);
-}
-};
-
-window.ouvrirPagePole=function(p,i){
-const f=get(p)[i];
-if(!f)return;
-
-const w=window.open();
-
-if(!w){
-alert('Autorise les fenêtres pop-up pour cette page.');
-return;
-}
-
-w.document.write('<title>'+esc(f.name)+'</title>');
-
-w.document.write(
-f.type&&f.type.indexOf('image/')===0
-?'<body style="margin:0;background:#525659;text-align:center"><img src="'+f.content+'" style="max-width:100%;max-height:100vh"></body>'
-:'<iframe src="'+f.content+'" style="position:fixed;inset:0;width:100%;height:100%;border:0"></iframe>'
-);
-
-w.document.close();
-};
-
-Object.keys(poles).forEach(p=>{
-const panel=document.getElementById(p);
-if(!panel)return;
-
-const old=panel.querySelector('.file-upload-box');
-
-const box=document.createElement('div');
-box.className='pages-box';
-
-box.innerHTML=
-'<div class="file-upload-box">'+
-'<p><strong>Ajouter une page au programme</strong></p>'+
-'<p>Choisis une page puis appuie sur « Ajouter cette page ». Tu peux en ajouter plusieurs.</p>'+
-'<input type="file" id="page-file-'+p+'" accept=".pdf,.docx,.jpg,.jpeg,.png">'+
-'</div>'+
-'<div class="pages-actions">'+
-'<button class="pages-add" onclick="ajouterPagePole(\''+p+'\')">＋ Ajouter cette page</button>'+
-'<button class="pages-clear" onclick="effacerPagesPole(\''+p+'\')">Effacer les pages</button>'+
-'</div>'+
-'<div id="pages-'+p+'" class="pages-grid"></div>';
-
-if(old)
-old.parentNode.insertBefore(box,old);
-else
-panel.appendChild(box);
-
-render(p);
-});
-})();
-</script>
-</body>
-</html>
+</body></html>
