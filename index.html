@@ -4,7 +4,7 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assemblée Monplaisir - 8 pôles administration</title>
+    <title>Assemblée Monplaisir - 10 pôles administration</title>
     <style>
         :root {
             --primary-color: #2b3e50;
@@ -427,6 +427,76 @@
             }
         }
 
+        /* Section Groupes de prédication */
+        .groupes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-top: 18px;
+        }
+
+        .groupe-card {
+            background: #f8fafb;
+            border: 1px solid #d7dee5;
+            border-radius: 10px;
+            padding: 16px;
+        }
+
+        .groupe-card h3 {
+            margin: 0 0 12px;
+            color: var(--primary-color);
+        }
+
+        .membre-list {
+            margin: 0 0 12px;
+            padding-left: 20px;
+        }
+
+        .membre-list li {
+            margin: 7px 0;
+            word-break: break-word;
+        }
+
+        .groupe-ajout {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .groupe-ajout input {
+            flex: 1 1 120px;
+            min-width: 0;
+            padding: 9px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font: inherit;
+        }
+
+        .groupe-ajout button {
+            margin: 0;
+        }
+
+        @media (max-width: 900px) {
+            .groupes-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .groupes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .groupe-ajout {
+                flex-direction: column;
+            }
+
+            .groupe-ajout input,
+            .groupe-ajout button {
+                width: 100%;
+            }
+        }
+
         /* Section Administration */
         .admin-card {
             background: #f0f4f8;
@@ -622,7 +692,7 @@
 
     <header>
         <h1>Assemblée Monplaisir</h1>
-        <p>8 pôles administration</p>
+        <p>10 pôles administration</p>
     </header>
 
     <!-- Navigation pour grands écrans -->
@@ -637,6 +707,7 @@
         <button class="tab-button" onclick="switchTab('administration')">⚙️ Administration</button>
         <button class="tab-button" onclick="switchTab('evenements')">📅 Évènements</button>
         <button class="tab-button" onclick="switchTab('rapport')">📋 Rapport de prédication</button>
+        <button class="tab-button" onclick="switchTab('groupes')">👥 Groupes de prédication</button>
     </div>
 
     <!-- Navigation pour iPad / Mobile -->
@@ -651,6 +722,7 @@
             <option value="territoires">🗺️ Territoires</option>
             <option value="evenements">📅 Évènements</option>
             <option value="rapport">📋 Rapport de prédication</option>
+            <option value="groupes">👥 Groupes de prédication</option>
             <option value="administration">⚙️ Administration</option>
         </select>
         <span id="ipadPoleState" style="display:block;margin-top:6px;font-size:13px;">Pôle : 🎙️ Discours</span>
@@ -837,6 +909,137 @@
             </div>
         </div>
 
+        <!-- 10. GROUPES DE PRÉDICATION -->
+        <div id="groupes" class="panel">
+            <h2>👥 Groupes de prédication</h2>
+            <p>Les 15 groupes sont affichés ci-dessous. Ajoute le nom et le prénom de chaque membre dans son groupe.</p>
+
+            <div class="groupes-grid">
+            <div class="groupe-card">
+                <h3>Groupe 1</h3>
+                <ul id="membres-groupe-1" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-1" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(1)">➕ Ajouter</button>
+                </div>
+            </div>
+            <div class="groupe-card">
+                <h3>Groupe 2</h3>
+                <ul id="membres-groupe-2" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-2" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(2)">➕ Ajouter</button>
+                </div>
+            </div>
+            <div class="groupe-card">
+                <h3>Groupe 3</h3>
+                <ul id="membres-groupe-3" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-3" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(3)">➕ Ajouter</button>
+                </div>
+            </div>
+            <div class="groupe-card">
+                <h3>Groupe 4</h3>
+                <ul id="membres-groupe-4" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-4" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(4)">➕ Ajouter</button>
+                </div>
+            </div>
+            <div class="groupe-card">
+                <h3>Groupe 5</h3>
+                <ul id="membres-groupe-5" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-5" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(5)">➕ Ajouter</button>
+                </div>
+            </div>
+            <div class="groupe-card">
+                <h3>Groupe 6</h3>
+                <ul id="membres-groupe-6" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-6" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(6)">➕ Ajouter</button>
+                </div>
+            </div>
+            <div class="groupe-card">
+                <h3>Groupe 7</h3>
+                <ul id="membres-groupe-7" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-7" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(7)">➕ Ajouter</button>
+                </div>
+            </div>
+            <div class="groupe-card">
+                <h3>Groupe 8</h3>
+                <ul id="membres-groupe-8" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-8" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(8)">➕ Ajouter</button>
+                </div>
+            </div>
+            <div class="groupe-card">
+                <h3>Groupe 9</h3>
+                <ul id="membres-groupe-9" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-9" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(9)">➕ Ajouter</button>
+                </div>
+            </div>
+            <div class="groupe-card">
+                <h3>Groupe 10</h3>
+                <ul id="membres-groupe-10" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-10" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(10)">➕ Ajouter</button>
+                </div>
+            </div>
+            <div class="groupe-card">
+                <h3>Groupe 11</h3>
+                <ul id="membres-groupe-11" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-11" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(11)">➕ Ajouter</button>
+                </div>
+            </div>
+            <div class="groupe-card">
+                <h3>Groupe 12</h3>
+                <ul id="membres-groupe-12" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-12" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(12)">➕ Ajouter</button>
+                </div>
+            </div>
+            <div class="groupe-card">
+                <h3>Groupe 13</h3>
+                <ul id="membres-groupe-13" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-13" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(13)">➕ Ajouter</button>
+                </div>
+            </div>
+            <div class="groupe-card">
+                <h3>Groupe 14</h3>
+                <ul id="membres-groupe-14" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-14" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(14)">➕ Ajouter</button>
+                </div>
+            </div>
+            <div class="groupe-card">
+                <h3>Groupe 15</h3>
+                <ul id="membres-groupe-15" class="membre-list"></ul>
+                <div class="groupe-ajout">
+                    <input id="membre-nom-15" type="text" placeholder="Nom et prénom">
+                    <button class="btn" type="button" onclick="ajouterMembreGroupe(15)">➕ Ajouter</button>
+                </div>
+            </div>
+            </div>
+
+            <div id="groupes-status" class="status-msg"></div>
+        </div>
+
         <!-- 8. ADMINISTRATION -->
         <div id="administration" class="panel">
             <h2>⚙️ Administration</h2>
@@ -978,6 +1181,69 @@
         }
 
         toggleRapportChamps();
+
+
+        function chargerGroupes() {
+            for (let i = 1; i <= 15; i++) {
+                const liste = document.getElementById('membres-groupe-' + i);
+                if (!liste) continue;
+
+                const membres = JSON.parse(localStorage.getItem('groupePredication_' + i) || '[]');
+                liste.innerHTML = '';
+
+                membres.forEach((nom, index) => {
+                    const li = document.createElement('li');
+                    li.textContent = nom + ' ';
+
+                    const bouton = document.createElement('button');
+                    bouton.type = 'button';
+                    bouton.className = 'btn-action';
+                    bouton.textContent = 'Supprimer';
+                    bouton.style.backgroundColor = '#e74c3c';
+                    bouton.onclick = function() {
+                        supprimerMembreGroupe(i, index);
+                    };
+
+                    li.appendChild(bouton);
+                    liste.appendChild(li);
+                });
+            }
+        }
+
+        function ajouterMembreGroupe(numero) {
+            const champ = document.getElementById('membre-nom-' + numero);
+            if (!champ) return;
+
+            const nom = champ.value.trim();
+            if (!nom) return;
+
+            const cle = 'groupePredication_' + numero;
+            const membres = JSON.parse(localStorage.getItem(cle) || '[]');
+
+            membres.push(nom);
+            localStorage.setItem(cle, JSON.stringify(membres));
+
+            champ.value = '';
+            chargerGroupes();
+
+            const status = document.getElementById('groupes-status');
+            if (status) status.textContent = '✅ Membre ajouté au groupe ' + numero + '.';
+        }
+
+        function supprimerMembreGroupe(numero, index) {
+            const cle = 'groupePredication_' + numero;
+            const membres = JSON.parse(localStorage.getItem(cle) || '[]');
+
+            membres.splice(index, 1);
+            localStorage.setItem(cle, JSON.stringify(membres));
+
+            chargerGroupes();
+
+            const status = document.getElementById('groupes-status');
+            if (status) status.textContent = '✅ Membre supprimé du groupe ' + numero + '.';
+        }
+
+        chargerGroupes();
 
         function switchTab(tabId) {
             // Masquer tous les panneaux
