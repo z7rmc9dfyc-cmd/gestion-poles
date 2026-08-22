@@ -1082,6 +1082,7 @@
 
                 <input type="text" id="terr-nom" data-admin-only placeholder="Nom">
                 <input type="text" id="terr-prenom" data-admin-only placeholder="Prénom">
+                <input type="text" id="terr-localisation" data-admin-only placeholder="📍 Localisation du territoire">
                 <input type="text" id="terr-user-code" data-admin-only placeholder="Code utilisateur (ex. U001)">
 
                 <button class="btn" data-admin-only onclick="attribuerTerritoireLocal()">Attribuer la carte</button>
@@ -1093,6 +1094,7 @@
                 <input type="file" id="terr-file" data-admin-only accept=".pdf,.jpg,.jpeg,.png">
                 <br>
                 <button class="btn" data-admin-only onclick="enregistrerCarteTerritoire()" style="margin-top:10px;">🗺️ Enregistrer la carte du territoire</button>
+                <button class="btn btn-secondary" data-admin-only onclick="enregistrerLocalisationTerritoire()" style="margin-top:10px;">📍 Enregistrer la localisation</button>
                 <div id="status-territoire-carte" class="status-msg"></div>
                 <div class="small-note">
                     Exemple : Carte 12 Recto peut avoir son fichier, et Carte 12 Verso peut avoir un autre fichier.
@@ -1115,6 +1117,7 @@
                             <th>N° Carte &amp; Face</th>
                             <th>Carte réelle</th>
                             <th>Nom &amp; Prénom</th>
+                            <th>📍 Localisation</th>
                             <th>Date Sortie</th>
                             <th>Limite (3 mois)</th>
                             <th>Statut Durée</th>
@@ -1244,6 +1247,44 @@
         }
 
         chargerGroupes();
+
+
+        function enregistrerLocalisationTerritoire() {
+            const num = document.getElementById('terr-num')?.value;
+            const face = document.getElementById('terr-face')?.value || 'Recto';
+            const localisation = document.getElementById('terr-localisation')?.value.trim() || '';
+
+            if (!num) return;
+
+            const cle = 'territoireLocalisation_' + num + '_' + face;
+            localStorage.setItem(cle, localisation);
+
+            const status = document.getElementById('status-territoire-carte');
+            if (status) {
+                status.textContent = localisation
+                    ? '✅ Localisation enregistrée pour la carte ' + num + ' ' + face + '.'
+                    : '✅ Localisation effacée pour la carte ' + num + ' ' + face + '.';
+            }
+        }
+
+        function chargerLocalisationTerritoire() {
+            const num = document.getElementById('terr-num')?.value;
+            const face = document.getElementById('terr-face')?.value || 'Recto';
+            const champ = document.getElementById('terr-localisation');
+
+            if (!champ || !num) return;
+
+            champ.value = localStorage.getItem('territoireLocalisation_' + num + '_' + face) || '';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const num = document.getElementById('terr-num');
+            const face = document.getElementById('terr-face');
+
+            if (num) num.addEventListener('change', chargerLocalisationTerritoire);
+            if (face) face.addEventListener('change', chargerLocalisationTerritoire);
+            chargerLocalisationTerritoire();
+        });
 
         function switchTab(tabId) {
             // Masquer tous les panneaux
