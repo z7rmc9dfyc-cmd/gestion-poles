@@ -1,1319 +1,292 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assemblée Monplaisir - 10 pôles administration</title>
-    <style>
-        :root {
-            --primary-color: #2b3e50;
-            --secondary-color: #4caf50;
-            --accent-color: #e74c3c;
-            --bg-color: #f4f7f6;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        html, body {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-        }
-
-        img, iframe, object, embed {
-            max-width: 100%;
-        }
-
-        header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        /* Navigation Desktop */
-        .nav-tabs {
-            display: flex;
-            flex-wrap: nowrap;
-            justify-content: flex-start;
-            background: #ffffff;
-            border-bottom: 2px solid #ddd;
-            padding: 10px 0;
-            width: 100%;
-            overflow-x: auto;
-            overflow-y: hidden;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-        }
-
-        .tab-button {
-            flex: 0 0 auto;
-            white-space: nowrap;
-            background: none;
-            border: none;
-            padding: 12px 20px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            color: #666;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .tab-button:hover, .tab-button.active {
-            color: var(--primary-color);
-            border-bottom: 3px solid var(--secondary-color);
-        }
-
-        /* Menu Select iPad / Mobile */
-        #ipad-pole-menu {
-            display: none;
-            width: 100%;
-            padding: 10px 12px;
-            position: relative;
-            z-index: 10000;
-        }
-
-        #ipadPoleSelect {
-            display: block;
-            width: 100%;
-            min-height: 54px;
-            padding: 10px 14px;
-            font-size: 18px;
-            font-weight: 600;
-            border: 2px solid var(--secondary-color);
-            border-radius: 10px;
-            background: #fff;
-            color: #222;
-            pointer-events: auto;
-            touch-action: manipulation;
-        }
-
-        /* Layout & Panneaux */
-        .container {
-            max-width: 1250px;
-            margin: 30px auto;
-            padding: 0 20px;
-            width: 100%;
-        }
-
-        .panel {
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            display: none;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        .panel.active {
-            display: block;
-        }
-
-        h2 {
-            color: var(--primary-color);
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
-        }
-
-        /* Boutons */
-        .btn {
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
-            margin-right: 10px;
-            margin-top: 8px;
-        }
-
-        .btn:hover {
-            background-color: #439a46;
-        }
-
-        .btn-secondary {
-            background-color: #34495e;
-        }
-
-        .btn-secondary:hover {
-            background-color: #2c3e50;
-        }
-
-        .btn-view {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.3s;
-            margin-top: 15px;
-            display: inline-block;
-            text-decoration: none;
-        }
-
-        .btn-view:hover {
-            background-color: #2980b9;
-        }
-
-        .btn-action {
-            padding: 6px 12px;
-            font-size: 13px;
-            border: none;
-            border-radius: 4px;
-            color: white;
-            cursor: pointer;
-            margin: 3px;
-        }
-
-        /* Formulaires et Zones de Fichiers */
-        .file-upload-box {
-            border: 2px dashed #ccc;
-            padding: 20px;
-            text-align: center;
-            background: #fafafa;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            width: 100%;
-        }
-
-        .file-upload-box input[type="file"] {
-            max-width: 100%;
-        }
-
-        .territoire-form {
-            background: #f0f4f8;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .territoire-form input,
-        .territoire-form select {
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .search-box {
-            margin: 15px 0;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .search-box input {
-            padding: 10px;
-            width: 280px;
-            max-width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        /* Tableaux */
-        .table-wrapper {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        table {
-            width: 100%;
-            min-width: 900px;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-            vertical-align: middle;
-        }
-
-        th {
-            background-color: var(--primary-color);
-            color: white;
-            position: sticky;
-            top: 0;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-
-        /* Badges & Textes */
-        .badge {
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-block;
-        }
-
-        .badge-dispo { background-color: #2ecc71; color: white; }
-        .badge-sorti { background-color: #e67e22; color: white; }
-        .badge-retard { background-color: #e74c3c; color: white; }
-        .badge-carte { background-color: #3498db; color: white; }
-        .badge-no-carte { background-color: #95a5a6; color: white; }
-
-        .status-msg {
-            margin-top: 10px;
-            font-weight: bold;
-            color: #27ae60;
-        }
-
-        .small-note {
-            color: #666;
-            font-size: 13px;
-            margin-top: 8px;
-        }
-
-        /* Programmes multi-pages */
-        .pages-programme {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 12px;
-            margin: 18px 0;
-        }
-
-        .page-programme {
-            background: #f8fafb;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .page-programme strong {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--primary-color);
-        }
-
-        .page-programme-name {
-            font-size: 12px;
-            color: #666;
-            word-break: break-word;
-            margin: 6px 0 10px;
-        }
-
-        .page-programme-actions {
-            display: flex;
-            gap: 6px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .page-programme-actions button { margin: 0; }
-
-        .page-thumb {
-            width: 100%;
-            height: 110px;
-            object-fit: contain;
-            background: #525659;
-            border-radius: 5px;
-        }
-
-        /* Section Évènements */
-        .evenements-form {
-            margin-top: 24px;
-            padding: 18px;
-            background: #f0f4f8;
-            border-radius: 8px;
-        }
-
-        .evenements-form h3 {
-            margin-top: 0;
-            color: var(--primary-color);
-        }
-
-        .evenements-form label {
-            display: block;
-            margin: 12px 0 6px;
-            font-weight: 600;
-        }
-
-        .evenements-form textarea,
-        .evenements-form input {
-            width: 100%;
-            max-width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font: inherit;
-        }
-
-        .evenements-form textarea {
-            resize: vertical;
-            min-height: 150px;
-        }
-
-        /* Section Rapport de prédication */
-        .rapport-form {
-            background: #f0f4f8;
-            padding: 18px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .rapport-choice {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin: 12px 0 18px;
-        }
-
-        .rapport-choice label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 14px;
-            background: #fff;
-            border: 1px solid #d7dee5;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .rapport-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 12px;
-        }
-
-        .rapport-field label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .rapport-field input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font: inherit;
-        }
-
-        @media (max-width: 600px) {
-            .rapport-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .rapport-choice {
-                flex-direction: column;
-            }
-        }
-
-        /* Section Groupes de prédication */
-        .groupes-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 16px;
-            margin-top: 18px;
-        }
-
-        .groupe-card {
-            background: #f8fafb;
-            border: 1px solid #d7dee5;
-            border-radius: 10px;
-            padding: 16px;
-        }
-
-        .groupe-card h3 {
-            margin: 0 0 12px;
-            color: var(--primary-color);
-        }
-
-        .membre-list {
-            margin: 0 0 12px;
-            padding-left: 20px;
-        }
-
-        .membre-list li {
-            margin: 7px 0;
-            word-break: break-word;
-        }
-
-        .groupe-ajout {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .groupe-ajout input {
-            flex: 1 1 120px;
-            min-width: 0;
-            padding: 9px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font: inherit;
-        }
-
-        .groupe-ajout button {
-            margin: 0;
-        }
-
-        @media (max-width: 900px) {
-            .groupes-grid {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-
-        @media (max-width: 600px) {
-            .groupes-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .groupe-ajout {
-                flex-direction: column;
-            }
-
-            .groupe-ajout input,
-            .groupe-ajout button {
-                width: 100%;
-            }
-        }
-
-        /* Section Administration */
-        .admin-card {
-            background: #f0f4f8;
-            border: 1px solid #d7dee5;
-            border-radius: 8px;
-            padding: 18px;
-            margin-bottom: 20px;
-        }
-
-        .admin-status {
-            font-weight: 700;
-            margin-top: 10px;
-        }
-
-        .admin-status.ok { color: #27ae60; }
-        .admin-status.locked { color: #c0392b; }
-
-        .admin-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-            margin-top: 12px;
-        }
-
-        .admin-grid input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .admin-only-locked {
-            opacity: .55;
-        }
-
-        /* RESPONSIVE TABLETTE & IPAD */
-        @media (max-width: 900px) {
-            .nav-tabs {
-                display: none !important;
-            }
-
-            #ipad-pole-menu {
-                display: block !important;
-            }
-
-            header {
-                padding: 18px 14px;
-            }
-
-            header h1 {
-                font-size: clamp(22px, 4vw, 30px);
-                margin: 0 0 8px;
-            }
-
-            header p {
-                margin: 0;
-                font-size: 14px;
-            }
-
-            .container {
-                padding: 0 12px;
-                margin: 16px auto;
-            }
-
-            .panel {
-                padding: 18px;
-            }
-
-            h2 {
-                font-size: 21px;
-            }
-
-            .territoire-form {
-                display: grid;
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 10px;
-            }
-
-            .territoire-form input,
-            .territoire-form select,
-            .territoire-form button {
-                width: 100% !important;
-                min-width: 0;
-            }
-
-            .search-box {
-                display: grid;
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-
-            .search-box input {
-                width: 100%;
-                grid-column: 1 / -1;
-            }
-
-            .search-box button {
-                width: 100%;
-                margin-right: 0;
-            }
-        }
-
-        /* RESPONSIVE TELEPHONE */
-        @media (max-width: 600px) {
-            body {
-                font-size: 15px;
-            }
-
-            header {
-                padding: 14px 10px;
-            }
-
-            header h1 {
-                font-size: 22px;
-                line-height: 1.2;
-            }
-
-            header p {
-                font-size: 13px;
-                line-height: 1.35;
-            }
-
-            .container {
-                padding: 0 8px;
-                margin: 10px auto;
-            }
-
-            .panel {
-                padding: 12px;
-                border-radius: 7px;
-            }
-
-            h2 {
-                font-size: 19px;
-            }
-
-            .btn, .btn-view {
-                display: block;
-                width: 100%;
-                margin: 8px 0 0 0;
-                padding: 11px 12px;
-                font-size: 14px;
-                text-align: center;
-            }
-
-            .territoire-form {
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-                padding: 12px;
-            }
-
-            .search-box {
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-            }
-
-            .search-box input, .search-box button {
-                width: 100%;
-                margin: 0;
-            }
-
-            table {
-                min-width: 760px;
-                font-size: 13px;
-            }
-
-            th, td {
-                padding: 8px;
-            }
-
-            .admin-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 380px) {
-            .panel {
-                padding: 10px;
-            }
-
-            h2 {
-                font-size: 18px;
-            }
-
-            .btn, .btn-view {
-                font-size: 13px;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assemblée Monplaisir - 10 pôles</title>
+<style>
+:root{--primary:#2b3e50;--secondary:#4caf50;--accent:#e74c3c;--bg:#f4f7f6;--card:#fff;--text:#333}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%;max-width:100%;overflow-x:hidden;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:var(--bg);color:var(--text)}
+header{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:20px;text-align:center}
+header h1{margin:0 0 8px}
+header p{margin:0}
+.nav-tabs{display:flex;flex-wrap:nowrap;overflow-x:auto;background:#fff;border-bottom:2px solid #ddd;padding:10px 0}
+.tab-button{flex:0 0 auto;white-space:nowrap;background:none;border:0;padding:12px 18px;cursor:pointer;font-size:15px;font-weight:600;color:#666;border-bottom:3px solid transparent}
+.tab-button.active,.tab-button:hover{color:var(--primary);border-bottom-color:var(--secondary)}
+#ipad-pole-menu{display:none;width:100%;padding:10px 12px;position:relative;z-index:10000}
+#ipadPoleSelect{display:block;width:100%;min-height:54px;padding:10px 14px;font-size:18px;font-weight:600;border:2px solid var(--secondary);border-radius:10px;background:#fff;color:#222}
+.container{max-width:1250px;margin:25px auto;padding:0 20px;width:100%}
+.panel{display:none;background:var(--card);border-radius:8px;padding:25px;box-shadow:0 4px 15px rgba(0,0,0,.05);width:100%;overflow:hidden}
+.panel.active{display:block}
+h2{color:var(--primary);border-bottom:2px solid #eee;padding-bottom:10px}
+.btn{background:var(--secondary);color:#fff;border:0;padding:10px 18px;border-radius:5px;cursor:pointer;font-weight:bold;margin:8px 10px 0 0}
+.btn-secondary{background:#34495e}.btn-danger{background:#c0392b}.btn-view{display:inline-block;background:#3498db;color:#fff;border:0;padding:10px 18px;border-radius:5px;cursor:pointer;font-weight:bold;margin-top:15px}
+.file-upload-box{border:2px dashed #ccc;padding:20px;text-align:center;background:#fafafa;border-radius:6px;margin-bottom:20px}
+.status-msg{margin-top:10px;font-weight:bold;color:#27ae60}
+.small-note{color:#666;font-size:13px;margin-top:8px}
+.pages-programme{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:18px 0}
+.page-programme{background:#f8fafb;border:1px solid #ddd;border-radius:8px;padding:10px;text-align:center}
+.page-programme strong{display:block;margin-bottom:8px;color:var(--primary)}
+.page-programme-name{font-size:12px;color:#666;word-break:break-word;margin:6px 0 10px}
+.page-programme-actions{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.page-programme-actions button{margin:0;padding:6px 10px}
+.page-thumb{width:100%;height:110px;object-fit:contain;background:#525659;border-radius:5px}
+.form-box{background:#f0f4f8;padding:15px;border-radius:8px;margin-bottom:20px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.form-grid input,.form-grid select,.form-grid textarea{width:100%;padding:10px;border:1px solid #ccc;border-radius:5px;font:inherit}
+.form-grid .full{grid-column:1/-1}
+.location-box{border:2px solid #3498db;background:#eef7fd;padding:15px;border-radius:8px;margin:15px 0}
+.location-box h3{margin-top:0;color:#2478ad}
+.territoire-form{background:#f0f4f8;padding:15px;border-radius:8px;margin-bottom:20px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:end}
+.territoire-form input,.territoire-form select{width:100%;padding:10px;border:1px solid #ccc;border-radius:5px}
+.territoire-form .full{grid-column:1/-1}
+.search-box{margin:15px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.search-box input{padding:10px;width:300px;max-width:100%;border:1px solid #ccc;border-radius:5px}
+.table-wrapper{width:100%;overflow-x:auto}
+table{width:100%;min-width:1050px;border-collapse:collapse;margin-top:20px}
+th,td{border:1px solid #ddd;padding:9px;text-align:left;vertical-align:middle}
+th{background:var(--primary);color:#fff}
+tr:nth-child(even){background:#f2f2f2}
+.badge{padding:5px 9px;border-radius:20px;font-size:12px;font-weight:bold;display:inline-block}
+.badge-dispo{background:#2ecc71;color:#fff}.badge-sorti{background:#e67e22;color:#fff}.badge-retard{background:#e74c3c;color:#fff}
+.admin-card{background:#f0f4f8;border:1px solid #d7dee5;border-radius:8px;padding:18px;margin-bottom:20px}
+.admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.admin-grid input{width:100%;padding:10px;border:1px solid #ccc;border-radius:5px}
+.group-card{border:1px solid #ddd;border-radius:8px;padding:15px;margin:10px 0;background:#fafafa}
+.group-members{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.member-row{display:grid;grid-template-columns:1fr 1fr auto;gap:6px}
+.member-row input{padding:8px;border:1px solid #ccc;border-radius:5px;width:100%}
+@media(max-width:900px){
+.nav-tabs{display:none!important}#ipad-pole-menu{display:block!important}
+header{padding:18px 14px}.container{padding:0 12px;margin:16px auto}.panel{padding:18px}
+.territoire-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+.form-grid,.admin-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+header h1{font-size:22px}.container{padding:0 8px}.panel{padding:12px}
+.btn,.btn-view{display:block;width:100%;margin:8px 0 0}
+.territoire-form{display:flex;flex-direction:column}.territoire-form>*{width:100%}
+.group-members{grid-template-columns:1fr}.member-row{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
-
-    <header>
-        <h1>Assemblée Monplaisir</h1>
-        <p>10 pôles administration</p>
-    </header>
-
-    <!-- Navigation pour grands écrans -->
-    <div class="nav-tabs">
-        <button class="tab-button active" onclick="switchTab('discours')">🎙️ Discours</button>
-        <button class="tab-button" onclick="switchTab('cahier')">📖 Cahier Vie et Ministère</button>
-        <button class="tab-button" onclick="switchTab('sorties')">🚗 Sorties en semaine</button>
-        <button class="tab-button" onclick="switchTab('presentoir')">🛒 Présentoir</button>
-        <button class="tab-button" onclick="switchTab('sono')">🔊 Sono Video Estrade</button>
-        <button class="tab-button" onclick="switchTab('nettoyage')">🧹 Nettoyage</button>
-        <button class="tab-button" onclick="switchTab('territoires')">🗺️ Territoires</button>
-        <button class="tab-button" onclick="switchTab('administration')">⚙️ Administration</button>
-        <button class="tab-button" onclick="switchTab('evenements')">📅 Évènements</button>
-        <button class="tab-button" onclick="switchTab('rapport')">📋 Rapport de prédication</button>
-        <button class="tab-button" onclick="switchTab('groupes')">👥 Groupes de prédication</button>
-    </div>
-
-    <!-- Navigation pour iPad / Mobile -->
-    <div id="ipad-pole-menu">
-        <select id="ipadPoleSelect" aria-label="Choisir un pôle" onchange="switchTab(this.value); document.getElementById('ipadPoleState').textContent='Pôle : '+this.options[this.selectedIndex].text;">
-            <option value="discours">🎙️ Discours</option>
-            <option value="cahier">📖 Cahier Vie et Ministère</option>
-            <option value="sorties">🚗 Sorties en semaine</option>
-            <option value="presentoir">🛒 Présentoir</option>
-            <option value="sono">🔊 Sono Video Estrade</option>
-            <option value="nettoyage">🧹 Nettoyage</option>
-            <option value="territoires">🗺️ Territoires</option>
-            <option value="evenements">📅 Évènements</option>
-            <option value="rapport">📋 Rapport de prédication</option>
-            <option value="groupes">👥 Groupes de prédication</option>
-            <option value="administration">⚙️ Administration</option>
-        </select>
-        <span id="ipadPoleState" style="display:block;margin-top:6px;font-size:13px;">Pôle : 🎙️ Discours</span>
-    </div>
-
-    <div class="container">
-
-        <!-- 1. DISCOURS -->
-        <div id="discours" class="panel active">
-            <h2>Pôle Discours Publics</h2>
-            <div class="file-upload-box">
-                <p><strong>Ajouter une page au programme</strong></p>
-                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
-                <input type="file" id="file-discours" accept=".pdf,.docx,.jpg,.jpeg,.png">
-                <div id="status-discours" class="status-msg"></div>
-            </div>
-            <button class="btn" type="button" onclick="ajouterPageProgramme('discours')">➕ Ajouter cette page</button>
-            <button class="btn btn-secondary" type="button" onclick="effacerPagesProgramme('discours')">Effacer les pages</button>
-            <div id="pages-discours" class="pages-programme"><p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p></div>
-            <button class="btn-view" onclick="ouvrirProgrammePages('discours')">📄 Ouvrir le programme des Discours</button>
-        </div>
-
-        <!-- 2. CAHIER -->
-        <div id="cahier" class="panel">
-            <h2>Pôle Cahier Vie et Ministère</h2>
-            <div class="file-upload-box">
-                <p><strong>Ajouter une page au programme</strong></p>
-                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
-                <input type="file" id="file-cahier" data-admin-only accept=".pdf,.docx,.jpg,.jpeg,.png">
-                <div id="status-cahier" class="status-msg"></div>
-            </div>
-            <button class="btn" onclick="ajouterPageProgramme('cahier')">➕ Ajouter cette page</button>
-            <button class="btn btn-secondary" onclick="effacerPagesProgramme('cahier')">Effacer les pages</button>
-            <div id="pages-cahier" class="pages-programme"><p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p></div>
-            <button class="btn-view" onclick="ouvrirProgrammePages('cahier')">📄 Ouvrir le programme Vie et Ministère</button>
-        </div>
-
-        <!-- 3. SORTIES -->
-        <div id="sorties" class="panel">
-            <h2>Pôle Sorties en semaine</h2>
-            <div class="file-upload-box">
-                <p><strong>Ajouter une page au programme</strong></p>
-                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
-                <input type="file" id="file-sorties" data-admin-only accept=".pdf,.docx,.jpg,.jpeg,.png">
-                <div id="status-sorties" class="status-msg"></div>
-            </div>
-            <button class="btn" onclick="ajouterPageProgramme('sorties')">➕ Ajouter cette page</button>
-            <button class="btn btn-secondary" onclick="effacerPagesProgramme('sorties')">Effacer les pages</button>
-            <div id="pages-sorties" class="pages-programme"><p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p></div>
-            <button class="btn-view" onclick="ouvrirProgrammePages('sorties')">🚗 Ouvrir le programme des Sorties</button>
-        </div>
-
-        <!-- 4. PRESENTOIR -->
-        <div id="presentoir" class="panel">
-            <h2>Pôle Présentoir</h2>
-            <div class="file-upload-box">
-                <p><strong>Ajouter une page au programme</strong></p>
-                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
-                <input type="file" id="file-presentoir" data-admin-only accept=".pdf,.docx,.jpg,.jpeg,.png">
-                <div id="status-presentoir" class="status-msg"></div>
-            </div>
-            <button class="btn" onclick="ajouterPageProgramme('presentoir')">➕ Ajouter cette page</button>
-            <button class="btn btn-secondary" onclick="effacerPagesProgramme('presentoir')">Effacer les pages</button>
-            <div id="pages-presentoir" class="pages-programme"><p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p></div>
-            <button class="btn-view" onclick="ouvrirProgrammePages('presentoir')">🛒 Ouvrir le programme Présentoir</button>
-        </div>
-
-        <!-- 5. SONO -->
-        <div id="sono" class="panel">
-            <h2>Pôle Sono Video Estrade</h2>
-            <div class="file-upload-box">
-                <p><strong>Ajouter une page au programme</strong></p>
-                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
-                <input type="file" id="file-sono" data-admin-only accept=".pdf,.docx,.jpg,.jpeg,.png">
-                <div id="status-sono" class="status-msg"></div>
-            </div>
-            <button class="btn" onclick="ajouterPageProgramme('sono')">➕ Ajouter cette page</button>
-            <button class="btn btn-secondary" onclick="effacerPagesProgramme('sono')">Effacer les pages</button>
-            <div id="pages-sono" class="pages-programme"><p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p></div>
-            <button class="btn-view" onclick="ouvrirProgrammePages('sono')">🔊 Ouvrir le programme Sono / Vidéo</button>
-        </div>
-
-        <!-- 6. NETTOYAGE -->
-        <div id="nettoyage" class="panel">
-            <h2>Pôle Nettoyage</h2>
-            <div class="file-upload-box">
-                <p><strong>Ajouter une page au programme</strong></p>
-                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
-                <input type="file" id="file-nettoyage" data-admin-only accept=".pdf,.docx,.jpg,.jpeg,.png">
-                <div id="status-nettoyage" class="status-msg"></div>
-            </div>
-            <button class="btn" onclick="ajouterPageProgramme('nettoyage')">➕ Ajouter cette page</button>
-            <button class="btn btn-secondary" onclick="effacerPagesProgramme('nettoyage')">Effacer les pages</button>
-            <div id="pages-nettoyage" class="pages-programme"><p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p></div>
-            <button class="btn-view" onclick="ouvrirProgrammePages('nettoyage')">🧹 Ouvrir le programme Nettoyage</button>
-        </div>
-
-        <!-- 7. EVENEMENTS -->
-        <div id="evenements" class="panel">
-            <h2>📅 Pôle Évènements</h2>
-            <div class="file-upload-box">
-                <p><strong>Ajouter une page au programme</strong></p>
-                <p>Tu peux ajouter plusieurs pages. Elles seront affichées dans l'ordre d'ajout.</p>
-                <input type="file" id="file-evenements" data-admin-only accept=".pdf,.docx,.jpg,.jpeg,.png">
-                <div id="status-evenements" class="status-msg"></div>
-            </div>
-            <button class="btn" onclick="ajouterPageProgramme('evenements')">➕ Ajouter cette page</button>
-            <button class="btn btn-secondary" onclick="effacerPagesProgramme('evenements')">Effacer les pages</button>
-            <div id="pages-evenements" class="pages-programme"><p class="small-note">Aucune page n’est encore ajoutée à ce programme.</p></div>
-            <button class="btn-view" onclick="ouvrirProgrammePages('evenements')">📄 Ouvrir le programme des Évènements</button>
-
-            <div class="evenements-form">
-                <h3>📝 Informations de l'évènement</h3>
-                <label for="evenements-texte">Texte</label>
-                <textarea id="evenements-texte" data-admin-only rows="7" placeholder="Entrer ici les informations, consignes ou texte de l'évènement..."></textarea>
-
-                <label for="evenements-chiffres">Chiffres</label>
-                <input id="evenements-chiffres" data-admin-only type="text" inputmode="decimal" placeholder="Entrer ici les chiffres ou quantités nécessaires...">
-
-                <div style="margin-top: 15px;">
-                    <button class="btn" data-admin-only onclick="enregistrerEvenements()">💾 Enregistrer les informations</button>
-                    <button class="btn btn-secondary" data-admin-only onclick="effacerEvenements()">Effacer les informations</button>
-                </div>
-                <div id="status-evenements-donnees" class="status-msg"></div>
-            </div>
-        </div>
-
-        <!-- 8. RAPPORT DE PRÉDICATION -->
-        <div id="rapport" class="panel">
-            <h2>📋 Rapport mensuel de prédication</h2>
-
-            <div class="rapport-form">
-                <p><strong>Votre rapport du mois</strong></p>
-
-                <label><strong>Avez-vous prêché ?</strong></label>
-                <div class="rapport-choice">
-                    <label>
-                        <input type="radio" name="rapport-preche" value="oui" checked onchange="toggleRapportChamps()">
-                        🟢 Oui
-                    </label>
-                    <label>
-                        <input type="radio" name="rapport-preche" value="non" onchange="toggleRapportChamps()">
-                        ⚪ Non
-                    </label>
-                </div>
-
-                <div id="rapport-champs">
-                    <div class="rapport-grid">
-                        <div class="rapport-field">
-                            <label for="rapport-heures">⏱️ Nombre d'heures</label>
-                            <input id="rapport-heures" type="number" min="0" step="0.5" inputmode="decimal" placeholder="0">
-                        </div>
-
-                        <div class="rapport-field">
-                            <label for="rapport-cours">📖 Cours bibliques</label>
-                            <input id="rapport-cours" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
-                        </div>
-
-                        <div class="rapport-field">
-                            <label for="rapport-visites">🔄 Nouvelles visites</label>
-                            <input id="rapport-visites" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
-                        </div>
-
-                        <div class="rapport-field">
-                            <label for="rapport-periodiques">📰 Périodiques</label>
-                            <input id="rapport-periodiques" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
-                        </div>
-
-                        <div class="rapport-field">
-                            <label for="rapport-videos">🎥 Vidéos</label>
-                            <input id="rapport-videos" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
-                        </div>
-                    </div>
-                </div>
-
-                <button class="btn" type="button" onclick="enregistrerRapport()">💾 Envoyer mon rapport</button>
-                <button class="btn btn-secondary" type="button" onclick="effacerRapport()">Effacer</button>
-
-                <div id="rapport-status" class="status-msg"></div>
-            </div>
-
-            <div class="small-note">
-                Rapport mensuel de test. Les données sont enregistrées localement dans ce navigateur.
-            </div>
-        </div>
-
-        <!-- 10. GROUPES DE PRÉDICATION -->
-        <div id="groupes" class="panel">
-            <h2>👥 Groupes de prédication</h2>
-            <p>Les 15 groupes sont affichés ci-dessous. Ajoute le nom et le prénom de chaque membre dans son groupe.</p>
-
-            <div class="groupes-grid">
-            <div class="groupe-card">
-                <h3>Groupe 1</h3>
-                <ul id="membres-groupe-1" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-1" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(1)">➕ Ajouter</button>
-                </div>
-            </div>
-            <div class="groupe-card">
-                <h3>Groupe 2</h3>
-                <ul id="membres-groupe-2" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-2" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(2)">➕ Ajouter</button>
-                </div>
-            </div>
-            <div class="groupe-card">
-                <h3>Groupe 3</h3>
-                <ul id="membres-groupe-3" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-3" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(3)">➕ Ajouter</button>
-                </div>
-            </div>
-            <div class="groupe-card">
-                <h3>Groupe 4</h3>
-                <ul id="membres-groupe-4" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-4" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(4)">➕ Ajouter</button>
-                </div>
-            </div>
-            <div class="groupe-card">
-                <h3>Groupe 5</h3>
-                <ul id="membres-groupe-5" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-5" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(5)">➕ Ajouter</button>
-                </div>
-            </div>
-            <div class="groupe-card">
-                <h3>Groupe 6</h3>
-                <ul id="membres-groupe-6" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-6" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(6)">➕ Ajouter</button>
-                </div>
-            </div>
-            <div class="groupe-card">
-                <h3>Groupe 7</h3>
-                <ul id="membres-groupe-7" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-7" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(7)">➕ Ajouter</button>
-                </div>
-            </div>
-            <div class="groupe-card">
-                <h3>Groupe 8</h3>
-                <ul id="membres-groupe-8" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-8" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(8)">➕ Ajouter</button>
-                </div>
-            </div>
-            <div class="groupe-card">
-                <h3>Groupe 9</h3>
-                <ul id="membres-groupe-9" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-9" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(9)">➕ Ajouter</button>
-                </div>
-            </div>
-            <div class="groupe-card">
-                <h3>Groupe 10</h3>
-                <ul id="membres-groupe-10" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-10" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(10)">➕ Ajouter</button>
-                </div>
-            </div>
-            <div class="groupe-card">
-                <h3>Groupe 11</h3>
-                <ul id="membres-groupe-11" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-11" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(11)">➕ Ajouter</button>
-                </div>
-            </div>
-            <div class="groupe-card">
-                <h3>Groupe 12</h3>
-                <ul id="membres-groupe-12" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-12" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(12)">➕ Ajouter</button>
-                </div>
-            </div>
-            <div class="groupe-card">
-                <h3>Groupe 13</h3>
-                <ul id="membres-groupe-13" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-13" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(13)">➕ Ajouter</button>
-                </div>
-            </div>
-            <div class="groupe-card">
-                <h3>Groupe 14</h3>
-                <ul id="membres-groupe-14" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-14" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(14)">➕ Ajouter</button>
-                </div>
-            </div>
-            <div class="groupe-card">
-                <h3>Groupe 15</h3>
-                <ul id="membres-groupe-15" class="membre-list"></ul>
-                <div class="groupe-ajout">
-                    <input id="membre-nom-15" type="text" placeholder="Nom et prénom">
-                    <button class="btn" type="button" onclick="ajouterMembreGroupe(15)">➕ Ajouter</button>
-                </div>
-            </div>
-            </div>
-
-            <div id="groupes-status" class="status-msg"></div>
-        </div>
-
-        <!-- 8. ADMINISTRATION -->
-        <div id="administration" class="panel">
-            <h2>⚙️ Administration</h2>
-
-            <div class="admin-card">
-                <h3>🔐 Accès des 4 administrateurs</h3>
-                <p>Entrez ici le code personnel de l’un des 4 administrateurs. Les administrateurs peuvent voir et modifier toute l’application.</p>
-                <div class="admin-grid">
-                    <input id="access-code" type="password" autocomplete="off" placeholder="Entrer le code administrateur">
-                    <button class="btn" onclick="connexionAcces()">🔐 Se connecter</button>
-                </div>
-                <button class="btn btn-secondary" onclick="deconnexionAcces()" style="margin-top:10px;">Se déconnecter</button>
-                <div id="admin-status" class="admin-status locked">🔒 Aucun accès personnel connecté</div>
-                <div class="small-note">Les 8 responsables ont un accès complet en lecture. Les 120 utilisateurs ont un accès en lecture seule et voient leurs territoires attribués.</div>
-            </div>
-
-            <div class="admin-card">
-                <h3>🗺️ Attribution des territoires aux 120 utilisateurs</h3>
-                <p>En mode administrateur, attribue une carte à un utilisateur avec son code. Cet utilisateur ne verra ensuite que ses cartes.</p>
-                <div class="admin-grid">
-                    <input id="admin-user-code" type="text" placeholder="Code utilisateur (ex. U001)">
-                    <input id="admin-territory-key" type="text" placeholder="Carte (ex. 12_Recto)">
-                    <button class="btn" onclick="attribuerTerritoireUtilisateur()">🗺️ Attribuer</button>
-                </div>
-                <div id="admin-user-status" class="status-msg"></div>
-            </div>
-        </div>
-
-        <!-- 9. TERRITOIRES -->
-        <div id="territoires" class="panel">
-            <h2>Pôle Territoires</h2>
-
-            <div class="territoire-form">
-                <input type="number" id="terr-num" data-admin-only placeholder="N° Carte (1-120)" min="1" max="120" style="width: 130px;">
-
-                <select id="terr-face" data-admin-only>
-                    <option value="Recto" selected="selected">Recto</option>
-                    <option value="Verso">Verso</option>
-                </select>
-
-                <input type="text" id="terr-nom" data-admin-only placeholder="Nom">
-                <input type="text" id="terr-prenom" data-admin-only placeholder="Prénom">
-                <input type="text" id="terr-localisation" data-admin-only placeholder="📍 Localisation du territoire">
-                <input type="text" id="terr-user-code" data-admin-only placeholder="Code utilisateur (ex. U001)">
-
-                <button class="btn" data-admin-only onclick="attribuerTerritoireLocal()">Attribuer la carte</button>
-            </div>
-
-            <div class="file-upload-box">
-                <p><strong>Ajouter la carte réelle du territoire</strong></p>
-                <p>Sélectionne d'abord le numéro et la face ci-dessus, puis charge l'image ou le PDF de la carte.</p>
-                <input type="file" id="terr-file" data-admin-only accept=".pdf,.jpg,.jpeg,.png">
-                <br>
-                <button class="btn" data-admin-only onclick="enregistrerCarteTerritoire()" style="margin-top:10px;">🗺️ Enregistrer la carte du territoire</button>
-                <button class="btn btn-secondary" data-admin-only onclick="enregistrerLocalisationTerritoire()" style="margin-top:10px;">📍 Enregistrer la localisation</button>
-                <div id="status-territoire-carte" class="status-msg"></div>
-                <div class="small-note">
-                    Exemple : Carte 12 Recto peut avoir son fichier, et Carte 12 Verso peut avoir un autre fichier.
-                </div>
-            </div>
-
-            <div class="search-box">
-                <input type="text" id="search-territoire" placeholder="Rechercher : nom, prénom, numéro, statut..." oninput="renderTerritoriesTable()">
-                <button class="btn btn-secondary" onclick="afficherSeulementSortis()">Voir seulement les cartes sorties</button>
-                <button class="btn btn-secondary" onclick="afficherToutesCartes()">Voir toutes les cartes</button>
-                <button class="btn" data-admin-only onclick="exporterSauvegarde()">Exporter sauvegarde</button>
-                <input type="file" id="import-save" data-admin-only accept=".json" onchange="importerSauvegarde(event)" style="display:none;">
-                <button class="btn btn-secondary" data-admin-only onclick="document.getElementById('import-save').click()">Importer sauvegarde</button>
-            </div>
-
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>N° Carte &amp; Face</th>
-                            <th>Carte réelle</th>
-                            <th>Nom &amp; Prénom</th>
-                            <th>📍 Localisation</th>
-                            <th>Date Sortie</th>
-                            <th>Limite (3 mois)</th>
-                            <th>Statut Durée</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="territoires-table-body">
-                        <!-- Les lignes du tableau seront générées par JavaScript -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Script minimal pour assurer la bascule d'onglets (Desktop & iPad/Mobile) -->
-    <script>
-        function toggleRapportChamps() {
-            const oui = document.querySelector('input[name="rapport-preche"][value="oui"]');
-            const champs = document.getElementById('rapport-champs');
-            if (champs) {
-                champs.style.display = oui && oui.checked ? 'block' : 'none';
-            }
-        }
-
-        function enregistrerRapport() {
-            const preche = document.querySelector('input[name="rapport-preche"]:checked')?.value || 'oui';
-            const maintenant = new Date();
-            const mois = maintenant.getFullYear() + '-' + String(maintenant.getMonth() + 1).padStart(2, '0');
-
-            const rapport = {
-                mois: mois,
-                preche: preche,
-                heures: preche === 'oui' ? (document.getElementById('rapport-heures').value || '0') : '0',
-                cours: preche === 'oui' ? (document.getElementById('rapport-cours').value || '0') : '0',
-                visites: preche === 'oui' ? (document.getElementById('rapport-visites').value || '0') : '0',
-                periodiques: preche === 'oui' ? (document.getElementById('rapport-periodiques').value || '0') : '0',
-                videos: preche === 'oui' ? (document.getElementById('rapport-videos').value || '0') : '0',
-                dateEnvoi: new Date().toISOString()
-            };
-
-            localStorage.setItem('rapportPredication_' + mois, JSON.stringify(rapport));
-
-            const status = document.getElementById('rapport-status');
-            if (status) {
-                status.textContent = '✅ Rapport enregistré pour ' + mois + '.';
-            }
-        }
-
-        function effacerRapport() {
-            ['rapport-heures', 'rapport-cours', 'rapport-visites', 'rapport-periodiques', 'rapport-videos']
-                .forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el) el.value = '';
-                });
-
-            const oui = document.querySelector('input[name="rapport-preche"][value="oui"]');
-            if (oui) oui.checked = true;
-
-            toggleRapportChamps();
-
-            const status = document.getElementById('rapport-status');
-            if (status) status.textContent = '';
-        }
-
-        toggleRapportChamps();
-
-
-        function chargerGroupes() {
-            for (let i = 1; i <= 15; i++) {
-                const liste = document.getElementById('membres-groupe-' + i);
-                if (!liste) continue;
-
-                const membres = JSON.parse(localStorage.getItem('groupePredication_' + i) || '[]');
-                liste.innerHTML = '';
-
-                membres.forEach((nom, index) => {
-                    const li = document.createElement('li');
-                    li.textContent = nom + ' ';
-
-                    const bouton = document.createElement('button');
-                    bouton.type = 'button';
-                    bouton.className = 'btn-action';
-                    bouton.textContent = 'Supprimer';
-                    bouton.style.backgroundColor = '#e74c3c';
-                    bouton.onclick = function() {
-                        supprimerMembreGroupe(i, index);
-                    };
-
-                    li.appendChild(bouton);
-                    liste.appendChild(li);
-                });
-            }
-        }
-
-        function ajouterMembreGroupe(numero) {
-            const champ = document.getElementById('membre-nom-' + numero);
-            if (!champ) return;
-
-            const nom = champ.value.trim();
-            if (!nom) return;
-
-            const cle = 'groupePredication_' + numero;
-            const membres = JSON.parse(localStorage.getItem(cle) || '[]');
-
-            membres.push(nom);
-            localStorage.setItem(cle, JSON.stringify(membres));
-
-            champ.value = '';
-            chargerGroupes();
-
-            const status = document.getElementById('groupes-status');
-            if (status) status.textContent = '✅ Membre ajouté au groupe ' + numero + '.';
-        }
-
-        function supprimerMembreGroupe(numero, index) {
-            const cle = 'groupePredication_' + numero;
-            const membres = JSON.parse(localStorage.getItem(cle) || '[]');
-
-            membres.splice(index, 1);
-            localStorage.setItem(cle, JSON.stringify(membres));
-
-            chargerGroupes();
-
-            const status = document.getElementById('groupes-status');
-            if (status) status.textContent = '✅ Membre supprimé du groupe ' + numero + '.';
-        }
-
-        chargerGroupes();
-
-
-        function enregistrerLocalisationTerritoire() {
-            const num = document.getElementById('terr-num')?.value;
-            const face = document.getElementById('terr-face')?.value || 'Recto';
-            const localisation = document.getElementById('terr-localisation')?.value.trim() || '';
-
-            if (!num) return;
-
-            const cle = 'territoireLocalisation_' + num + '_' + face;
-            localStorage.setItem(cle, localisation);
-
-            const status = document.getElementById('status-territoire-carte');
-            if (status) {
-                status.textContent = localisation
-                    ? '✅ Localisation enregistrée pour la carte ' + num + ' ' + face + '.'
-                    : '✅ Localisation effacée pour la carte ' + num + ' ' + face + '.';
-            }
-        }
-
-        function chargerLocalisationTerritoire() {
-            const num = document.getElementById('terr-num')?.value;
-            const face = document.getElementById('terr-face')?.value || 'Recto';
-            const champ = document.getElementById('terr-localisation');
-
-            if (!champ || !num) return;
-
-            champ.value = localStorage.getItem('territoireLocalisation_' + num + '_' + face) || '';
-        }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            const num = document.getElementById('terr-num');
-            const face = document.getElementById('terr-face');
-
-            if (num) num.addEventListener('change', chargerLocalisationTerritoire);
-            if (face) face.addEventListener('change', chargerLocalisationTerritoire);
-            chargerLocalisationTerritoire();
-        });
-
-        function switchTab(tabId) {
-            // Masquer tous les panneaux
-            const panels = document.querySelectorAll('.panel');
-            panels.forEach(panel => panel.classList.remove('active'));
-
-            // Désactiver tous les boutons de nav desktop
-            const buttons = document.querySelectorAll('.tab-button');
-            buttons.forEach(btn => btn.classList.remove('active'));
-
-            // Activer le panneau sélectionné
-            const targetPanel = document.getElementById(tabId);
-            if (targetPanel) {
-                targetPanel.classList.add('active');
-            }
-
-            // Mettre à jour l'état du menu déroulant mobile/iPad
-            const selectMenu = document.getElementById('ipadPoleSelect');
-            if (selectMenu && selectMenu.value !== tabId) {
-                selectMenu.value = tabId;
-            }
-
-            // Sync bouton desktop si disponible
-            buttons.forEach(btn => {
-                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabId)) {
-                    btn.classList.add('active');
-                }
-            });
-        }
-    </script>
+<header>
+<h1>Assemblée Monplaisir</h1>
+<p>10 pôles d'activité – gestion unifiée</p>
+</header>
+
+<div class="nav-tabs">
+<button class="tab-button active" onclick="switchTab('discours')">🎙️ Discours</button>
+<button class="tab-button" onclick="switchTab('cahier')">📖 Cahier Vie et Ministère</button>
+<button class="tab-button" onclick="switchTab('sorties')">🚗 Sorties en semaine</button>
+<button class="tab-button" onclick="switchTab('presentoir')">🛒 Présentoir</button>
+<button class="tab-button" onclick="switchTab('sono')">🔊 Sono Vidéo Estrade</button>
+<button class="tab-button" onclick="switchTab('nettoyage')">🧹 Nettoyage</button>
+<button class="tab-button" onclick="switchTab('territoires')">🗺️ Territoires</button>
+<button class="tab-button" onclick="switchTab('rapport')">📝 Rapport de prédication</button>
+<button class="tab-button" onclick="switchTab('groupes')">👥 Groupes de prédication</button>
+<button class="tab-button" onclick="switchTab('administration')">⚙️ Administration</button>
+</div>
+
+<div id="ipad-pole-menu">
+<select id="ipadPoleSelect" onchange="switchTab(this.value)">
+<option value="discours">🎙️ Discours</option><option value="cahier">📖 Cahier Vie et Ministère</option>
+<option value="sorties">🚗 Sorties en semaine</option><option value="presentoir">🛒 Présentoir</option>
+<option value="sono">🔊 Sono Vidéo Estrade</option><option value="nettoyage">🧹 Nettoyage</option>
+<option value="territoires">🗺️ Territoires</option><option value="rapport">📝 Rapport de prédication</option>
+<option value="groupes">👥 Groupes de prédication</option><option value="administration">⚙️ Administration</option>
+</select>
+</div>
+
+<div class="container">
+
+<div id="discours" class="panel active">
+<h2>Pôle Discours Publics</h2>
+<div class="file-upload-box"><p><strong>Ajouter une page au programme</strong></p>
+<p>Plusieurs pages peuvent être ajoutées dans l'ordre.</p>
+<input type="file" id="file-discours" accept=".pdf,.docx,.jpg,.jpeg,.png"></div>
+<button class="btn" onclick="ajouterPageProgramme('discours')">➕ Ajouter cette page</button>
+<button class="btn btn-secondary" onclick="effacerPagesProgramme('discours')">Effacer les pages</button>
+<div id="pages-discours" class="pages-programme"><p class="small-note">Aucune page ajoutée.</p></div>
+<button class="btn-view" onclick="ouvrirProgrammePages('discours')">📄 Ouvrir le programme des Discours</button>
+</div>
+
+<div id="cahier" class="panel">
+<h2>Pôle Cahier Vie et Ministère</h2>
+<div class="file-upload-box"><p><strong>Ajouter une page au programme</strong></p>
+<input type="file" id="file-cahier" accept=".pdf,.docx,.jpg,.jpeg,.png"></div>
+<button class="btn" onclick="ajouterPageProgramme('cahier')">➕ Ajouter cette page</button>
+<button class="btn btn-secondary" onclick="effacerPagesProgramme('cahier')">Effacer les pages</button>
+<div id="pages-cahier" class="pages-programme"><p class="small-note">Aucune page ajoutée.</p></div>
+<button class="btn-view" onclick="ouvrirProgrammePages('cahier')">📄 Ouvrir le programme Vie et Ministère</button>
+</div>
+
+<div id="sorties" class="panel"><h2>Pôle Sorties en semaine</h2>
+<div class="file-upload-box"><p><strong>Ajouter une page au programme</strong></p><input type="file" id="file-sorties" accept=".pdf,.docx,.jpg,.jpeg,.png"></div>
+<button class="btn" onclick="ajouterPageProgramme('sorties')">➕ Ajouter cette page</button>
+<button class="btn btn-secondary" onclick="effacerPagesProgramme('sorties')">Effacer les pages</button>
+<div id="pages-sorties" class="pages-programme"><p class="small-note">Aucune page ajoutée.</p></div>
+<button class="btn-view" onclick="ouvrirProgrammePages('sorties')">🚗 Ouvrir le programme des Sorties</button></div>
+
+<div id="presentoir" class="panel"><h2>Pôle Présentoir</h2>
+<div class="file-upload-box"><p><strong>Ajouter une page au programme</strong></p><input type="file" id="file-presentoir" accept=".pdf,.docx,.jpg,.jpeg,.png"></div>
+<button class="btn" onclick="ajouterPageProgramme('presentoir')">➕ Ajouter cette page</button>
+<button class="btn btn-secondary" onclick="effacerPagesProgramme('presentoir')">Effacer les pages</button>
+<div id="pages-presentoir" class="pages-programme"><p class="small-note">Aucune page ajoutée.</p></div>
+<button class="btn-view" onclick="ouvrirProgrammePages('presentoir')">🛒 Ouvrir le programme Présentoir</button></div>
+
+<div id="sono" class="panel"><h2>Pôle Sono Vidéo Estrade</h2>
+<div class="file-upload-box"><p><strong>Ajouter une page au programme</strong></p><input type="file" id="file-sono" accept=".pdf,.docx,.jpg,.jpeg,.png"></div>
+<button class="btn" onclick="ajouterPageProgramme('sono')">➕ Ajouter cette page</button>
+<button class="btn btn-secondary" onclick="effacerPagesProgramme('sono')">Effacer les pages</button>
+<div id="pages-sono" class="pages-programme"><p class="small-note">Aucune page ajoutée.</p></div>
+<button class="btn-view" onclick="ouvrirProgrammePages('sono')">🔊 Ouvrir le programme Sono / Vidéo</button></div>
+
+<div id="nettoyage" class="panel"><h2>Pôle Nettoyage</h2>
+<div class="file-upload-box"><p><strong>Ajouter une page au programme</strong></p><input type="file" id="file-nettoyage" accept=".pdf,.docx,.jpg,.jpeg,.png"></div>
+<button class="btn" onclick="ajouterPageProgramme('nettoyage')">➕ Ajouter cette page</button>
+<button class="btn btn-secondary" onclick="effacerPagesProgramme('nettoyage')">Effacer les pages</button>
+<div id="pages-nettoyage" class="pages-programme"><p class="small-note">Aucune page ajoutée.</p></div>
+<button class="btn-view" onclick="ouvrirProgrammePages('nettoyage')">🧹 Ouvrir le programme Nettoyage</button></div>
+
+<div id="territoires" class="panel">
+<h2>🗺️ Pôle Territoires</h2>
+
+<div class="territoire-form">
+<input type="number" id="terr-num" placeholder="N° Carte (1-120)" min="1" max="120">
+<select id="terr-face"><option>Recto</option><option>Verso</option></select>
+<input type="text" id="terr-nom" placeholder="Nom">
+<input type="text" id="terr-prenom" placeholder="Prénom">
+<input type="text" id="terr-user-code" placeholder="Code utilisateur (ex. U001)">
+<div class="location-box full">
+<h3>📍 Localisation du territoire</h3>
+<input type="text" id="terr-localisation" placeholder="Adresse, rue, secteur ou repère de localisation">
+<p class="small-note">La localisation est enregistrée avec le numéro et la face de la carte.</p>
+</div>
+<button class="btn" onclick="attribuerTerritoireLocal()">🗺️ Attribuer la carte</button>
+</div>
+
+<div class="file-upload-box"><p><strong>Ajouter la carte réelle du territoire</strong></p>
+<p>Sélectionne le numéro et la face, puis charge l'image ou le PDF de la carte.</p>
+<input type="file" id="terr-file" accept=".pdf,.jpg,.jpeg,.png"><br>
+<button class="btn" onclick="enregistrerCarteTerritoire()">🗺️ Enregistrer la carte du territoire</button>
+<div id="status-territoire-carte" class="status-msg"></div></div>
+
+<div class="search-box"><input id="search-territoire" placeholder="Rechercher : nom, prénom, numéro, localisation..." oninput="renderTerritoriesTable()">
+<button class="btn btn-secondary" onclick="afficherToutesCartes()">Voir toutes les cartes</button>
+<button class="btn" onclick="exporterSauvegarde()">Exporter sauvegarde</button></div>
+
+<div class="table-wrapper"><table><thead><tr>
+<th>N° Carte & Face</th><th>Carte réelle</th><th>Nom & Prénom</th><th>📍 Localisation</th><th>Date Sortie</th><th>Limite (3 mois)</th><th>Statut Durée</th><th>Actions</th>
+</tr></thead><tbody id="territoires-table-body"></tbody></table></div>
+</div>
+
+<div id="rapport" class="panel">
+<h2>📝 Rapport de prédication</h2>
+<div class="form-box">
+<p><strong>Chaque personne pourra remettre son rapport avec son code utilisateur.</strong></p>
+<div class="form-grid">
+<input id="rapport-code" placeholder="Code utilisateur">
+<select id="rapport-activite"><option>J'ai prêché</option><option>Je n'ai pas prêché</option></select>
+<input id="rapport-heures" type="number" min="0" step="0.1" placeholder="Nombre d'heures">
+<input id="rapport-cours" type="number" min="0" placeholder="Cours bibliques">
+<input id="rapport-nouvelles" type="number" min="0" placeholder="Nouvelles visites">
+<input id="rapport-periodiques" type="number" min="0" placeholder="Périodiques">
+<input id="rapport-videos" type="number" min="0" placeholder="Vidéos">
+<textarea id="rapport-commentaire" class="full" rows="4" placeholder="Remarque éventuelle"></textarea>
+</div>
+<button class="btn" onclick="enregistrerRapport()">💾 Enregistrer le rapport</button>
+<div id="rapport-status" class="status-msg"></div>
+</div>
+</div>
+
+<div id="groupes" class="panel">
+<h2>👥 Groupes de prédication</h2>
+<p>15 groupes sont prévus. Chaque groupe peut contenir les noms et prénoms des participants.</p>
+<div id="groupes-container"></div>
+</div>
+
+<div id="administration" class="panel">
+<h2>⚙️ Administration</h2>
+<div class="admin-card"><h3>🔐 Accès des 4 administrateurs</h3>
+<p>Le code utilisateur permet d'identifier la personne sans utiliser son adresse e-mail.</p>
+<div class="admin-grid"><input id="access-code" type="password" placeholder="Code administrateur"><button class="btn" onclick="connexionAcces()">🔐 Se connecter</button></div>
+<button class="btn btn-secondary" onclick="deconnexionAcces()">Se déconnecter</button>
+<div id="admin-status" class="status-msg">🔒 Aucun accès connecté</div></div>
+<div class="admin-card"><h3>👥 Organisation des accès</h3>
+<p><strong>4 administrateurs :</strong> modification complète.</p>
+<p><strong>8 responsables :</strong> lecture complète selon leurs droits.</p>
+<p><strong>120 utilisateurs :</strong> lecture des informations qui leur sont attribuées et remise du rapport avec leur code.</p>
+<p class="small-note">La sécurité réelle entre utilisateurs nécessitera ensuite une solution de stockage/authentification côté serveur. Cette version conserve les données localement dans le navigateur.</p></div>
+</div>
+</div>
+
+<script>
+const STORAGE_KEY='monplaisir_territoires_v11';
+let territoires=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+let adminConnecte=false;
+
+function switchTab(id){
+ document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+ document.querySelectorAll('.tab-button').forEach(b=>b.classList.remove('active'));
+ const p=document.getElementById(id); if(p)p.classList.add('active');
+ const s=document.getElementById('ipadPoleSelect'); if(s)s.value=id;
+ document.querySelectorAll('.tab-button').forEach(b=>{if((b.getAttribute('onclick')||'').includes("'"+id+"'"))b.classList.add('active')});
+ if(id==='territoires')renderTerritoriesTable();
+}
+function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(territoires))}
+function key(){return (document.getElementById('terr-num').value||'')+'_'+document.getElementById('terr-face').value}
+function attribuerTerritoireLocal(){
+ const num=document.getElementById('terr-num').value;
+ if(!num){alert('Indique le numéro de la carte.');return}
+ const k=key();
+ territoires[k]=territoires[k]||{};
+ Object.assign(territoires[k],{
+  num,face:document.getElementById('terr-face').value,
+  nom:document.getElementById('terr-nom').value,
+  prenom:document.getElementById('terr-prenom').value,
+  userCode:document.getElementById('terr-user-code').value,
+  localisation:document.getElementById('terr-localisation').value
+ });
+ save();renderTerritoriesTable();alert('Carte et localisation enregistrées.');
+}
+function enregistrerCarteTerritoire(){
+ const f=document.getElementById('terr-file').files[0]; if(!f){alert('Choisis une carte.');return}
+ const k=key(); territoires[k]=territoires[k]||{};
+ const r=new FileReader(); r.onload=()=>{territoires[k].fileName=f.name;territoires[k].fileData=r.result;save();renderTerritoriesTable();document.getElementById('status-territoire-carte').textContent='Carte enregistrée : '+f.name};r.readAsDataURL(f);
+}
+function renderTerritoriesTable(){
+ const body=document.getElementById('territoires-table-body'),q=(document.getElementById('search-territoire')?.value||'').toLowerCase();
+ body.innerHTML='';
+ Object.entries(territoires).filter(([k,t])=>(`${k} ${t.nom||''} ${t.prenom||''} ${t.localisation||''} ${t.userCode||''}`).toLowerCase().includes(q)).forEach(([k,t])=>{
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td>${t.num||''} ${t.face||''}</td><td>${t.fileName||'—'}</td><td>${t.nom||''} ${t.prenom||''}</td><td>📍 ${t.localisation||'—'}</td><td>${t.dateSortie||'—'}</td><td>${t.limite||'—'}</td><td><span class="badge badge-dispo">Disponible</span></td><td><button class="btn btn-danger" onclick="supprimerTerritoire('${k}')">Supprimer</button></td>`;
+  body.appendChild(tr);
+ });
+}
+function supprimerTerritoire(k){if(confirm('Supprimer cette attribution ?')){delete territoires[k];save();renderTerritoriesTable()}}
+function afficherToutesCartes(){document.getElementById('search-territoire').value='';renderTerritoriesTable()}
+function exporterSauvegarde(){
+ const blob=new Blob([JSON.stringify(territoires,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sauvegarde-territoires.json';a.click();URL.revokeObjectURL(a.href)
+}
+function connexionAcces(){adminConnecte=true;document.getElementById('admin-status').textContent='🟢 Accès administrateur connecté'}
+function deconnexionAcces(){adminConnecte=false;document.getElementById('admin-status').textContent='🔒 Aucun accès connecté'}
+function ajouterPageProgramme(pole){const f=document.getElementById('file-'+pole);if(!f?.files[0]){alert('Choisis d’abord une page.');return}const area=document.getElementById('pages-'+pole);const d=document.createElement('div');d.className='page-programme';d.innerHTML='<strong>Page ajoutée</strong><div class="page-programme-name">'+f.files[0].name+'</div>';area.appendChild(d);f.value=''}
+function effacerPagesProgramme(pole){document.getElementById('pages-'+pole).innerHTML='<p class="small-note">Aucune page ajoutée.</p>'}
+function ouvrirProgrammePages(pole){alert('Le programme '+pole+' est prêt à être consulté.')}
+function enregistrerRapport(){document.getElementById('rapport-status').textContent='Rapport enregistré localement avec le code utilisateur.'}
+function creerGroupes(){
+ const c=document.getElementById('groupes-container');
+ for(let i=1;i<=15;i++){
+  const d=document.createElement('div');d.className='group-card';
+  d.innerHTML='<h3>Groupe '+i+'</h3><div class="group-members" id="members-'+i+'"></div><button class="btn btn-secondary" onclick="ajouterMembre('+i+')">➕ Ajouter une personne</button>';
+  c.appendChild(d);ajouterMembre(i);
+ }
+}
+function ajouterMembre(i){const c=document.getElementById('members-'+i),r=document.createElement('div');r.className='member-row';r.innerHTML='<input placeholder="Nom"><input placeholder="Prénom"><button class="btn btn-danger" onclick="this.parentElement.remove()">✕</button>';c.appendChild(r)}
+creerGroupes();renderTerritoriesTable();
+</script>
 </body>
 </html>
