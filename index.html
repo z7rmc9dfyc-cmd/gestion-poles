@@ -371,6 +371,62 @@
             min-height: 150px;
         }
 
+        /* Section Rapport de prédication */
+        .rapport-form {
+            background: #f0f4f8;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .rapport-choice {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 12px 0 18px;
+        }
+
+        .rapport-choice label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            background: #fff;
+            border: 1px solid #d7dee5;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .rapport-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .rapport-field label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .rapport-field input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font: inherit;
+        }
+
+        @media (max-width: 600px) {
+            .rapport-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .rapport-choice {
+                flex-direction: column;
+            }
+        }
+
         /* Section Administration */
         .admin-card {
             background: #f0f4f8;
@@ -580,6 +636,7 @@
         <button class="tab-button" onclick="switchTab('territoires')">🗺️ Territoires</button>
         <button class="tab-button" onclick="switchTab('administration')">⚙️ Administration</button>
         <button class="tab-button" onclick="switchTab('evenements')">📅 Évènements</button>
+        <button class="tab-button" onclick="switchTab('rapport')">📋 Rapport de prédication</button>
     </div>
 
     <!-- Navigation pour iPad / Mobile -->
@@ -593,6 +650,7 @@
             <option value="nettoyage">🧹 Nettoyage</option>
             <option value="territoires">🗺️ Territoires</option>
             <option value="evenements">📅 Évènements</option>
+            <option value="rapport">📋 Rapport de prédication</option>
             <option value="administration">⚙️ Administration</option>
         </select>
         <span id="ipadPoleState" style="display:block;margin-top:6px;font-size:13px;">Pôle : 🎙️ Discours</span>
@@ -720,6 +778,65 @@
             </div>
         </div>
 
+        <!-- 8. RAPPORT DE PRÉDICATION -->
+        <div id="rapport" class="panel">
+            <h2>📋 Rapport mensuel de prédication</h2>
+
+            <div class="rapport-form">
+                <p><strong>Votre rapport du mois</strong></p>
+
+                <label><strong>Avez-vous prêché ?</strong></label>
+                <div class="rapport-choice">
+                    <label>
+                        <input type="radio" name="rapport-preche" value="oui" checked onchange="toggleRapportChamps()">
+                        🟢 Oui
+                    </label>
+                    <label>
+                        <input type="radio" name="rapport-preche" value="non" onchange="toggleRapportChamps()">
+                        ⚪ Non
+                    </label>
+                </div>
+
+                <div id="rapport-champs">
+                    <div class="rapport-grid">
+                        <div class="rapport-field">
+                            <label for="rapport-heures">⏱️ Nombre d'heures</label>
+                            <input id="rapport-heures" type="number" min="0" step="0.5" inputmode="decimal" placeholder="0">
+                        </div>
+
+                        <div class="rapport-field">
+                            <label for="rapport-cours">📖 Cours bibliques</label>
+                            <input id="rapport-cours" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+                        </div>
+
+                        <div class="rapport-field">
+                            <label for="rapport-visites">🔄 Nouvelles visites</label>
+                            <input id="rapport-visites" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+                        </div>
+
+                        <div class="rapport-field">
+                            <label for="rapport-periodiques">📰 Périodiques</label>
+                            <input id="rapport-periodiques" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+                        </div>
+
+                        <div class="rapport-field">
+                            <label for="rapport-videos">🎥 Vidéos</label>
+                            <input id="rapport-videos" type="number" min="0" step="1" inputmode="numeric" placeholder="0">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn" type="button" onclick="enregistrerRapport()">💾 Envoyer mon rapport</button>
+                <button class="btn btn-secondary" type="button" onclick="effacerRapport()">Effacer</button>
+
+                <div id="rapport-status" class="status-msg"></div>
+            </div>
+
+            <div class="small-note">
+                Rapport mensuel de test. Les données sont enregistrées localement dans ce navigateur.
+            </div>
+        </div>
+
         <!-- 8. ADMINISTRATION -->
         <div id="administration" class="panel">
             <h2>⚙️ Administration</h2>
@@ -812,6 +929,56 @@
 
     <!-- Script minimal pour assurer la bascule d'onglets (Desktop & iPad/Mobile) -->
     <script>
+        function toggleRapportChamps() {
+            const oui = document.querySelector('input[name="rapport-preche"][value="oui"]');
+            const champs = document.getElementById('rapport-champs');
+            if (champs) {
+                champs.style.display = oui && oui.checked ? 'block' : 'none';
+            }
+        }
+
+        function enregistrerRapport() {
+            const preche = document.querySelector('input[name="rapport-preche"]:checked')?.value || 'oui';
+            const maintenant = new Date();
+            const mois = maintenant.getFullYear() + '-' + String(maintenant.getMonth() + 1).padStart(2, '0');
+
+            const rapport = {
+                mois: mois,
+                preche: preche,
+                heures: preche === 'oui' ? (document.getElementById('rapport-heures').value || '0') : '0',
+                cours: preche === 'oui' ? (document.getElementById('rapport-cours').value || '0') : '0',
+                visites: preche === 'oui' ? (document.getElementById('rapport-visites').value || '0') : '0',
+                periodiques: preche === 'oui' ? (document.getElementById('rapport-periodiques').value || '0') : '0',
+                videos: preche === 'oui' ? (document.getElementById('rapport-videos').value || '0') : '0',
+                dateEnvoi: new Date().toISOString()
+            };
+
+            localStorage.setItem('rapportPredication_' + mois, JSON.stringify(rapport));
+
+            const status = document.getElementById('rapport-status');
+            if (status) {
+                status.textContent = '✅ Rapport enregistré pour ' + mois + '.';
+            }
+        }
+
+        function effacerRapport() {
+            ['rapport-heures', 'rapport-cours', 'rapport-visites', 'rapport-periodiques', 'rapport-videos']
+                .forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = '';
+                });
+
+            const oui = document.querySelector('input[name="rapport-preche"][value="oui"]');
+            if (oui) oui.checked = true;
+
+            toggleRapportChamps();
+
+            const status = document.getElementById('rapport-status');
+            if (status) status.textContent = '';
+        }
+
+        toggleRapportChamps();
+
         function switchTab(tabId) {
             // Masquer tous les panneaux
             const panels = document.querySelectorAll('.panel');
